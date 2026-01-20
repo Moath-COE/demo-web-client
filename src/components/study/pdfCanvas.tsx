@@ -18,9 +18,19 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 // import "@/styles/TextLayer.css";
 // import "@/styles/AnnotationLayer.css";
 
-export function PdfCanvas({ pdfUrl }: { pdfUrl: string | null }) {
-  const [api, setApi] = useState<CarouselApi>();
-  const [numPages, setNumPages] = useState<number>(0);
+export function PdfCanvas({
+  pdfUrl,
+  api,
+  setApi,
+  numPages,
+  setNumPages,
+}: {
+  pdfUrl: string | null;
+  api: CarouselApi | null;
+  setApi: React.Dispatch<React.SetStateAction<CarouselApi | null>>;
+  numPages: number;
+  setNumPages: React.Dispatch<React.SetStateAction<number>>;
+}) {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
 

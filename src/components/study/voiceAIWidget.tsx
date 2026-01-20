@@ -11,15 +11,23 @@ import {
 } from "lucide-react";
 import { LiveKitRoom } from "@livekit/components-react";
 import AgentController from "./agentController";
+import { CarouselApi } from "../ui/carousel";
 
 interface VoiceAIWidgetProps {
   isOpen: boolean;
   onClose: () => void;
+  api: CarouselApi | null;
+  numPages: number;
 }
 
 type AIuiState = "idle" | "listening" | "thinking" | "speaking";
 
-export function VoiceAIWidget({ isOpen, onClose }: VoiceAIWidgetProps) {
+export function VoiceAIWidget({
+  isOpen,
+  onClose,
+  api,
+  numPages,
+}: VoiceAIWidgetProps) {
   const [uiState, setUiState] = useState<AIuiState>("idle");
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -92,20 +100,20 @@ export function VoiceAIWidget({ isOpen, onClose }: VoiceAIWidgetProps) {
                 {uiState === "listening"
                   ? "Listening..."
                   : uiState === "thinking"
-                  ? "Thinking..."
-                  : uiState === "speaking"
-                  ? "Speaking..."
-                  : "سند"}
+                    ? "Thinking..."
+                    : uiState === "speaking"
+                      ? "Speaking..."
+                      : "سند"}
               </span>
               <div
                 className={`w-2 h-2 rounded-full ${
                   uiState === "listening"
                     ? "bg-red-500 animate-pulse"
                     : uiState === "thinking"
-                    ? "bg-yellow-500 animate-pulse"
-                    : uiState === "speaking"
-                    ? "bg-green-500 animate-pulse"
-                    : "bg-gray-500"
+                      ? "bg-yellow-500 animate-pulse"
+                      : uiState === "speaking"
+                        ? "bg-green-500 animate-pulse"
+                        : "bg-gray-500"
                 }`}
               />
             </div>
@@ -122,7 +130,7 @@ export function VoiceAIWidget({ isOpen, onClose }: VoiceAIWidgetProps) {
               }}
               className="flex flex-col"
             >
-              <AgentController />
+              <AgentController api={api} numPages={numPages} />
             </LiveKitRoom>
           ) : (
             <div className="p-4 border-t border-[#1d5479]/50 flex items-center justify-center gap-3 h-full">
