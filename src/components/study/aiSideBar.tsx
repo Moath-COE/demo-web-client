@@ -1,15 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { CarouselApi } from "../ui/carousel";
 import { Button } from "@/components/ui/button";
-import {
-  Mic,
-  MicOff,
-  X,
-  Minimize2,
-  Volume2,
-  VolumeX,
-  Play,
-} from "lucide-react";
+import { X, Volume2, VolumeX, Play } from "lucide-react";
 import { LiveKitRoom } from "@livekit/components-react";
 import AgentController from "./agentController";
 
@@ -69,27 +61,34 @@ export function AISideBar({
         </Button>
       </div>
 
-      {/* Interaction section Section */}
-
-      {/* AI controls */}
-      <div className="p-4 border-b border-[#1d5479]">
-        <div className="w-full h-full rounded-2xl flex flex-col overflow-hidden backdrop-blur-sm">
-          {token && uiState === "started" ? (
-            <LiveKitRoom
-              serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL!}
-              token={token!}
-              connect={true}
-              video={false}
-              audio={true}
-              onDisconnected={() => {
-                handleMicToggle();
-              }}
-              className="flex flex-col"
-            >
-              <AgentController api={api} numPages={numPages} />
-            </LiveKitRoom>
-          ) : (
-            <div className="p-4 border-t border-[#1d5479]/50 flex items-center justify-center gap-3 h-full">
+      {/* Voice Assistant Section */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {token && uiState === "started" ? (
+          <LiveKitRoom
+            serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL!}
+            token={token!}
+            connect={true}
+            video={false}
+            audio={true}
+            onDisconnected={() => {
+              handleMicToggle();
+              setToken(null);
+            }}
+            className="flex-1 flex flex-col"
+          >
+            <AgentController api={api} numPages={numPages} />
+          </LiveKitRoom>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center p-8">
+            <div className="text-center mb-8 space-y-2">
+              <h3 className="text-xl font-semibold text-[#fffdfd]">
+                مستعد للمساعدة
+              </h3>
+              <p className="text-sm text-[#fffdfd]/70">
+                انقر على زر التشغيل للبدء في المحادثة مع سند
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-3">
               <Button
                 variant="ghost"
                 size="icon"
@@ -97,33 +96,22 @@ export function AISideBar({
                 className="h-10 w-10 rounded-full hover:bg-[#1d5479]"
               >
                 {isMuted ? (
-                  <VolumeX className="h-15 w-15 text-[#fffdfd]" />
+                  <VolumeX className="h-5 w-5 text-[#fffdfd]" />
                 ) : (
-                  <Volume2 className="h-15 w-15 text-[#fffdfd]" />
+                  <Volume2 className="h-5 w-5 text-[#fffdfd]" />
                 )}
               </Button>
-              {/* Main Mic Button */}
+              {/* Main Start Button */}
               <button
                 onClick={handleMicToggle}
-                className={`relative h-18 w-18 rounded-full flex items-center justify-center transition-all ${
-                  uiState === "started"
-                    ? "bg-red-500 hover:bg-red-600 scale-110"
-                    : "bg-[#ffa02f] hover:bg-[#ff8c1a]"
-                } shadow-lg`}
+                className="relative h-16 w-16 rounded-full flex items-center justify-center transition-all bg-[#ffa02f] hover:bg-[#ff8c1a] shadow-lg hover:scale-105"
               >
-                {uiState === "started" ? (
-                  <MicOff className="h-6 w-6 text-white" />
-                ) : (
-                  <Play className="h-6 w-6 text-[#0e293c]" />
-                )}
-                {uiState === "started" && (
-                  <span className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-75" />
-                )}
+                <Play className="h-7 w-7 text-[#0e293c]" />
               </button>
               <div className="h-10 w-10" /> {/* Spacer for symmetry */}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
