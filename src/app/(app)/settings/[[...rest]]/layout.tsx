@@ -1,14 +1,11 @@
 import React from "react";
 import TopNav from "@/components/landing/topNav";
 
-interface LayoutProps {
+export default function SettingsLayout({
+  children,
+}: {
   children: React.ReactNode;
-  params: {
-    rest?: string[];
-  };
-}
-
-export default function SettingsLayout({ children, params }: LayoutProps) {
+}) {
   return (
     <>
       <TopNav />
