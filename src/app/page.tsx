@@ -1,246 +1,193 @@
-import { SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  BookOpen,
-  Brain,
-  Zap,
-  Target,
-  ArrowRight,
-  CheckCircle2,
-  Sparkles,
-} from "lucide-react";
-import TopNav from "@/components/landing/topNav";
-import Footer from "@/components/landing/footer";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+
+interface FilterOption {
+  value: string;
+  label: string;
+}
+
+const UNIVERSITIES: FilterOption[] = [
+  { value: "ksu", label: "جامعة الملك سعود" },
+  { value: "kau", label: "جامعة الملك عبدالعزيز" },
+  { value: "kfupm", label: "جامعة الملك فهد للبترول والمعادن" },
+  { value: "qu", label: "جامعة القصيم" },
+];
+
+const MAJORS: FilterOption[] = [
+  { value: "cs", label: "علوم الحاسب" },
+  { value: "eng", label: "الهندسة" },
+  { value: "med", label: "الطب" },
+  { value: "bus", label: "إدارة الأعمال" },
+];
+
+const SUBJECTS: FilterOption[] = [
+  { value: "math", label: "الرياضيات" },
+  { value: "physics", label: "الفيزياء" },
+  { value: "chem", label: "الكيمياء" },
+  { value: "programming", label: "البرمجة" },
+];
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const query = formData.get("search") as string;
+    const trimmed = query.trim();
+    router.push(
+      trimmed ? `/enroll?q=${encodeURIComponent(trimmed)}` : "/enroll",
+    );
+  };
+
+  const handleFilterSelect = (
+    type: "university" | "major" | "subject",
+    value: string,
+  ) => {
+    router.push(`/enroll?${type}=${encodeURIComponent(value)}`);
+  };
+
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#f5f7fa] via-white to-[#e6e9ed] dark:from-[#0e293c] dark:via-[#1d5479] dark:to-[#0e293c] flex flex-col items-center">
-      {/* Header */}
-      <TopNav />
-      {/* Hero Section */}
-      <section className="container px-4 sm:px-8 py-20 sm:py-32">
-        <div className="mx-auto max-w-4xl text-center space-y-8">
-          <Badge className="px-4 py-1 bg-[#ffa02f]/10 text-[#ffa02f] border-[#ffa02f]/20 hover:bg-[#ffa02f]/20">
-            <Sparkles className="w-3 h-3 ml-1" />
-            منصة تعليمية مدعومة بالذكاء الاصطناعي
-          </Badge>
+    <main className="min-h-dvh overflow-y-auto [@media(min-height:600px)]:h-dvh [@media(min-height:600px)]:overflow-hidden flex flex-col relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10 z-0" />
+      <div
+        className="absolute inset-0 opacity-[0.05] dark:opacity-[0.08] z-0"
+        style={{
+          backgroundImage: "url('/static/O.png')",
+          backgroundRepeat: "repeat",
+          backgroundSize: "200px",
+        }}
+      />
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
-            تعلم بذكاء مع أدوات الدراسة{" "}
-            <span className="bg-gradient-to-r from-[#1d5479] via-[#ffa02f] to-[#ff8c00] bg-clip-text text-transparent">
-              المدعومة بالذكاء الاصطناعي
-            </span>
-          </h1>
-
-          <p className="text-lg sm:text-xl text-card max-w-2xl mx-auto">
-            حوّل تجربة التعلم الخاصة بك مع مساعدة الذكاء الاصطناعي التفاعلية،
-            والتعليقات الذكية، وجلسات الدراسة المخصصة. أتقن أي موضوع بشكل أسرع
-            من أي وقت مضى.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <SignedOut>
-              <SignUpButton>
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-[#1d5479] to-[#ffa02f] hover:from-[#0e293c] hover:to-[#ff8c00] text-white h-12 px-8 text-base"
-                >
-                  ابدأ التعلم مجاناً
-                  <ArrowRight className="mr-2 h-5 w-5 rotate-180" />
-                </Button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              <Link href={`/my-library`}>
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-[#1d5479] to-[#ffa02f] hover:from-[#0e293c] hover:to-[#ff8c00] text-white h-12 px-8 text-base"
-                >
-                  اذهب مكتبة الدورات
-                  <ArrowRight className="mr-2 h-5 w-5 rotate-180" />
-                </Button>
-              </Link>
-            </SignedIn>
-            <Button size="lg" variant="outline" className="h-12 px-8 text-base">
-              شاهد العرض التوضيحي
-            </Button>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-8 pt-8 text-sm text-card-muted">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
-              <span>لا حاجة لبطاقة ائتمان</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
-              <span>خطة مجانية للأبد</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
-              <span>إلغاء في أي وقت</span>
-            </div>
-          </div>
+      <header className="w-full p-6 lg:p-8 flex items-center justify-between relative z-10 bg-background/70 dark:bg-background/70 backdrop-blur-sm border-b border-border">
+        <div>
+          <SignedOut>
+            <SignInButton mode="modal">
+              <Button className="bg-gradient-to-r from-chart-2 to-chart-1 hover:from-chart-3 hover:to-chart-1 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300">
+                تسجيل الدخول
+              </Button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <Link href="/my-library">
+              <Button className="bg-gradient-to-r from-chart-2 to-chart-1 hover:from-chart-3 hover:to-chart-1 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300">
+                مكتبة الدورات
+              </Button>
+            </Link>
+          </SignedIn>
         </div>
-      </section>
+        <div className="flex items-center gap-4">
+          <span className="text-2xl font-bold bg-gradient-to-r from-chart-2 via-chart-2 to-chart-1 bg-clip-text text-transparent tracking-tight">
+            Chapter-14
+          </span>
+          <Image
+            src="/static/logo.png"
+            alt="Company Logo"
+            width={48}
+            height={48}
+            className="h-12 w-auto drop-shadow-md"
+          />
+        </div>
+      </header>
 
-      {/* Features Section */}
-      <section
-        id="features"
-        className="container px-4 sm:px-8 py-20 border-y border-card-muted/20"
-      >
-        <div className="mx-auto max-w-6xl">
-          <div className="text-center space-y-4 mb-16">
-            <Badge className="px-4 py-1 bg-[#ffa02f]/10 text-[#ffa02f] border-[#ffa02f]/20">
-              المميزات
-            </Badge>
-            <h2 className="text-3xl sm:text-5xl font-bold">
-              كل ما تحتاجه{" "}
-              <span className="bg-gradient-to-r from-[#1d5479] to-[#ffa02f] bg-clip-text text-transparent">
-                للتفوق
-              </span>
-            </h2>
-            <p className="text-lg text-card-muted max-w-2xl mx-auto">
-              ميزات قوية مصممة لتحسين رحلتك التعليمية وتعزيز إنتاجيتك
+      <section className="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:py-16 relative z-10">
+        <div className="w-full max-w-4xl space-y-10">
+          <div className="text-center space-y-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-center leading-tight tracking-tight bg-gradient-to-r from-foreground to-chart-1 bg-clip-text text-transparent">
+              مدرس خصوصي بالذكاء الاصطناعي
+            </h1>
+            <p className="text-lg sm:text-xl text-foreground max-w-2xl mx-auto leading-relaxed opacity-90">
+              اكتشف عالماً جديداً من التعلم المخصص مع تقنيات الذكاء الاصطناعي
+              المتطورة
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="relative overflow-hidden border-2 hover:border-[#ffa02f]/50 transition-all hover:shadow-lg group">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#ffa02f]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#1d5479] to-[#0e293c] flex items-center justify-center mb-4">
-                  <Brain className="h-6 w-6 text-white" />
-                </div>
-                <CardTitle>محادثة بالذكاء الاصطناعي</CardTitle>
-                <CardDescription>
-                  احصل على إجابات وتوضيحات فورية من مدرسنا الذكي المتاح على مدار
-                  الساعة
-                </CardDescription>
-              </CardHeader>
-            </Card>
+          <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto">
+            <div className="relative group">
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-chart-2 group-focus-within:text-chart-1 transition-colors duration-200" />
+              <Input
+                name="search"
+                type="text"
+                placeholder="ابحث عن دورة أو موضوع..."
+                className="h-14 pr-12 pl-5 text-base bg-card border-border shadow-lg hover:shadow-xl focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 placeholder:text-muted-foreground"
+              />
+            </div>
+          </form>
 
-            <Card className="relative overflow-hidden border-2 hover:border-[#ffa02f]/50 transition-all hover:shadow-lg group">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#ffa02f]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#ffa02f] to-[#ff8c00] flex items-center justify-center mb-4">
-                  <Zap className="h-6 w-6 text-white" />
-                </div>
-                <CardTitle>تعليقات توضيحية ذكية</CardTitle>
-                <CardDescription>
-                  قم بتمييز المواد الدراسية والتعليق عليها وتنظيمها باستخدام
-                  أدوات ذكية
-                </CardDescription>
-              </CardHeader>
-            </Card>
+          <div className="w-full max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Select
+              onValueChange={(value) => handleFilterSelect("university", value)}
+            >
+              <SelectTrigger className="h-14 bg-card border-2 border-border shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
+                <SelectValue placeholder="الجامعة" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border shadow-xl">
+                {UNIVERSITIES.map((uni) => (
+                  <SelectItem
+                    key={uni.value}
+                    value={uni.value}
+                    className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1 text-foreground"
+                  >
+                    {uni.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-            <Card className="relative overflow-hidden border-2 hover:border-[#ffa02f]/50 transition-all hover:shadow-lg group">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#ffa02f]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#1d5479] to-[#ffa02f] flex items-center justify-center mb-4">
-                  <BookOpen className="h-6 w-6 text-white" />
-                </div>
-                <CardTitle>دراسة تفاعلية</CardTitle>
-                <CardDescription>
-                  تفاعل مع المحتوى التفاعلي وأسئلة التدريب المصممة خصيصاً
-                  لمستواك
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <Select
+              onValueChange={(value) => handleFilterSelect("major", value)}
+            >
+              <SelectTrigger className="h-14 bg-card border-2 border-border shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
+                <SelectValue placeholder="التخصص" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border shadow-xl">
+                {MAJORS.map((major) => (
+                  <SelectItem
+                    key={major.value}
+                    value={major.value}
+                    className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1 text-foreground"
+                  >
+                    {major.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-            <Card className="relative overflow-hidden border-2 hover:border-[#ffa02f]/50 transition-all hover:shadow-lg group">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#ffa02f]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#ffa02f] to-[#ff8c00] flex items-center justify-center mb-4">
-                  <Target className="h-6 w-6 text-white" />
-                </div>
-                <CardTitle>تتبع التقدم</CardTitle>
-                <CardDescription>
-                  راقب رحلتك التعليمية من خلال التحليلات والرؤى التفصيلية
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="relative overflow-hidden border-2 hover:border-[#ffa02f]/50 transition-all hover:shadow-lg group">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#ffa02f]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#1d5479] to-[#0e293c] flex items-center justify-center mb-4">
-                  <Sparkles className="h-6 w-6 text-white" />
-                </div>
-                <CardTitle>تفاعل صوتي</CardTitle>
-                <CardDescription>
-                  ادرس دون استخدام اليدين باستخدام الأوامر الصوتية وميزات النسخ
-                  الصوتي
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="relative overflow-hidden border-2 hover:border-[#ffa02f]/50 transition-all hover:shadow-lg group">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#ffa02f]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#ffa02f] to-[#ff8c00] flex items-center justify-center mb-4">
-                  <BookOpen className="h-6 w-6 text-white" />
-                </div>
-                <CardTitle>مكتبة الدورات</CardTitle>
-                <CardDescription>
-                  الوصول إلى مكتبة متنامية من الدورات عبر مواضيع ومجالات متعددة
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <Select
+              onValueChange={(value) => handleFilterSelect("subject", value)}
+            >
+              <SelectTrigger className="h-14 bg-card border-2 border-border shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
+                <SelectValue placeholder="المادة" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border shadow-xl">
+                {SUBJECTS.map((subject) => (
+                  <SelectItem
+                    key={subject.value}
+                    value={subject.value}
+                    className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1 text-foreground"
+                  >
+                    {subject.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </section>
-
-      {/* CTA Section */}
-      <section className="container px-4 sm:px-8 py-20">
-        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-[#1d5479] to-[#ffa02f]">
-          <div className="absolute inset-0 bg-grid-white/10" />
-          <CardContent className="relative p-12 sm:p-16 text-center space-y-6">
-            <h2 className="text-3xl sm:text-5xl font-bold text-white">
-              هل أنت مستعد لتحويل تجربة التعلم؟
-            </h2>
-            <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto">
-              انضم إلى آلاف الطلاب الذين يتعلمون بذكاء بالفعل باستخدام أدوات
-              الذكاء الاصطناعي
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <SignedOut>
-                <SignUpButton>
-                  <Button
-                    size="lg"
-                    className="bg-white text-[#1d5479] hover:bg-white/90 h-12 px-8 text-base font-bold"
-                  >
-                    ابدأ مجاناً
-                    <ArrowRight className="mr-2 h-5 w-5 rotate-180" />
-                  </Button>
-                </SignUpButton>
-              </SignedOut>
-              <SignedIn>
-                <Link href="/admin/dashboard">
-                  <Button
-                    size="lg"
-                    className="bg-white text-[#1d5479] hover:bg-white/90 h-12 px-8 text-base font-bold"
-                  >
-                    انتقل إلى لوحة التحكم
-                    <ArrowRight className="mr-2 h-5 w-5 rotate-180" />
-                  </Button>
-                </Link>
-              </SignedIn>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Footer */}
-      <Footer />
-    </div>
+    </main>
   );
 }
