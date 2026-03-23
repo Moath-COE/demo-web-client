@@ -50,7 +50,7 @@ export function AISideBar({
       await session.room.localParticipant.setAttributes({
         course_id: "test_subj",
         chapter_id: "ch_2",
-        language: "English",
+        language: "Arabic",
         user_id: "user_123",
       });
     } catch (error) {
