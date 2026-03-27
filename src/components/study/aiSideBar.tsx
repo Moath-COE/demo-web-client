@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { CarouselApi } from "../ui/carousel";
 import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { X, Play } from "lucide-react";
 import AgentController from "./agentController";
 import { useSession, SessionProvider } from "@livekit/components-react";
@@ -34,6 +35,9 @@ export function AISideBar({
   // Initialize session with the token source
   const session = useSession(tokenSource);
 
+  // Language selection state
+  const [language, setLanguage] = useState<"English" | "Arabic">("Arabic");
+
   // Handle starting the session
   const handleStart = async () => {
     try {
@@ -48,9 +52,9 @@ export function AISideBar({
 
       // Set participant attributes after connection
       await session.room.localParticipant.setAttributes({
-        course_id: "test_subj",
-        chapter_id: "ch_2",
-        language: "Arabic",
+        course_id: "phys_1040",
+        chapter_id: "ch_1",
+        language: language,
         user_id: "user_123",
       });
     } catch (error) {
@@ -103,6 +107,19 @@ export function AISideBar({
                 <Play className="h-7 w-7 text-[#0e293c]" />
               </button>
             </div>
+            {/* Language Switch */}
+            <ToggleGroup
+              type="single"
+              value={language}
+              onValueChange={(val) =>
+                val && setLanguage(val as "English" | "Arabic")
+              }
+              variant="outline"
+              className="mt-4"
+            >
+              <ToggleGroupItem value="English">EN</ToggleGroupItem>
+              <ToggleGroupItem value="Arabic">AR</ToggleGroupItem>
+            </ToggleGroup>
           </div>
         )}
       </div>
