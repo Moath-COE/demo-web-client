@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { filepath: string[] } },
+  { params }: { params: Promise<{ filepath: string[] }> },
 ) {
   // 1. Authenticate the request using Clerk
   // This reads the session cookies sent by the browser
