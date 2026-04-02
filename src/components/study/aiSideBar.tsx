@@ -6,17 +6,20 @@ import { X, Play } from "lucide-react";
 import AgentController from "./agentController";
 import { useSession, SessionProvider } from "@livekit/components-react";
 import { TokenSource } from "livekit-client";
+import { Json } from "@/types/database.types";
 
 export function AISideBar({
   onClose,
   isOpen,
   api,
   numPages,
+  topicsJSON,
 }: {
   isOpen: boolean;
   onClose: () => void;
   api: CarouselApi | null;
   numPages: number;
+  topicsJSON: Json;
 }) {
   // Create a stable token source that fetches from our API
   const tokenSource = useMemo(
@@ -64,29 +67,21 @@ export function AISideBar({
 
   // Derive UI state from session connection state
   const isConnected = session.connectionState !== "disconnected";
+  // const isConnected = true;
 
   if (!isOpen) return null;
 
   return (
     <div className="flex flex-col h-full bg-[#0f4c6f]">
-      {/* Header */}
-      <div className="flex items-center justify-between py-2 px-4 border-b border-[#1d5479]">
-        <h2 className="text-lg font-semibold text-[#fffdfd]">اهلا بك مع سند</h2>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onClose}
-          className="h-8 w-8 rounded-full hover:bg-[#1d5479]"
-        >
-          <X className="h-4 w-4 text-[#fffdfd]" />
-        </Button>
-      </div>
-
       {/* Voice Assistant Section */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {isConnected ? (
           <SessionProvider session={session}>
-            <AgentController api={api} numPages={numPages} />
+            <AgentController
+              api={api}
+              numPages={numPages}
+              topicsJSON={topicsJSON}
+            />
           </SessionProvider>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8">
