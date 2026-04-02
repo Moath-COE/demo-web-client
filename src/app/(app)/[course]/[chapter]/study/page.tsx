@@ -8,6 +8,7 @@ import { useDatabase } from "@/context/databaseContext";
 import { Database, Json } from "@/types/database.types";
 import { CarouselApi } from "@/components/ui/carousel";
 import { AISideBar } from "@/components/study/aiSideBar";
+import { set } from "zod/v4";
 
 type Chapter = Database["public"]["Tables"]["chapters"]["Row"];
 
@@ -53,31 +54,19 @@ export default function Study() {
 
     async function fetchTopicsJSON() {
       try {
-        // Get signed URL from server
-        const signedUrlResponse = await fetch("/api/fetch-from-bunny", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ filePath: "/sanad/phys_1040/ch_1/topics_list.json" }),
-        });
+        const response = await fetch(
+          "/api/fetch-bunny/sanad/phys_1040/ch_1/topics_list.json",
+        );
 
-        if (!signedUrlResponse.ok) {
-          throw new Error(`Failed to get signed URL: ${signedUrlResponse.status}`);
-        }
-
-        const { url: signedUrl } = await signedUrlResponse.json();
-
-        // Fetch the actual JSON using the signed URL
-        const response = await fetch(signedUrl);
+        const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch topics JSON: ${response.status}`);
+          throw new Error(data.error);
         }
 
-        const topics = await response.json();
-        setTopicsJSON(topics);
+        setTopicsJSON(data);
       } catch (error) {
-        console.error("Error fetching topics JSON:", error);
-        setTopicsJSON({});
+        console.error("Error fetching in course JSON:", error);
       }
     }
 

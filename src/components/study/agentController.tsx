@@ -27,6 +27,7 @@ import {
   Send,
 } from "lucide-react";
 import { Json } from "@/types/database.types";
+import { set } from "zod/v4";
 
 interface Topic {
   name: string;
@@ -34,16 +35,18 @@ interface Topic {
   slug: string;
 }
 
+type TopicState = "not_started" | "current" | "done";
+
 export default function AgentController({
   api,
   numPages,
   topicsJSON,
-  onTopicSelect,
+  topicStates,
 }: {
   api: any;
   numPages: number;
   topicsJSON: Json;
-  onTopicSelect?: (selectedSlugs: string[]) => void;
+  topicStates?: Record<string, TopicState>;
 }) {
   const { state, audioTrack } = useVoiceAssistant();
   const room = useRoomContext();
@@ -58,8 +61,8 @@ export default function AgentController({
   const [isTextInputOpen, setIsTextInputOpen] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [currentTopicName, setCurrentTopicName] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [checkedTopics, setCheckedTopics] = useState<Set<string>>(new Set());
 
   const sendTextMessage = async () => {
     if (!textInput.trim() || isSending) return;
@@ -89,24 +92,11 @@ export default function AgentController({
     setIsAudioMuted(!isAudioMuted);
   };
 
-  // Toggle topic checkbox
-  const toggleTopic = (slug: string) => {
-    const newCheckedTopics = new Set(checkedTopics);
-    if (newCheckedTopics.has(slug)) {
-      newCheckedTopics.delete(slug);
-    } else {
-      newCheckedTopics.add(slug);
-    }
-    setCheckedTopics(newCheckedTopics);
-    if (onTopicSelect) {
-      onTopicSelect(Array.from(newCheckedTopics));
-    }
-  };
-
   useEffect(() => {
     interface UIControlData {
       action: string;
       page?: number;
+      topic?: string;
     }
 
     const handleData = (
@@ -121,10 +111,15 @@ export default function AgentController({
         );
 
         if (data.action === "scroll") {
-          // Your scrolling logic here:
           if (api && data.page && data.page >= 1 && data.page <= numPages) {
             api.scrollTo(data.page - 1); // scrollTo uses 0-based index
           }
+        } else if (data.action === "set_topic") {
+          if (data.topic) {
+            setCurrentTopicName(data.topic);
+          }
+        } else if (data.action === "topic_done") {
+          setCurrentTopicName(null);
         }
       }
     };
@@ -170,12 +165,28 @@ export default function AgentController({
 
   const currentState = stateConfig[state] || stateConfig.disconnected;
 
+  const topicStateStyles: Record<TopicState, string> = {
+    not_started: "bg-primary/60",
+    current: "bg-primary",
+    done: "bg-primary/40",
+  };
+
   // Parse topics from JSON
-  const topics: Topic[] = topicsJSON && typeof topicsJSON === "object" && "topics" in topicsJSON
-    ? (topicsJSON as { topics: unknown[] }).topics.filter((item): item is Topic =>
-        !!item && typeof item === "object" && "name" in item && "slug" in item
-      )
-    : [];
+  const topics: Topic[] =
+    topicsJSON && typeof topicsJSON === "object" && "topics" in topicsJSON
+      ? (topicsJSON as { topics: unknown[] }).topics.filter(
+          (item): item is Topic =>
+            !!item &&
+            typeof item === "object" &&
+            "name" in item &&
+            "slug" in item,
+        )
+      : [];
+
+  // Find the current topic object by matching name
+  const currentTopic = currentTopicName
+    ? topics.find((t) => t.slug === currentTopicName)
+    : null;
 
   return (
     <div className="flex flex-col h-full" data-lk-theme="default">
@@ -220,23 +231,29 @@ export default function AgentController({
       </div>
 
       {/* Topics List */}
-      <div className="h-[50%] px-4 py-2 overflow-y-auto border-t border-[#1d5479]/30 bg-[#0e293c]/10">
+      <div className="h-[25%] px-4 py-2 overflow-y-auto border-t border-[#1d5479]/30 bg-[#0e293c]/10">
         {topics.length > 0 ? (
           <div className="space-y-2">
-            {topics.map((topic) => (
-              <div
-                key={topic.slug}
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1d5479]/20 cursor-pointer transition-colors group"
-                onClick={() => toggleTopic(topic.slug)}
-              >
-                <Checkbox
-                  checked={checkedTopics.has(topic.slug)}
-                  onCheckedChange={() => toggleTopic(topic.slug)}
-                  className="flex-shrink-0 data-[state=checked]:bg-[#ffa02f] data-[state=checked]:border-[#ffa02f]"
-                />
-                <span className="text-sm text-[#fffdfd] truncate">{topic.name}</span>
-              </div>
-            ))}
+            {topics.map((topic) => {
+              const state: TopicState =
+                topic.slug === currentTopicName
+                  ? "current"
+                  : topicStates?.[topic.slug] || "not_started";
+              return (
+                <div
+                  key={topic.slug}
+                  className={`flex items-center gap-3 px-2 py-4 rounded-lg ${topicStateStyles[state]} transition-colors group`}
+                >
+                  <Checkbox
+                    checked={state === "done"}
+                    className="flex-shrink-0 data-[state=checked]:bg-[#ffa02f] data-[state=checked]:border-[#ffa02f]"
+                  />
+                  <span className="text-sm text-[#fffdfd] truncate">
+                    {topic.name}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="flex items-center justify-center h-full text-[#fffdfd]/50 text-sm">
@@ -245,8 +262,29 @@ export default function AgentController({
         )}
       </div>
 
+      {/* Current Topic Details */}
+      <div className="px-4 py-3 border-t border-[#1d5479]/30 bg-[#0e293c]/20 h-[50%]">
+        <h3 className="text-sm font-medium text-[#ffa02f] mb-2">
+          الموضوع الحالي
+        </h3>
+        {currentTopic ? (
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-[#fffdfd]">
+              {currentTopic.name}
+            </p>
+            <p className="text-xs text-[#fffdfd]/70 leading-relaxed">
+              {currentTopic.brief}
+            </p>
+          </div>
+        ) : (
+          <p className="text-xs text-[#fffdfd]/50 text-center">
+            لا يوجد موضوع قيد الشرح
+          </p>
+        )}
+      </div>
+
       {/* Voice Assistant Controls */}
-      <div className="px-4 pb-4">
+      <div className="px-4 py-4 mt-auto">
         <div className="flex items-center justify-center gap-3">
           {/* Keyboard Toggle */}
           <Button
