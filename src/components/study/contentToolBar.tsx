@@ -31,15 +31,6 @@ export function ContentToolbar({
     setZoom(1);
   };
 
-  const handleDownload = () => {
-    // Download functionality
-    console.log("Download initiated");
-  };
-
-  const handlePrint = () => {
-    window.print();
-  };
-
   const handleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
@@ -90,24 +81,6 @@ export function ContentToolbar({
         title="Fullscreen"
       >
         <Maximize2 className="w-4 h-4" />
-      </button>
-
-      <button
-        onClick={handlePrint}
-        className="p-2 rounded hover:bg-[#ffa02f] text-[#fffdfd] transition-colors"
-        aria-label="Print"
-        title="Print"
-      >
-        <Printer className="w-4 h-4" />
-      </button>
-
-      <button
-        onClick={handleDownload}
-        className="p-2 rounded hover:bg-[#ffa02f] text-[#fffdfd] transition-colors"
-        aria-label="Download"
-        title="Download"
-      >
-        <Download className="w-4 h-4" />
       </button>
 
       <div className="w-px h-6 bg-[#0e293c] mx-2" />

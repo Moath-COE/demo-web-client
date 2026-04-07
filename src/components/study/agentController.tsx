@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import {
   Mic,
   MicOff,
@@ -25,9 +26,14 @@ import {
   VolumeX,
   Keyboard,
   Send,
+  BookOpen,
+  Layers,
+  List,
+  CircleHelp,
 } from "lucide-react";
 import { Json } from "@/types/database.types";
-import { set } from "zod/v4";
+import { number, set } from "zod/v4";
+import * as Direction from "@radix-ui/react-direction";
 
 interface Topic {
   name: string;
@@ -62,6 +68,16 @@ export default function AgentController({
   const [textInput, setTextInput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [currentTopicName, setCurrentTopicName] = useState<string | null>(null);
+  const [numberOfSections, setNumberOfSections] = useState<number | null>(null);
+  const [currentSectionName, setCurrentSectionName] = useState<string | null>(
+    null,
+  );
+  const [currentSectionIndex, setCurrentSectionIndex] = useState<number | null>(
+    null,
+  );
+  const [currentCheckpointQuestion, setCurrentCheckpointQuestion] = useState<
+    string | null
+  >(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const sendTextMessage = async () => {
@@ -97,6 +113,10 @@ export default function AgentController({
       action: string;
       page?: number;
       topic?: string;
+      section?: string;
+      number_of_sections?: number;
+      current_section_index?: number;
+      checkpoint_question?: string;
     }
 
     const handleData = (
@@ -117,9 +137,20 @@ export default function AgentController({
         } else if (data.action === "set_topic") {
           if (data.topic) {
             setCurrentTopicName(data.topic);
+            setNumberOfSections(data.number_of_sections || null);
           }
-        } else if (data.action === "topic_done") {
-          setCurrentTopicName(null);
+        } else if (data.action === "set_section") {
+          if (data.section) {
+            setCurrentSectionName(data.section);
+            setCurrentSectionIndex(data.current_section_index || null);
+          }
+        } else if (data.action === "set_checkpoint") {
+          if (data.checkpoint_question) {
+            setCurrentCheckpointQuestion(data.checkpoint_question);
+          }
+        } else if (data.action === "section_done") {
+          setCurrentSectionName(null);
+          setCurrentSectionIndex(null);
         }
       }
     };
@@ -166,9 +197,11 @@ export default function AgentController({
   const currentState = stateConfig[state] || stateConfig.disconnected;
 
   const topicStateStyles: Record<TopicState, string> = {
-    not_started: "bg-primary/60",
-    current: "bg-primary",
-    done: "bg-primary/40",
+    not_started:
+      "backdrop-blur-sm bg-[#1d5479]/20 border border-[#1d5479]/30 hover:border-[#1d5479]/50",
+    current:
+      "backdrop-blur-sm bg-[#ffa02f]/10 border border-[#ffa02f]/40 hover:border-[#ffa02f]/60 shadow-[0_0_12px_rgba(255,160,47,0.15)] hover:shadow-[0_0_16px_rgba(255,160,47,0.25)]",
+    done: "backdrop-blur-sm bg-[#1d5479]/30 border border-[#1d5479]/40 hover:border-[#1d5479]/60",
   };
 
   // Parse topics from JSON
@@ -232,6 +265,12 @@ export default function AgentController({
 
       {/* Topics List */}
       <div className="h-[25%] px-4 py-2 overflow-y-auto border-t border-[#1d5479]/30 bg-[#0e293c]/10">
+        <div className="flex items-center gap-2 mb-3 group cursor-default">
+          <List className="h-4 w-4 text-[#ffa02f] transition-transform group-hover:scale-110" />
+          <h3 className="text-sm font-medium text-[#ffa02f] transition-colors group-hover:text-[#ffa02f]/80">
+            المواضيع
+          </h3>
+        </div>
         {topics.length > 0 ? (
           <div className="space-y-2">
             {topics.map((topic) => {
@@ -242,44 +281,117 @@ export default function AgentController({
               return (
                 <div
                   key={topic.slug}
-                  className={`flex items-center gap-3 px-2 py-4 rounded-lg ${topicStateStyles[state]} transition-colors group`}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${topicStateStyles[state]} transition-all duration-200 group hover:translate-y-[-1px]`}
                 >
-                  <Checkbox
-                    checked={state === "done"}
-                    className="flex-shrink-0 data-[state=checked]:bg-[#ffa02f] data-[state=checked]:border-[#ffa02f]"
-                  />
-                  <span className="text-sm text-[#fffdfd] truncate">
+                  <div className="relative flex-shrink-0">
+                    <Checkbox
+                      checked={state === "done"}
+                      className="data-[state=checked]:bg-[#ffa02f] data-[state=checked]:border-[#ffa02f] transition-all"
+                    />
+                  </div>
+                  <span className="text-sm text-[#fffdfd] truncate flex-1">
                     {topic.name}
                   </span>
+                  {state === "current" && (
+                    <div className="flex-shrink-0 w-2 h-2 rounded-full bg-[#ffa02f] animate-pulse" />
+                  )}
                 </div>
               );
             })}
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full text-[#fffdfd]/50 text-sm">
-            لا توجد مواضيع
+          <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)] text-center">
+            <p className="text-xs text-[#fffdfd]/50 transition-opacity duration-300">
+              لا توجد مواضيع
+            </p>
           </div>
         )}
       </div>
 
       {/* Current Topic Details */}
-      <div className="px-4 py-3 border-t border-[#1d5479]/30 bg-[#0e293c]/20 h-[50%]">
-        <h3 className="text-sm font-medium text-[#ffa02f] mb-2">
-          الموضوع الحالي
-        </h3>
+      <div className="px-4 py-3 border-t border-[#1d5479]/30 bg-[#0e293c]/20 h-[50%] flex flex-col gap-4">
         {currentTopic ? (
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-[#fffdfd]">
-              {currentTopic.name}
-            </p>
-            <p className="text-xs text-[#fffdfd]/70 leading-relaxed">
-              {currentTopic.brief}
-            </p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 mb-3 group cursor-default">
+              <BookOpen className="h-4 w-4 text-[#ffa02f] transition-transform group-hover:scale-110" />
+              <h3 className="text-sm font-medium text-[#ffa02f] transition-colors group-hover:text-[#ffa02f]/80">
+                الموضوع الحالي
+              </h3>
+            </div>
+            <div className="backdrop-blur-sm rounded-lg bg-gradient-to-br from-[#1d5479]/30 to-[#0e293c]/30 border border-[#1d5479]/30 hover:border-[#ffa02f]/40 hover:shadow-lg hover:shadow-[#ffa02f]/10 transition-all duration-300 hover:translate-y-[-2px] p-3">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <p className="text-sm font-medium text-[#fffdfd] leading-tight">
+                  {currentTopic.name}
+                </p>
+                <div className="flex-shrink-0 w-2 h-2 rounded-full bg-[#ffa02f] animate-pulse" />
+              </div>
+              <p className="text-xs text-[#fffdfd]/70 leading-relaxed mb-3">
+                {currentTopic.brief}
+              </p>
+              <div className="space-y-2">
+                {currentSectionName && (
+                  <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-[#ffa02f]/10 border border-[#ffa02f]/20">
+                    <Layers className="h-3 w-3 text-[#ffa02f] flex-shrink-0" />
+                    <span className="text-xs text-[#fffdfd]/90">
+                      الموضوع الفرعي:{" "}
+                      <span className="text-[#ffa02f] font-medium">
+                        {currentSectionName}
+                      </span>
+                    </span>
+                  </div>
+                )}
+                {numberOfSections !== null && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs text-[#fffdfd]/70">
+                      <span>تقدم الدرس</span>
+                      <span className="text-[#ffa02f] font-medium">
+                        {currentSectionIndex} من {numberOfSections}
+                      </span>
+                    </div>
+                    <Progress
+                      value={
+                        numberOfSections > 0
+                          ? ((currentSectionIndex || 0) / numberOfSections) *
+                            100
+                          : 0
+                      }
+                      className="h-1.5 bg-[#0e293c]/50 border border-[#1d5479]/30 rtl:rotate-180"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         ) : (
-          <p className="text-xs text-[#fffdfd]/50 text-center">
-            لا يوجد موضوع قيد الشرح
-          </p>
+          <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)] text-center">
+            <p className="text-xs text-[#fffdfd]/50 transition-opacity duration-300">
+              لا يوجد موضوع قيد الشرح
+            </p>
+          </div>
+        )}
+        {/* Current Checkpoint Question */}
+        {currentCheckpointQuestion && state == "listening" && (
+          <div className="backdrop-blur-sm rounded-lg bg-gradient-to-br from-[#1d5479]/30 to-[#0e293c]/30 border border-[#ffa02f]/40 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <CircleHelp className="h-4 w-4 text-[#ffa02f]" />
+              <h3 className="text-sm font-medium text-[#ffa02f]">
+                تحقق من فهمك{" "}
+              </h3>
+            </div>
+            <p className="text-sm text-[#fffdfd] leading-relaxed mb-4">
+              {currentCheckpointQuestion}
+            </p>
+            <div className="flex items-center gap-2 pt-3 border-t border-[#1d5479]/30">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ffa02f] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ffa02f]"></span>
+              </span>
+              <span className="text-xs text-[#ffa02f] font-medium">
+                اجب على السؤال في حال فهمت الموضوع، او اطلب من سند اعادة
+                الشرح{" "}
+              </span>
+            </div>
+          </div>
         )}
       </div>
 
