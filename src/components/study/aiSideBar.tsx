@@ -7,6 +7,7 @@ import AgentController from "./agentController";
 import { useSession, SessionProvider } from "@livekit/components-react";
 import { TokenSource } from "livekit-client";
 import { Json } from "@/types/database.types";
+import { useUser } from "@clerk/nextjs";
 
 export function AISideBar({
   onClose,
@@ -21,6 +22,8 @@ export function AISideBar({
   numPages: number;
   topicsJSON: Json;
 }) {
+  const { user } = useUser();
+
   // Create a stable token source that fetches from our API
   const tokenSource = useMemo(
     () =>
@@ -58,7 +61,7 @@ export function AISideBar({
         course_id: "phys_1040",
         chapter_id: "ch_1",
         language: language,
-        user_id: "user_123",
+        user_name: user?.fullName || "undefined",
       });
     } catch (error) {
       console.error("Failed to start session:", error);

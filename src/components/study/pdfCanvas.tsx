@@ -57,17 +57,13 @@ export function PdfCanvas({
       className="w-full"
     >
       <Carousel
-        className="overflow-y-scroll p-4 bg-[#0e293c]"
+        className="overflow-y-scroll p-4 bg-[#0e293c] "
         setApi={setApi}
         dir="ltr"
       >
-        <CarouselContent className="max-h-[calc(100vh-6rem)]">
+        <CarouselContent className="max-h-[calc(100vh-6rem)] ">
           {Array.from({ length: numPages }).map((_, index) => (
-            <CarouselItem
-              key={index}
-              className="rounded-lg overflow-clip"
-              page-index={pageNumber}
-            >
+            <CarouselItem key={index} page-index={pageNumber}>
               <AspectRatio className="bg-gray-300 mx-auto overflow-y-auto flex justify-center scrollbar-show-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400/60 scrollbar-track-gray-200/10 max-h-[calc(100vh-12rem)]">
                 <Page
                   pageNumber={index + 1}
