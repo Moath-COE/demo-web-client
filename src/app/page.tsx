@@ -14,51 +14,62 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Search, HelpCircle } from "lucide-react";
-
-interface FilterOption {
-  value: string;
-  label: string;
-}
-
-const UNIVERSITIES: FilterOption[] = [
-  { value: "ksu", label: "جامعة الملك سعود" },
-  { value: "kau", label: "جامعة الملك عبدالعزيز" },
-  { value: "kfupm", label: "جامعة الملك فهد للبترول والمعادن" },
-  { value: "qu", label: "جامعة القصيم" },
-];
-
-const MAJORS: FilterOption[] = [
-  { value: "cs", label: "علوم الحاسب" },
-  { value: "eng", label: "الهندسة" },
-  { value: "med", label: "الطب" },
-  { value: "bus", label: "إدارة الأعمال" },
-];
-
-const SUBJECTS: FilterOption[] = [
-  { value: "math", label: "الرياضيات" },
-  { value: "physics", label: "الفيزياء" },
-  { value: "chem", label: "الكيمياء" },
-  { value: "programming", label: "البرمجة" },
-];
+import { useState, useEffect, useMemo } from "react";
+import initializeSupabase from "@/lib/supabaseClient";
 
 export default function Home() {
   const router = useRouter();
+  const supabase = useMemo(() => initializeSupabase(undefined), []);
+
+  const [institutions, setInstitutions] = useState<
+    { id: number; name: string }[]
+  >([]);
+  const [majors, setMajors] = useState<{ id: number; name: string }[]>([]);
+
+  const [selectedInstitution, setSelectedInstitution] = useState("");
+  const [selectedMajor, setSelectedMajor] = useState("");
+
+  useEffect(() => {
+    const fetchInstitutions = async () => {
+      const { data, error } = await supabase
+        .from("institutions")
+        .select("id, name")
+        .order("name");
+      if (!error && data) setInstitutions(data);
+    };
+    fetchInstitutions();
+  }, [supabase]);
+
+  useEffect(() => {
+    const fetchMajors = async () => {
+      const { data, error } = await supabase
+        .from("majors")
+        .select("id, name")
+        .order("name");
+      if (!error && data) setMajors(data);
+    };
+    fetchMajors();
+  }, [supabase]);
+
+  const handleInstitutionChange = (value: string) => {
+    setSelectedInstitution(value);
+    router.push(`/enroll?institution=${value}`);
+  };
+
+  const handleMajorChange = (value: string) => {
+    setSelectedMajor(value);
+    router.push(`/enroll?major=${value}`);
+  };
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const query = formData.get("search") as string;
-    const trimmed = query.trim();
-    router.push(
-      trimmed ? `/enroll?q=${encodeURIComponent(trimmed)}` : "/enroll",
-    );
-  };
-
-  const handleFilterSelect = (
-    type: "university" | "major" | "subject",
-    value: string,
-  ) => {
-    router.push(`/enroll?${type}=${encodeURIComponent(value)}`);
+    const query = (formData.get("search") as string)?.trim() || "";
+    if (query) {
+      router.push(`/enroll?q=${encodeURIComponent(query)}`);
+    } else {
+      router.push("/enroll");
+    }
   };
 
   return (
@@ -118,7 +129,7 @@ export default function Home() {
             <h2 className="text-background text-2xl font-bold">
               ايش تنتظر ؟ 🤔
             </h2>
-            <form onSubmit={handleSearch} className="w-full">
+            <form onSubmit={handleSearch} className="w-full space-y-6">
               <div className="relative group">
                 <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-chart-2 group-focus-within:text-chart-1 transition-colors duration-200" />
                 <Input
@@ -128,74 +139,55 @@ export default function Home() {
                   className="h-14 pr-12 pl-5 text-muted-foreground bg-background border-border/50 shadow-lg hover:shadow-xl focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 placeholder:text-muted-foreground"
                 />
               </div>
+
+              <div className="flex items-center gap-4">
+                <div className="flex-1 h-px bg-border"></div>
+                <span className="text-muted-foreground px-2">أو</span>
+                <div className="flex-1 h-px bg-border"></div>
+              </div>
+
+              <div className="flex justify-center items-center gap-4">
+                <Select
+                  value={selectedInstitution}
+                  onValueChange={handleInstitutionChange}
+                >
+                  <SelectTrigger className="flex-1 h-14 bg-background border-border/50 shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
+                    <SelectValue placeholder="اختر الجامعة" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border-border shadow-xl">
+                    {institutions.map((inst) => (
+                      <SelectItem
+                        key={inst.id}
+                        value={String(inst.id)}
+                        className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1"
+                      >
+                        {inst.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={selectedMajor}
+                  onValueChange={handleMajorChange}
+                >
+                  <SelectTrigger className="flex-1 h-14 bg-background border-border/50 shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
+                    <SelectValue placeholder="اختر التخصص" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border-border shadow-xl">
+                    {majors.map((major) => (
+                      <SelectItem
+                        key={major.id}
+                        value={String(major.id)}
+                        className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1"
+                      >
+                        {major.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </form>
-
-            <div className="flex items-center gap-4">
-              <div className="flex-1 h-px bg-border"></div>
-              <span className="text-muted-foreground px-2">أو</span>
-              <div className="flex-1 h-px bg-border"></div>
-            </div>
-
-            <div className="flex justify-center items-center gap-4">
-              <Select
-                onValueChange={(value) =>
-                  handleFilterSelect("university", value)
-                }
-              >
-                <SelectContent className="bg-card border-border shadow-xl">
-                  {UNIVERSITIES.map((uni) => (
-                    <SelectItem
-                      key={uni.value}
-                      value={uni.value}
-                      className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1"
-                    >
-                      {uni.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-                <SelectTrigger className="flex-1 h-14 bg-background border-border/50 shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
-                  <SelectValue placeholder="اختر الجامعة" />
-                </SelectTrigger>
-              </Select>
-
-              <Select
-                onValueChange={(value) => handleFilterSelect("major", value)}
-              >
-                <SelectTrigger className="flex-1 h-14 bg-background border-border/50 shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
-                  <SelectValue placeholder="اختر التخصص" />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border shadow-xl">
-                  {MAJORS.map((major) => (
-                    <SelectItem
-                      key={major.value}
-                      value={major.value}
-                      className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1"
-                    >
-                      {major.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select
-                onValueChange={(value) => handleFilterSelect("subject", value)}
-              >
-                <SelectTrigger className="flex-1 h-14 bg-background border-border/50 shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
-                  <SelectValue placeholder="اختر الموضوع" />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border shadow-xl">
-                  {SUBJECTS.map((subject) => (
-                    <SelectItem
-                      key={subject.value}
-                      value={subject.value}
-                      className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1"
-                    >
-                      {subject.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         </div>
       </section>
