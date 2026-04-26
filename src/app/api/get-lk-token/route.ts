@@ -2,7 +2,7 @@
 import { AccessToken } from "livekit-server-sdk";
 import { auth } from "@clerk/nextjs/server";
 
-export async function GET() {
+export async function GET(request: Request) {
   const apiKey = process.env.LIVEKIT_API_KEY;
   const apiSecret = process.env.LIVEKIT_API_SECRET;
 
@@ -14,16 +14,29 @@ export async function GET() {
     );
   }
 
-  const { userId } = await auth(); // Get user from Clerk
+  const { userId } = await auth();
   if (!userId) return new Response("Unauthorized", { status: 401 });
+
+  const url = new URL(request.url);
+  const courseId = url.searchParams.get("course_id") ?? "";
+  const chapterId = url.searchParams.get("chapter_id") ?? "";
+  const language = url.searchParams.get("language") ?? "Arabic";
+  const userName = url.searchParams.get("user_name") ?? "undefined";
 
   const at = new AccessToken(apiKey, apiSecret, {
     identity: userId,
+    name: userName,
+    attributes: {
+      course_id: courseId,
+      chapter_id: chapterId,
+      language,
+      user_name: userName,
+    },
   });
 
   at.addGrant({
     roomJoin: true,
-    room: `study-session-${userId}-${Date.now()}`, // Unique room name per user/session
+    room: "study-session-" + userId + "-" + Date.now(),
     canUpdateOwnMetadata: true,
   });
 

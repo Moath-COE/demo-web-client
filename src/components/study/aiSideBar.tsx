@@ -26,27 +26,38 @@ export function AISideBar({
   courseSlug: string;
   chapterIndex: number;
 }) {
+  // Language selection state
+  const [language, setLanguage] = useState<"English" | "Arabic">("Arabic");
   const { user } = useUser();
+  const userName = user?.fullName ?? "undefined";
+  const chapterId = "ch_" + chapterIndex;
 
-  // Create a stable token source that fetches from our API
+  // Create a token source that includes join-time context
   const tokenSource = useMemo(
     () =>
       TokenSource.custom(async () => {
-        const response = await fetch("/api/get-lk-token");
+        const params = new URLSearchParams({
+          course_id: courseSlug,
+          chapter_id: chapterId,
+          language,
+          user_name: userName,
+        });
+
+        const response = await fetch("/api/get-lk-token?" + params.toString(), {
+          cache: "no-store",
+        });
+
         const participantToken = await response.text();
+
         return {
           serverUrl: process.env.NEXT_PUBLIC_LIVEKIT_URL!,
           participantToken,
         };
       }),
-    [],
+    [courseSlug, chapterId, language, userName],
   );
-
   // Initialize session with the token source
   const session = useSession(tokenSource);
-
-  // Language selection state
-  const [language, setLanguage] = useState<"English" | "Arabic">("Arabic");
 
   // Handle starting the session
   const handleStart = async () => {
@@ -61,12 +72,12 @@ export function AISideBar({
       });
 
       // Set participant attributes after connection
-      await session.room.localParticipant.setAttributes({
-        course_id: courseSlug,
-        chapter_id: `ch_${chapterIndex}`,
-        language: language,
-        user_name: user?.fullName || "undefined",
-      });
+      // await session.room.localParticipant.setAttributes({
+      //   course_id: courseSlug,
+      //   chapter_id: `ch_${chapterIndex}`,
+      //   language: language,
+      //   user_name: user?.name || "undefined",
+      // });
     } catch (error) {
       console.error("Failed to start session:", error);
     }
