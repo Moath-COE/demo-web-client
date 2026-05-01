@@ -15,8 +15,6 @@ import {
   Track,
 } from "livekit-client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import {
   Mic,
@@ -30,10 +28,11 @@ import {
   Layers,
   List,
   CircleHelp,
+  CheckSquare,
+  Square,
 } from "lucide-react";
 import { Json } from "@/types/database.types";
-import { number, set } from "zod/v4";
-import * as Direction from "@radix-ui/react-direction";
+import { send } from "process";
 
 interface Topic {
   name: string;
@@ -54,7 +53,7 @@ export default function AgentController({
   topicsJSON: Json;
   topicStates?: Record<string, TopicState>;
 }) {
-  const { state, audioTrack } = useVoiceAssistant();
+  const { state: agentState, audioTrack } = useVoiceAssistant();
   const room = useRoomContext();
 
   // Custom voice control hooks
@@ -67,7 +66,7 @@ export default function AgentController({
   const [isTextInputOpen, setIsTextInputOpen] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const [currentTopicName, setCurrentTopicName] = useState<string | null>(null);
+  const [currentTopicName, setCurrentTopicName] = useState<string | null>();
   const [numberOfSections, setNumberOfSections] = useState<number | null>(null);
   const [currentSectionName, setCurrentSectionName] = useState<string | null>(
     null,
@@ -80,19 +79,22 @@ export default function AgentController({
   >(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const sendTextMessage = async () => {
-    if (!textInput.trim() || isSending) return;
+  const sendUserMessage = async (message: string) => {
+    if (isSending) return;
     setIsSending(true);
     try {
-      await room.localParticipant.sendText(textInput.trim(), {
-        topic: "lk.chat",
-      });
-      setTextInput("");
+      await room.localParticipant.sendText(message, { topic: "lk.chat" });
     } catch (error) {
-      console.error("Failed to send text:", error);
+      console.error("Failed to send message:", error);
     } finally {
       setIsSending(false);
     }
+  };
+
+  const sendTextMessage = async () => {
+    if (!textInput.trim() || isSending) return;
+    sendUserMessage(textInput.trim());
+    setTextInput("");
   };
 
   // Toggle agent audio output
@@ -194,7 +196,7 @@ export default function AgentController({
     speaking: { label: "أتحدث...", color: "text-cyan-400", icon: "🗣️" },
   };
 
-  const currentState = stateConfig[state] || stateConfig.disconnected;
+  const currentState = stateConfig[agentState] || stateConfig.disconnected;
 
   const topicStateStyles: Record<TopicState, string> = {
     not_started:
@@ -234,21 +236,21 @@ export default function AgentController({
       </div>
 
       {/* Audio Visualizer */}
-      <div className="px-4 py-2 border-t border-[#1d5479]/30 bg-gradient-to-b from-[#0e293c]/20 to-transparent">
+      <div className="px-4 py-2 border-t border-[#1d5479]/30 bg-linear-to-b from-[#0e293c]/20 to-transparent">
         <div className="flex items-center justify-center h-18 rounded-lg bg-[#0e293c]/30 backdrop-blur-sm border border-[#1d5479]/20 shadow-lg">
           <BarVisualizer
-            state={state}
+            state={agentState}
             trackRef={audioTrack}
             barCount={15}
             options={{ minHeight: 36 }}
             style={
               {
                 "--lk-fg":
-                  state === "listening"
+                  agentState === "listening"
                     ? "#4ade80"
-                    : state === "thinking"
+                    : agentState === "thinking"
                       ? "#fbbf24"
-                      : state === "speaking"
+                      : agentState === "speaking"
                         ? "#ffa02f"
                         : "#60a5fa",
                 "--lk-bg": "rgba(29, 84, 121, 0.15)",
@@ -264,7 +266,10 @@ export default function AgentController({
       </div>
 
       {/* Topics List */}
-      <div className="h-[25%] px-4 py-2 overflow-y-auto border-t border-[#1d5479]/30 bg-[#0e293c]/10">
+      <div
+        className="h-[20%] px-4 py-2 overflow-y-auto border-t border-[#1d5479]/30 bg-[#0e293c]/10 transition-all duration-200 ease-in"
+        style={{ flexGrow: currentTopic ? "0" : "1" }}
+      >
         <div className="flex items-center gap-2 mb-3 group cursor-default">
           <List className="h-4 w-4 text-[#ffa02f] transition-transform group-hover:scale-110" />
           <h3 className="text-sm font-medium text-[#ffa02f] transition-colors group-hover:text-[#ffa02f]/80">
@@ -274,25 +279,36 @@ export default function AgentController({
         {topics.length > 0 ? (
           <div className="space-y-2">
             {topics.map((topic) => {
-              const state: TopicState =
+              const topicState: TopicState =
                 topic.slug === currentTopicName
                   ? "current"
                   : topicStates?.[topic.slug] || "not_started";
               return (
-                <div
+                <button
                   key={topic.slug}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${topicStateStyles[state]} transition-all duration-200 group hover:translate-y-[-1px]`}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${topicStateStyles[topicState]} transition-all duration-200 group hover:-translate-y-px cursor-pointer w-full text-left disabled:cursor-not-allowed disabled:opacity-50`}
+                  onClick={() => {
+                    sendUserMessage(`Please explain ${topic.name}.`); // Send topic query to agent
+                  }}
+                  disabled={
+                    topicState === "current" ||
+                    topicState === "done" ||
+                    agentState === "disconnected" ||
+                    agentState === "connecting" ||
+                    agentState === "initializing"
+                  }
                 >
-                  <div className="relative flex-shrink-0">
-                    <Checkbox
-                      checked={state === "done"}
-                      className="data-[state=checked]:bg-[#ffa02f] data-[state=checked]:border-[#ffa02f] transition-all"
-                    />
+                  <div className="relative shrink-0">
+                    {topicState === "done" ? (
+                      <CheckSquare className="h-4 w-4 text-green-400" />
+                    ) : (
+                      <Square className="h-4 w-4 text-background" />
+                    )}
                   </div>
                   <span className="text-sm text-[#fffdfd] truncate flex-1">
                     {topic.name}
                   </span>
-                </div>
+                </button>
               );
             })}
           </div>
@@ -306,8 +322,9 @@ export default function AgentController({
       </div>
 
       {/* Current Topic Details */}
-      <div className="px-4 py-3 border-t border-[#1d5479]/30 bg-[#0e293c]/20 h-[50%] flex flex-col gap-4">
-        {currentTopic ? (
+      {currentTopic ? (
+        <div className="px-4 py-3 border-t border-[#1d5479]/30 bg-[#0e293c]/20 flex-1 flex flex-col gap-4">
+          {/* Section details */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-3 group cursor-default">
               <BookOpen className="h-4 w-4 text-[#ffa02f] transition-transform group-hover:scale-110" />
@@ -359,38 +376,32 @@ export default function AgentController({
               </div>
             </div>
           </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)] text-center">
-            <p className="text-xs text-[#fffdfd]/50 transition-opacity duration-300">
-              لا يوجد موضوع قيد الشرح
-            </p>
-          </div>
-        )}
-        {/* Current Checkpoint Question */}
-        {currentCheckpointQuestion && state == "listening" && (
-          <div className="backdrop-blur-sm rounded-lg bg-gradient-to-br from-[#1d5479]/30 to-[#0e293c]/30 border border-[#ffa02f]/40 p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <CircleHelp className="h-4 w-4 text-[#ffa02f]" />
-              <h3 className="text-sm font-medium text-[#ffa02f]">
-                تحقق من فهمك{" "}
-              </h3>
+          {/* Current Checkpoint Question */}
+          {currentCheckpointQuestion && agentState == "listening" && (
+            <div className="backdrop-blur-sm rounded-lg bg-gradient-to-br from-[#1d5479]/30 to-[#0e293c]/30 border border-[#ffa02f]/40 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <CircleHelp className="h-4 w-4 text-[#ffa02f]" />
+                <h3 className="text-sm font-medium text-[#ffa02f]">
+                  تحقق من فهمك{" "}
+                </h3>
+              </div>
+              <p className="text-sm text-[#fffdfd] leading-relaxed mb-4">
+                {currentCheckpointQuestion}
+              </p>
+              <div className="flex items-center gap-2 pt-3 border-t border-[#1d5479]/30">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ffa02f] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ffa02f]"></span>
+                </span>
+                <span className="text-xs text-[#ffa02f] font-medium">
+                  اجب على السؤال في حال فهمت الموضوع، او اطلب من سند اعادة
+                  الشرح{" "}
+                </span>
+              </div>
             </div>
-            <p className="text-sm text-[#fffdfd] leading-relaxed mb-4">
-              {currentCheckpointQuestion}
-            </p>
-            <div className="flex items-center gap-2 pt-3 border-t border-[#1d5479]/30">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ffa02f] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ffa02f]"></span>
-              </span>
-              <span className="text-xs text-[#ffa02f] font-medium">
-                اجب على السؤال في حال فهمت الموضوع، او اطلب من سند اعادة
-                الشرح{" "}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      ) : null}
 
       {/* Voice Assistant Controls */}
       <div className="px-4 py-4 mt-auto">
@@ -437,10 +448,7 @@ export default function AgentController({
 
           {/* Disconnect Button */}
           <Button
-            onClick={() => {
-              disconnectProps.onClick();
-              document.exitFullscreen();
-            }}
+            onClick={disconnectProps.onClick}
             disabled={disconnectProps.disabled}
             className="rounded-lg bg-red-500 hover:bg-red-600 text-white px-4 py-2 flex items-center gap-2"
             aria-label="Disconnect"

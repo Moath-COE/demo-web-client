@@ -72,10 +72,8 @@ export function AISideBar({
           },
         },
       });
-      await document.documentElement.requestFullscreen();
     } catch (error) {
       console.error("Failed to start session:", error);
-      await document.exitFullscreen();
     }
   };
 

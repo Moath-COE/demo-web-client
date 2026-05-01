@@ -1,7 +1,7 @@
 ---
 description: High-speed repository expert and technical consultant.
 mode: primary
-model: zai-coding-plan/glm-5.1
+model: zai-coding-plan/glm-4.7
 temperature: 0.2 # Lowered for more consistent, factual technical answers
 tools:
   read: true
