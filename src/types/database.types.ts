@@ -14,6 +14,73 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_sessions: {
+        Row: {
+          chapter_id: string | null
+          course_id: string | null
+          created_at: string
+          duration_secs: number | null
+          ended_at: string | null
+          feedback: Json | null
+          id: string
+          language: string | null
+          room_name: string
+          started_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          chapter_id?: string | null
+          course_id?: string | null
+          created_at?: string
+          duration_secs?: number | null
+          ended_at?: string | null
+          feedback?: Json | null
+          id?: string
+          language?: string | null
+          room_name: string
+          started_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          chapter_id?: string | null
+          course_id?: string | null
+          created_at?: string
+          duration_secs?: number | null
+          ended_at?: string | null
+          feedback?: Json | null
+          id?: string
+          language?: string | null
+          room_name?: string
+          started_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_sessions_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_sessions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_agent_sessions_user_id"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chapters: {
         Row: {
           course_id: string | null
@@ -129,6 +196,38 @@ export type Database = {
           },
         ]
       }
+      daily_agent_usage: {
+        Row: {
+          total_minutes: number
+          total_sessions: number
+          updated_at: string
+          usage_date: string
+          user_id: string
+        }
+        Insert: {
+          total_minutes?: number
+          total_sessions?: number
+          updated_at?: string
+          usage_date?: string
+          user_id: string
+        }
+        Update: {
+          total_minutes?: number
+          total_sessions?: number
+          updated_at?: string
+          usage_date?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_daily_agent_usage_user_id"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       enrollments: {
         Row: {
           course_id: string
@@ -230,6 +329,27 @@ export type Database = {
           },
         ]
       }
+      processed_webhook_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          room_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id: string
+          room_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          room_name?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -237,6 +357,7 @@ export type Database = {
           institution_id: number | null
           level: number | null
           major_id: number | null
+          quota_tier_id: number
           status: string | null
         }
         Insert: {
@@ -245,6 +366,7 @@ export type Database = {
           institution_id?: number | null
           level?: number | null
           major_id?: number | null
+          quota_tier_id?: number
           status?: string | null
         }
         Update: {
@@ -253,6 +375,7 @@ export type Database = {
           institution_id?: number | null
           level?: number | null
           major_id?: number | null
+          quota_tier_id?: number
           status?: string | null
         }
         Relationships: [
@@ -270,13 +393,75 @@ export type Database = {
             referencedRelation: "majors"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "profiles_quota_tier_id_fkey"
+            columns: ["quota_tier_id"]
+            isOneToOne: false
+            referencedRelation: "quota_tiers"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      quota_tiers: {
+        Row: {
+          created_at: string
+          id: number
+          max_daily_minutes: number
+          max_daily_sessions: number
+          max_session_minutes: number
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          max_daily_minutes: number
+          max_daily_sessions: number
+          max_session_minutes: number
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          max_daily_minutes?: number
+          max_daily_sessions?: number
+          max_session_minutes?: number
+          name?: string
+        }
+        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      check_daily_quota: {
+        Args: { p_user_id: string }
+        Returns: {
+          allowed: boolean
+          max_minutes: number
+          max_sessions: number
+          remaining_minutes: number
+          remaining_sessions: number
+          tier_name: string
+          used_minutes: number
+          used_sessions: number
+        }[]
+      }
+      cleanup_old_daily_usage: { Args: never; Returns: undefined }
+      cleanup_old_webhook_events: { Args: never; Returns: undefined }
+      get_my_daily_quota: {
+        Args: never
+        Returns: {
+          allowed: boolean
+          max_minutes: number
+          max_sessions: number
+          remaining_minutes: number
+          remaining_sessions: number
+          tier_name: string
+          used_minutes: number
+          used_sessions: number
+        }[]
+      }
       get_unenrolled_courses: {
         Args: { check_user_id: string }
         Returns: {
@@ -296,6 +481,19 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      record_session_end: {
+        Args: {
+          p_ended_at?: string
+          p_room_name: string
+          p_status?: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      record_webhook_event: {
+        Args: { p_event_id: string; p_event_type: string; p_room_name?: string }
+        Returns: boolean
       }
     }
     Enums: {
