@@ -42,11 +42,13 @@ export async function POST(req: NextRequest) {
     const publicKey = process.env.LANGFUSE_PUBLIC_KEY!;
     const secretKey = process.env.LANGFUSE_SECRET_KEY!;
     const langfuseHost = process.env.LANGFUSE_HOST!;
+    const environment = process.env.NODE_ENV || "development";
 
     const langfuse = new Langfuse({
       publicKey,
       secretKey,
       baseUrl: langfuseHost,
+      environment,
     });
 
     const existingTraceId = await findTraceIdBySessionId(
