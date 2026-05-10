@@ -40,7 +40,6 @@ export async function GET(request: Request) {
   at.addGrant({
     roomJoin: true,
     room: `ss_${userId.slice(-10)}_${dateStr}_${timeStr}`,
-    canUpdateOwnMetadata: true,
   });
   return new Response(await at.toJwt());
 }

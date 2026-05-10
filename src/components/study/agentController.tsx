@@ -13,15 +13,14 @@ import {
   RemoteParticipant,
   DataPacket_Kind,
   Track,
+  type RpcInvocationData,
 } from "livekit-client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import {
   Mic,
   MicOff,
-  PhoneOff,
+  SquareArrowRight,
   Volume2,
   VolumeX,
   Keyboard,
@@ -30,10 +29,11 @@ import {
   Layers,
   List,
   CircleHelp,
+  CheckSquare,
+  Square,
 } from "lucide-react";
 import { Json } from "@/types/database.types";
-import { number, set } from "zod/v4";
-import * as Direction from "@radix-ui/react-direction";
+import { markerPayload } from "@/types/types";
 
 interface Topic {
   name: string;
@@ -48,13 +48,17 @@ export default function AgentController({
   numPages,
   topicsJSON,
   topicStates,
+  setActiveMarker,
 }: {
   api: any;
   numPages: number;
   topicsJSON: Json;
   topicStates?: Record<string, TopicState>;
+  setActiveMarker: React.Dispatch<
+    React.SetStateAction<Record<string, markerPayload>>
+  >;
 }) {
-  const { state, audioTrack } = useVoiceAssistant();
+  const { state: agentState, audioTrack } = useVoiceAssistant();
   const room = useRoomContext();
 
   // Custom voice control hooks
@@ -67,7 +71,7 @@ export default function AgentController({
   const [isTextInputOpen, setIsTextInputOpen] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const [currentTopicName, setCurrentTopicName] = useState<string | null>(null);
+  const [currentTopicName, setCurrentTopicName] = useState<string | null>();
   const [numberOfSections, setNumberOfSections] = useState<number | null>(null);
   const [currentSectionName, setCurrentSectionName] = useState<string | null>(
     null,
@@ -80,19 +84,22 @@ export default function AgentController({
   >(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const sendTextMessage = async () => {
-    if (!textInput.trim() || isSending) return;
+  const sendUserMessage = async (message: string) => {
+    if (isSending) return;
     setIsSending(true);
     try {
-      await room.localParticipant.sendText(textInput.trim(), {
-        topic: "lk.chat",
-      });
-      setTextInput("");
+      await room.localParticipant.sendText(message, { topic: "lk.chat" });
     } catch (error) {
-      console.error("Failed to send text:", error);
+      console.error("Failed to send message:", error);
     } finally {
       setIsSending(false);
     }
+  };
+
+  const sendTextMessage = async () => {
+    if (!textInput.trim() || isSending) return;
+    sendUserMessage(textInput.trim());
+    setTextInput("");
   };
 
   // Toggle agent audio output
@@ -117,6 +124,8 @@ export default function AgentController({
       number_of_sections?: number;
       current_section_index?: number;
       checkpoint_question?: string;
+      add?: { [key: string]: markerPayload };
+      remove?: string[];
     }
 
     const handleData = (
@@ -151,6 +160,28 @@ export default function AgentController({
         } else if (data.action === "section_done") {
           setCurrentSectionName(null);
           setCurrentSectionIndex(null);
+        } else if (data.action === "remove_markers") {
+          if (data.remove) {
+            setActiveMarker((prev) => {
+              const next = { ...prev };
+              for (const id of data.remove!) {
+                delete next[id];
+              }
+              return next;
+            });
+          }
+        } else if (data.action === "add_markers") {
+          if (data.add) {
+            for (const [id, marker] of Object.entries(data.add)) {
+              if (marker.delay > 0) {
+                setTimeout(() => {
+                  setActiveMarker((prev) => ({ ...prev, [id]: marker }));
+                }, marker.delay);
+              } else {
+                setActiveMarker((prev) => ({ ...prev, [id]: marker }));
+              }
+            }
+          }
         }
       }
     };
@@ -174,27 +205,27 @@ export default function AgentController({
     string,
     { label: string; color: string; icon: string }
   > = {
-    disconnected: { label: "غير متصل", color: "text-gray-400", icon: "⚫" },
+    disconnected: { label: "غير متصل", color: "bg-gray-400", icon: "⚫" },
     connecting: {
       label: "جاري الاتصال...",
-      color: "text-yellow-400 animate-pulse",
+      color: "bg-yellow-400 animate-pulse",
       icon: "🔄",
     },
     initializing: {
       label: "جاري التحضير...",
-      color: "text-blue-400 animate-pulse",
+      color: "bg-blue-400 animate-pulse",
       icon: "⚙️",
     },
-    listening: { label: "أستمع...", color: "text-green-400", icon: "👂" },
+    listening: { label: "أستمع...", color: "bg-green-400", icon: "👂" },
     thinking: {
       label: "أفكر...",
-      color: "text-[#ffa02f] animate-pulse",
+      color: "bg-[#ffa02f] animate-pulse",
       icon: "🤔",
     },
-    speaking: { label: "أتحدث...", color: "text-cyan-400", icon: "🗣️" },
+    speaking: { label: "أتحدث...", color: "bg-cyan-400", icon: "🗣️" },
   };
 
-  const currentState = stateConfig[state] || stateConfig.disconnected;
+  const currentState = stateConfig[agentState] || stateConfig.disconnected;
 
   const topicStateStyles: Record<TopicState, string> = {
     not_started:
@@ -202,6 +233,27 @@ export default function AgentController({
     current:
       "backdrop-blur-sm bg-[#ffa02f]/10 border border-[#ffa02f]/40 hover:border-[#ffa02f]/60 shadow-[0_0_12px_rgba(255,160,47,0.15)] hover:shadow-[0_0_16px_rgba(255,160,47,0.25)]",
     done: "backdrop-blur-sm bg-[#1d5479]/30 border border-[#1d5479]/40 hover:border-[#1d5479]/60",
+  };
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const handleTopicRequest = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    message: string,
+  ) => {
+    const container = containerRef.current;
+    const item = e.currentTarget;
+
+    if (container && item) {
+      // Calculate the distance from the top of the item to the top of the container
+      const targetPos = item.offsetTop - container.offsetTop;
+
+      container.scrollTo({
+        top: targetPos,
+        behavior: "smooth",
+      });
+    }
+    sendUserMessage(message);
   };
 
   // Parse topics from JSON
@@ -223,37 +275,28 @@ export default function AgentController({
 
   return (
     <div className="flex flex-col h-full" data-lk-theme="default">
-      {/* Connection State Indicator */}
-      <div className="px-4 py-2 border-b border-[#1d5479]/50">
-        <div className="flex items-center justify-center gap-2">
-          <span className={`text-sm font-medium ${currentState.color}`}>
-            {currentState.label}
-          </span>
-          <span className="text-lg">{currentState.icon}</span>
-        </div>
-      </div>
-
-      {/* Audio Visualizer */}
-      <div className="px-4 py-2 border-t border-[#1d5479]/30 bg-gradient-to-b from-[#0e293c]/20 to-transparent">
-        <div className="flex items-center justify-center h-18 rounded-lg bg-[#0e293c]/30 backdrop-blur-sm border border-[#1d5479]/20 shadow-lg">
+      {/* Header */}
+      <div className="px-2 py-2 border-t border-[#1d5479]/30 bg-linear-to-b from-[#0e293c]/20 to-transparent ">
+        {/* Agent Visualizer */}
+        <div className="flex items-center justify-center h-10 rounded-sm bg-[#0e293c]/30 backdrop-blur-sm border border-[#1d5479]/20 shadow-lg flex-1">
           <BarVisualizer
-            state={state}
+            state={agentState}
             trackRef={audioTrack}
             barCount={15}
-            options={{ minHeight: 36 }}
+            options={{ minHeight: 42 }}
             style={
               {
                 "--lk-fg":
-                  state === "listening"
+                  agentState === "listening"
                     ? "#4ade80"
-                    : state === "thinking"
+                    : agentState === "thinking"
                       ? "#fbbf24"
-                      : state === "speaking"
+                      : agentState === "speaking"
                         ? "#ffa02f"
                         : "#60a5fa",
                 "--lk-bg": "rgba(29, 84, 121, 0.15)",
                 "--lk-va-bar-height": "80px",
-                "--lk-va-bar-width": "4px",
+                "--lk-va-bar-width": "6px",
                 "--lk-va-bar-gap": "6px",
                 "--lk-va-border-radius": "8px",
               } as React.CSSProperties
@@ -264,38 +307,56 @@ export default function AgentController({
       </div>
 
       {/* Topics List */}
-      <div className="h-[25%] px-4 py-2 overflow-y-auto border-t border-[#1d5479]/30 bg-[#0e293c]/10">
-        <div className="flex items-center gap-2 mb-3 group cursor-default">
-          <List className="h-4 w-4 text-[#ffa02f] transition-transform group-hover:scale-110" />
-          <h3 className="text-sm font-medium text-[#ffa02f] transition-colors group-hover:text-[#ffa02f]/80">
-            المواضيع
-          </h3>
-        </div>
+      <div className="flex items-center gap-2 m-2 group cursor-default">
+        <List className="h-4 w-4 text-[#ffa02f] transition-transform group-hover:scale-110" />
+        <h3 className="text-sm font-medium text-[#ffa02f] transition-colors group-hover:text-[#ffa02f]/80">
+          المواضيع
+        </h3>
+      </div>
+      <div
+        className="h-[10%] px-4 py-2 border-t overflow-y-auto border-[#1d5479]/30 bg-[#0e293c]/10 transition-all duration-200 ease-in flex flex-col gap-2"
+        ref={containerRef}
+        style={{ flexGrow: currentTopic ? "0" : "1" }}
+      >
         {topics.length > 0 ? (
-          <div className="space-y-2">
+          <>
             {topics.map((topic) => {
-              const state: TopicState =
+              const topicState: TopicState =
                 topic.slug === currentTopicName
                   ? "current"
                   : topicStates?.[topic.slug] || "not_started";
               return (
-                <div
+                <button
                   key={topic.slug}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${topicStateStyles[state]} transition-all duration-200 group hover:translate-y-[-1px]`}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${topicStateStyles[topicState]} transition-all duration-200 group hover:-translate-y-px cursor-pointer w-full text-left disabled:cursor-not-allowed disabled:opacity-50`}
+                  onClick={(e) =>
+                    handleTopicRequest(
+                      e,
+                      `Please explain the topic ${topic.slug}`,
+                    )
+                  }
+                  disabled={
+                    topicState === "current" ||
+                    topicState === "done" ||
+                    agentState === "disconnected" ||
+                    agentState === "connecting" ||
+                    agentState === "initializing"
+                  }
                 >
-                  <div className="relative flex-shrink-0">
-                    <Checkbox
-                      checked={state === "done"}
-                      className="data-[state=checked]:bg-[#ffa02f] data-[state=checked]:border-[#ffa02f] transition-all"
-                    />
+                  <div className="relative shrink-0">
+                    {topicState === "done" ? (
+                      <CheckSquare className="h-4 w-4 text-green-400" />
+                    ) : (
+                      <Square className="h-4 w-4 text-background" />
+                    )}
                   </div>
                   <span className="text-sm text-[#fffdfd] truncate flex-1">
                     {topic.name}
                   </span>
-                </div>
+                </button>
               );
             })}
-          </div>
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)] text-center">
             <p className="text-xs text-[#fffdfd]/50 transition-opacity duration-300">
@@ -306,8 +367,9 @@ export default function AgentController({
       </div>
 
       {/* Current Topic Details */}
-      <div className="px-4 py-3 border-t border-[#1d5479]/30 bg-[#0e293c]/20 h-[50%] flex flex-col gap-4">
-        {currentTopic ? (
+      {currentTopic ? (
+        <div className="px-4 py-3 border-t border-[#1d5479]/30 bg-[#0e293c]/20 flex-1 flex flex-col gap-4">
+          {/* Section details */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-3 group cursor-default">
               <BookOpen className="h-4 w-4 text-[#ffa02f] transition-transform group-hover:scale-110" />
@@ -322,9 +384,9 @@ export default function AgentController({
                 </p>
                 <div className="flex-shrink-0 w-2 h-2 rounded-full bg-[#ffa02f] animate-pulse" />
               </div>
-              <p className="text-xs text-[#fffdfd]/70 leading-relaxed mb-3">
+              {/* <p className="text-xs text-[#fffdfd]/70 leading-relaxed mb-3">
                 {currentTopic.brief}
-              </p>
+              </p> */}
               <div className="space-y-2">
                 {currentSectionName && (
                   <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-[#ffa02f]/10 border border-[#ffa02f]/20">
@@ -359,101 +421,99 @@ export default function AgentController({
               </div>
             </div>
           </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)] text-center">
-            <p className="text-xs text-[#fffdfd]/50 transition-opacity duration-300">
-              لا يوجد موضوع قيد الشرح
-            </p>
-          </div>
-        )}
-        {/* Current Checkpoint Question */}
-        {currentCheckpointQuestion && state == "listening" && (
-          <div className="backdrop-blur-sm rounded-lg bg-gradient-to-br from-[#1d5479]/30 to-[#0e293c]/30 border border-[#ffa02f]/40 p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <CircleHelp className="h-4 w-4 text-[#ffa02f]" />
-              <h3 className="text-sm font-medium text-[#ffa02f]">
-                تحقق من فهمك{" "}
-              </h3>
+          {/* Current Checkpoint Question */}
+          {currentCheckpointQuestion && agentState === "listening" && (
+            <div className="backdrop-blur-sm rounded-lg bg-gradient-to-br from-[#1d5479]/30 to-[#0e293c]/30 border border-[#ffa02f]/40 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <CircleHelp className="h-4 w-4 text-[#ffa02f]" />
+                <h3 className="text-sm font-medium text-[#ffa02f]">
+                  تحقق من فهمك{" "}
+                </h3>
+              </div>
+              <p className="text-sm text-[#fffdfd] leading-relaxed mb-4">
+                {currentCheckpointQuestion}
+              </p>
+              <div className="flex items-center gap-2 pt-3 border-t border-[#1d5479]/30">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ffa02f] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ffa02f]"></span>
+                </span>
+                <span className="text-xs text-[#ffa02f] font-medium">
+                  اجب على السؤال في حال فهمت الموضوع، او اطلب من سند اعادة
+                  الشرح{" "}
+                </span>
+              </div>
             </div>
-            <p className="text-sm text-[#fffdfd] leading-relaxed mb-4">
-              {currentCheckpointQuestion}
-            </p>
-            <div className="flex items-center gap-2 pt-3 border-t border-[#1d5479]/30">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ffa02f] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ffa02f]"></span>
-              </span>
-              <span className="text-xs text-[#ffa02f] font-medium">
-                اجب على السؤال في حال فهمت الموضوع، او اطلب من سند اعادة
-                الشرح{" "}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      ) : null}
 
       {/* Voice Assistant Controls */}
-      <div className="px-4 py-4 mt-auto">
-        <div className="flex items-center justify-center gap-3">
-          {/* Keyboard Toggle */}
-          <Button
-            onClick={() => setIsTextInputOpen(!isTextInputOpen)}
-            className={`rounded-lg px-4 py-2 ${
-              isTextInputOpen
-                ? "bg-[#ffa02f] text-white"
-                : "bg-[#1d5479] hover:bg-[#1d5479]/80 text-white"
-            }`}
-            aria-label="Toggle text input"
-          >
-            <Keyboard className="h-5 w-5" />
-          </Button>
+      <div className="flex items-center justify-start gap-2 p-2 mt-auto">
+        {/* Disconnect Button */}
+        <Button
+          onClick={() => {
+            disconnectProps.onClick();
+            setActiveMarker({}); // Clear all markers on disconnect
+          }}
+          disabled={disconnectProps.disabled}
+          className="rounded-lg bg-red-500 hover:bg-red-600 text-white px-4 py-2 flex items-center gap-2"
+          aria-label="Disconnect"
+        >
+          <SquareArrowRight className="h-5 w-5" />
+          <span className="text-sm font-medium">انهاء</span>
+        </Button>
 
-          {/* Microphone Toggle */}
-          <Button
-            onClick={() => micToggle.toggle()}
-            disabled={micToggle.pending}
-            className="rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white px-4 py-2"
-            aria-label="Toggle microphone"
-          >
-            {micToggle.enabled ? (
-              <Mic className="h-5 w-5" />
-            ) : (
-              <MicOff className="h-5 w-5" />
-            )}
-          </Button>
+        {/* Microphone Toggle */}
+        <Button
+          onClick={() => micToggle.toggle()}
+          disabled={micToggle.pending}
+          className="rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white px-4 py-2"
+          aria-label="Toggle microphone"
+        >
+          {micToggle.enabled ? (
+            <Mic className="h-5 w-5" />
+          ) : (
+            <MicOff className="h-5 w-5" />
+          )}
+        </Button>
 
-          {/* Audio Mute Toggle */}
-          <Button
-            onClick={toggleAudioMute}
-            className="rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white px-4 py-2"
-            aria-label="Toggle audio output"
-          >
-            {isAudioMuted ? (
-              <VolumeX className="h-5 w-5" />
-            ) : (
-              <Volume2 className="h-5 w-5" />
-            )}
-          </Button>
+        {/* Audio Mute Toggle */}
+        <Button
+          onClick={toggleAudioMute}
+          className="rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white px-4 py-2"
+          aria-label="Toggle audio output"
+        >
+          {isAudioMuted ? (
+            <VolumeX className="h-5 w-5" />
+          ) : (
+            <Volume2 className="h-5 w-5" />
+          )}
+        </Button>
+        {/* Keyboard Toggle */}
+        <Button
+          onClick={() => setIsTextInputOpen(!isTextInputOpen)}
+          className={`rounded-lg px-4 py-2 ${
+            isTextInputOpen
+              ? "bg-[#ffa02f] text-white"
+              : "bg-[#1d5479] hover:bg-[#1d5479]/80 text-white"
+          }`}
+          aria-label="Toggle text input"
+        >
+          <Keyboard className="h-5 w-5" />
+        </Button>
+        {/* Connection State Indicator */}
 
-          {/* Disconnect Button */}
-          <Button
-            onClick={() => {
-              disconnectProps.onClick();
-              document.exitFullscreen();
-            }}
-            disabled={disconnectProps.disabled}
-            className="rounded-lg bg-red-500 hover:bg-red-600 text-white px-4 py-2 flex items-center gap-2"
-            aria-label="Disconnect"
-          >
-            <PhoneOff className="h-5 w-5" />
-            <span className="text-sm font-medium">اوقف المحادثة</span>
-          </Button>
+        <div
+          className={`${currentState.color} flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 flex-1`}
+        >
+          <span className="text-sm font-medium">{currentState.label}</span>
         </div>
       </div>
 
       {/* Text Input */}
       {isTextInputOpen && (
-        <div className="px-4 pb-2">
+        <div className="px-2 pb-2">
           <div className="flex gap-2">
             <Button
               onClick={sendTextMessage}

@@ -7,7 +7,7 @@ import { useSession, SessionProvider } from "@livekit/components-react";
 import { TokenSource } from "livekit-client";
 import { Json } from "@/types/database.types";
 import { useUser } from "@clerk/nextjs";
-import Image from "next/image";
+import { markerPayload } from "@/types/types";
 
 export function AISideBar({
   onClose,
@@ -18,6 +18,7 @@ export function AISideBar({
   courseSlug,
   chapterIndex,
   setMenuOpen,
+  setActiveMarker,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -27,6 +28,7 @@ export function AISideBar({
   courseSlug: string;
   chapterIndex: number;
   setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setActiveMarker: React.Dispatch<React.SetStateAction<Record<string, markerPayload>>>;
 }) {
   // Language selection state
   const [language, setLanguage] = useState<"English" | "Arabic">("English");
@@ -72,10 +74,8 @@ export function AISideBar({
           },
         },
       });
-      await document.documentElement.requestFullscreen();
     } catch (error) {
       console.error("Failed to start session:", error);
-      await document.exitFullscreen();
     }
   };
 
@@ -95,6 +95,7 @@ export function AISideBar({
               api={api}
               numPages={numPages}
               topicsJSON={topicsJSON}
+              setActiveMarker={setActiveMarker}
             />
           </SessionProvider>
         ) : (

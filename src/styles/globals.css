@@ -143,3 +143,74 @@
     display: none;
   }
 }
+
+@layer components {
+  /* Target the specific react-pdf text layer to ensure specificity */
+  .react-pdf__Page__textContent mark.agent-highlight {
+    @apply bg-yellow-400/30 rounded text-transparent shadow-[0_0_15px_rgba(250,204,21,0.5)];
+    animation: agent-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .react-pdf__Page__textContent mark.agent-circle {
+    @apply bg-transparent text-transparent rounded-sm outline-2 outline-red-500 outline-offset-[1px];
+
+    /* Optional: Keep a pulsing effect on the red box so the user notices it */
+    animation: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .react-pdf__Page__textContent mark.agent-underline {
+    @apply bg-transparent text-transparent border-b-2 border-red-500 outline-offset-[1px];
+
+    /* Optional: Keep a pulsing effect on the red box so the user notices it */
+    /* animation: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; */
+  }
+
+  .react-pdf__Page__textContent mark.agent-point::after {
+    content: "⬅"; /* You can use any Unicode arrow or Emoji like 👈 */
+
+    /* Position it to the right of the span, vertically centered */
+    @apply absolute -right-8 top-1/2 text-red-500 text-xl drop-shadow-md;
+
+    /* Make the text visible (since the parent mark is text-transparent) */
+    color: rgba(239, 68, 68, 1);
+
+    /* Add a pointing animation */
+    animation: agent-point 1s ease-in-out infinite;
+  }
+}
+
+/* Custom animation to pulse the glow rather than the whole element's opacity */
+@keyframes agent-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(250, 204, 21, 0.5);
+    background-color: rgba(250, 204, 21, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(250, 204, 21, 0.8);
+    background-color: rgba(250, 204, 21, 0.5);
+  }
+}
+
+@keyframes pulse-border {
+  0%,
+  100% {
+    outline-color: rgba(239, 68, 68, 1); /* Tailwind red-500 */
+  }
+  50% {
+    outline-color: rgba(239, 68, 68, 0.3); /* Faded red */
+  }
+}
+
+@keyframes agent-point {
+  0%,
+  100% {
+    transform: translate(0, -50%);
+  }
+  50% {
+    transform: translate(
+      -5px,
+      -50%
+    ); /* Moves slightly left, pointing at the box */
+  }
+}
