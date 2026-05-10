@@ -34,27 +34,6 @@ export default function TopNav() {
           </SignedIn>
         </div>
 
-        <nav className="hidden md:flex items-center gap-6 flex-1 justify-center">
-          <Link
-            href="#features"
-            className="text-sm font-medium hover:text-[#ffa02f] transition-colors"
-          >
-            المميزات
-          </Link>
-          <Link
-            href="#how-it-works"
-            className="text-sm font-medium hover:text-[#ffa02f] transition-colors"
-          >
-            كيف يعمل
-          </Link>
-          <Link
-            href="#pricing"
-            className="text-sm font-medium hover:text-[#ffa02f] transition-colors"
-          >
-            الأسعار
-          </Link>
-        </nav>
-
         <div className="flex items-center gap-2 flex-1 justify-end">
           <Link href={"/"} className="flex items-center gap-2">
             <span className="text-xl font-bold bg-linear-to-r from-white to-[#ffa02f] bg-clip-text text-transparent">
