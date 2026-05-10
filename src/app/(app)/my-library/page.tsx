@@ -27,13 +27,13 @@ export default function LibraryPage() {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      if (!supabase) return; // Add guard clause
+      if (!supabase || !user?.id) return;
 
       setLoading(true);
       const { data: courses, error } = await supabase
         .from("courses")
         .select(`*, enrollments!inner(user_id)`)
-        .eq("enrollments.user_id", user?.id || "");
+        .eq("enrollments.user_id", user.id);
 
       if (error) {
         console.error("Error fetching courses:", error);
@@ -44,7 +44,7 @@ export default function LibraryPage() {
       setLoading(false);
     };
     fetchCourses();
-  }, [supabase]); // Add supabase to dependencies
+  }, [supabase, user?.id]);
 
   if (loading) {
     return <CourseLoading />;

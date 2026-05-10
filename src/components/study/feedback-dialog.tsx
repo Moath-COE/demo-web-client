@@ -130,10 +130,11 @@ export function FeedbackDialog({
             <DialogHeader className="pb-1">
               <DialogTitle className="text-[#fffdfd] text-lg flex items-center gap-2">
                 <MessageSquareText className="h-5 w-5 text-[#ffa02f]" />
-                كيف كانت تجربتك؟
+                كيف كانت تجربتك مع سند؟
               </DialogTitle>
               <DialogDescription className="text-[#fffdfd]/60">
-                شاركنا رأيك لمساعدتنا في التحسين
+                شاركنا رأيك لتحسين تجربة سند في المستقبل. تقييمك سيبقى سرياً ولن
+                يستخدم إلا لتحسين الخدمة.
               </DialogDescription>
             </DialogHeader>
 
