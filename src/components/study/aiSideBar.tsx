@@ -1,13 +1,15 @@
 import { useMemo, useState } from "react";
 import { CarouselApi } from "../ui/carousel";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Menu, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import AgentController from "./agentController";
 import { useSession, SessionProvider } from "@livekit/components-react";
 import { TokenSource } from "livekit-client";
 import { Json } from "@/types/database.types";
 import { useUser } from "@clerk/nextjs";
 import { markerPayload } from "@/types/types";
+import Link from "next/link";
+import { FeedbackDialog } from "./feedback-dialog";
 
 export function AISideBar({
   onClose,
@@ -28,15 +30,18 @@ export function AISideBar({
   courseSlug: string;
   chapterIndex: number;
   setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setActiveMarker: React.Dispatch<React.SetStateAction<Record<string, markerPayload>>>;
+  setActiveMarker: React.Dispatch<
+    React.SetStateAction<Record<string, markerPayload>>
+  >;
 }) {
-  // Language selection state
   const [language, setLanguage] = useState<"English" | "Arabic">("English");
   const { user } = useUser();
   const userName = user?.fullName ?? "undefined";
   const chapterId = "ch_" + chapterIndex;
 
-  // Create a token source that includes join-time context
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [roomName, setRoomName] = useState("");
+
   const tokenSource = useMemo(
     () =>
       TokenSource.custom(async () => {
@@ -60,13 +65,10 @@ export function AISideBar({
       }),
     [courseSlug, chapterId, language, userName],
   );
-  // Initialize session with the token source
   const session = useSession(tokenSource);
 
-  // Handle starting the session
   const handleStart = async () => {
     try {
-      // Start the session with microphone enabled
       await session.start({
         tracks: {
           microphone: {
@@ -79,15 +81,22 @@ export function AISideBar({
     }
   };
 
-  // Derive UI state from session connection state
+  const handleSessionEnd = (name: string) => {
+    setRoomName(name);
+    setShowFeedback(true);
+  };
+
+  const handleFeedbackClose = () => {
+    setShowFeedback(false);
+    setRoomName("");
+  };
+
   const isConnected = session.connectionState !== "disconnected";
-  // const isConnected = true;
 
   if (!isOpen) return null;
 
   return (
-    <div className="flex flex-col h-full bg-[#0f4c6f]">
-      {/* Voice Assistant Section */}
+    <div className="flex flex-col h-full bg-[#0f4c6f] ">
       <div className="flex-1 flex flex-col overflow-hidden">
         {isConnected ? (
           <SessionProvider session={session}>
@@ -96,18 +105,18 @@ export function AISideBar({
               numPages={numPages}
               topicsJSON={topicsJSON}
               setActiveMarker={setActiveMarker}
+              onSessionEnd={handleSessionEnd}
             />
           </SessionProvider>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8 gap-4 relative">
-            <div className="absolute top-10 flex justify-between items-center gap-2 w-full py-2 px-6 rounded-lg">
-              <button
-                onClick={() => setMenuOpen((prev) => !prev)}
-                className="cursor-pointer "
+            <div className="absolute top-5 flex justify-between items-center gap-2 w-full py-2 px-6 rounded-lg">
+              <Link
+                href="/my-library"
+                className="flex items-center px-4 py-2 text-sm font-medium text-foreground hover:bg-accent rounded-lg transition-colors"
               >
-                <Menu className="h-8 w-8 text-[#fffdfd]" />
-              </button>
-              {/* Language Switch */}
+                الرجوع للمكتبة
+              </Link>
               <ToggleGroup
                 type="single"
                 value={language}
@@ -130,7 +139,6 @@ export function AISideBar({
                 على زر البدء لنبدأ رحلة التعلم!
               </p>
             </div>
-            {/* Main Start Button */}
             <div className="flex items-center justify-center gap-3">
               <button
                 onClick={handleStart}
@@ -143,6 +151,13 @@ export function AISideBar({
           </div>
         )}
       </div>
+
+      <FeedbackDialog
+        key={roomName}
+        open={showFeedback}
+        roomName={roomName}
+        onClose={handleFeedbackClose}
+      />
     </div>
   );
 }

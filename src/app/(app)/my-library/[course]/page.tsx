@@ -27,54 +27,38 @@ export default function CoursePage() {
   const supabase = useDatabase();
 
   useEffect(() => {
-    const fetchCourse = async () => {
-      if (!supabase) return; // Add guard clause
+    if (!supabase) return;
+    setLoading(true);
 
-      setLoading(true);
-      const { data: course, error } = await supabase
-        .from("courses")
-        .select("*")
-        .eq("slug", courseSlug)
-        .single();
+    const fetchData = async () => {
+      const [courseResult, chaptersResult] = await Promise.all([
+        supabase.from("courses").select("*").eq("slug", courseSlug).single(),
+        supabase
+          .from("chapters")
+          .select("*, courses!inner(slug)")
+          .eq("courses.slug", courseSlug)
+          .order("order_index", { ascending: true }),
+      ]);
 
-      if (error) {
-        console.error("Error fetching courses:", error);
-        return null;
-      }
-      setCourse(course || null);
-    };
+      if (courseResult.error)
+        console.error("Error fetching course:", courseResult.error);
+      if (chaptersResult.error)
+        console.error("Error fetching chapters:", chaptersResult.error);
 
-    const fetchChapters = async () => {
-      if (!supabase) return; // Add guard clause
-
-      const { data: chapters, error } = await supabase
-        .from("chapters")
-        .select(
-          `
-          *,
-          courses!inner(slug)
-        `,
-        )
-        .eq("courses.slug", courseSlug)
-        .order("order_index", { ascending: true });
-
-      if (error) {
-        console.error("Error fetching chapters:", error);
-        return [];
-      }
-      setChapters(chapters || []);
+      setCourse(courseResult.data || null);
+      setChapters(chaptersResult.data || []);
       setLoading(false);
     };
-    fetchChapters();
-    fetchCourse();
-  }, [supabase, courseSlug]); // Add dependencies
 
-  if (!course) {
-    return <div>Course not found</div>;
-  }
+    fetchData();
+  }, [supabase, courseSlug]);
 
   if (loading) {
     return <ChapterLoading />;
+  }
+
+  if (!course) {
+    return <div>Course not found</div>;
   }
 
   return (

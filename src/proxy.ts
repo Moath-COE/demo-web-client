@@ -4,8 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 const isProtectedRoute = createRouteMatcher([
   "/admin(.*)",
   "/my-library(.*)",
-  "/course(.*)",
-  // Add other nested routes under [user] here
+  "/enroll(.*)",
 ]);
 
 const isOnboardingRoute = createRouteMatcher([

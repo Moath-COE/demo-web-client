@@ -7,7 +7,7 @@ import {
   useDisconnectButton,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   RoomEvent,
   RemoteParticipant,
@@ -43,12 +43,54 @@ interface Topic {
 
 type TopicState = "not_started" | "current" | "done";
 
+interface UIControlData {
+  action: string;
+  page?: number;
+  topic?: string;
+  section?: string;
+  number_of_sections?: number;
+  current_section_index?: number;
+  checkpoint_question?: string;
+  add?: { [key: string]: markerPayload };
+  remove?: string[];
+}
+
+const STATE_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
+  disconnected: { label: "غير متصل", color: "bg-gray-400", icon: "⚫" },
+  connecting: {
+    label: "جاري الاتصال...",
+    color: "bg-yellow-400 animate-pulse",
+    icon: "🔄",
+  },
+  initializing: {
+    label: "جاري التحضير...",
+    color: "bg-blue-400 animate-pulse",
+    icon: "⚙️",
+  },
+  listening: { label: "أستمع...", color: "bg-green-400", icon: "👂" },
+  thinking: {
+    label: "أفكر...",
+    color: "bg-[#ffa02f] animate-pulse",
+    icon: "🤔",
+  },
+  speaking: { label: "أتحدث...", color: "bg-cyan-400", icon: "🗣️" },
+};
+
+const TOPIC_STATE_STYLES: Record<TopicState, string> = {
+  not_started:
+    "backdrop-blur-sm bg-[#1d5479]/20 border border-[#1d5479]/30 hover:border-[#1d5479]/50",
+  current:
+    "backdrop-blur-sm bg-[#ffa02f]/10 border border-[#ffa02f]/40 hover:border-[#ffa02f]/60 shadow-[0_0_12px_rgba(255,160,47,0.15)] hover:shadow-[0_0_16px_rgba(255,160,47,0.25)]",
+  done: "backdrop-blur-sm bg-[#1d5479]/30 border border-[#1d5479]/40 hover:border-[#1d5479]/60",
+};
+
 export default function AgentController({
   api,
   numPages,
   topicsJSON,
   topicStates,
   setActiveMarker,
+  onSessionEnd,
 }: {
   api: any;
   numPages: number;
@@ -57,6 +99,7 @@ export default function AgentController({
   setActiveMarker: React.Dispatch<
     React.SetStateAction<Record<string, markerPayload>>
   >;
+  onSessionEnd?: (roomName: string) => void;
 }) {
   const { state: agentState, audioTrack } = useVoiceAssistant();
   const room = useRoomContext();
@@ -116,18 +159,6 @@ export default function AgentController({
   };
 
   useEffect(() => {
-    interface UIControlData {
-      action: string;
-      page?: number;
-      topic?: string;
-      section?: string;
-      number_of_sections?: number;
-      current_section_index?: number;
-      checkpoint_question?: string;
-      add?: { [key: string]: markerPayload };
-      remove?: string[];
-    }
-
     const handleData = (
       payload: Uint8Array,
       participant?: RemoteParticipant,
@@ -200,40 +231,7 @@ export default function AgentController({
     }
   }, [textInput]);
 
-  // State display config
-  const stateConfig: Record<
-    string,
-    { label: string; color: string; icon: string }
-  > = {
-    disconnected: { label: "غير متصل", color: "bg-gray-400", icon: "⚫" },
-    connecting: {
-      label: "جاري الاتصال...",
-      color: "bg-yellow-400 animate-pulse",
-      icon: "🔄",
-    },
-    initializing: {
-      label: "جاري التحضير...",
-      color: "bg-blue-400 animate-pulse",
-      icon: "⚙️",
-    },
-    listening: { label: "أستمع...", color: "bg-green-400", icon: "👂" },
-    thinking: {
-      label: "أفكر...",
-      color: "bg-[#ffa02f] animate-pulse",
-      icon: "🤔",
-    },
-    speaking: { label: "أتحدث...", color: "bg-cyan-400", icon: "🗣️" },
-  };
-
-  const currentState = stateConfig[agentState] || stateConfig.disconnected;
-
-  const topicStateStyles: Record<TopicState, string> = {
-    not_started:
-      "backdrop-blur-sm bg-[#1d5479]/20 border border-[#1d5479]/30 hover:border-[#1d5479]/50",
-    current:
-      "backdrop-blur-sm bg-[#ffa02f]/10 border border-[#ffa02f]/40 hover:border-[#ffa02f]/60 shadow-[0_0_12px_rgba(255,160,47,0.15)] hover:shadow-[0_0_16px_rgba(255,160,47,0.25)]",
-    done: "backdrop-blur-sm bg-[#1d5479]/30 border border-[#1d5479]/40 hover:border-[#1d5479]/60",
-  };
+  const currentState = STATE_CONFIG[agentState] || STATE_CONFIG.disconnected;
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -256,22 +254,27 @@ export default function AgentController({
     sendUserMessage(message);
   };
 
-  // Parse topics from JSON
-  const topics: Topic[] =
-    topicsJSON && typeof topicsJSON === "object" && "topics" in topicsJSON
-      ? (topicsJSON as { topics: unknown[] }).topics.filter(
-          (item): item is Topic =>
-            !!item &&
-            typeof item === "object" &&
-            "name" in item &&
-            "slug" in item,
-        )
-      : [];
+  const topics: Topic[] = useMemo(
+    () =>
+      topicsJSON && typeof topicsJSON === "object" && "topics" in topicsJSON
+        ? (topicsJSON as { topics: unknown[] }).topics.filter(
+            (item): item is Topic =>
+              !!item &&
+              typeof item === "object" &&
+              "name" in item &&
+              "slug" in item,
+          )
+        : [],
+    [topicsJSON],
+  );
 
-  // Find the current topic object by matching name
-  const currentTopic = currentTopicName
-    ? topics.find((t) => t.slug === currentTopicName)
-    : null;
+  const currentTopic = useMemo(
+    () =>
+      currentTopicName
+        ? topics.find((t) => t.slug === currentTopicName)
+        : null,
+    [topics, currentTopicName],
+  );
 
   return (
     <div className="flex flex-col h-full" data-lk-theme="default">
@@ -328,7 +331,7 @@ export default function AgentController({
               return (
                 <button
                   key={topic.slug}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${topicStateStyles[topicState]} transition-all duration-200 group hover:-translate-y-px cursor-pointer w-full text-left disabled:cursor-not-allowed disabled:opacity-50`}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${TOPIC_STATE_STYLES[topicState]} transition-all duration-200 group hover:-translate-y-px cursor-pointer w-full text-left disabled:cursor-not-allowed disabled:opacity-50`}
                   onClick={(e) =>
                     handleTopicRequest(
                       e,
@@ -453,8 +456,9 @@ export default function AgentController({
         {/* Disconnect Button */}
         <Button
           onClick={() => {
+            if (onSessionEnd) onSessionEnd(room.name);
             disconnectProps.onClick();
-            setActiveMarker({}); // Clear all markers on disconnect
+            setActiveMarker({});
           }}
           disabled={disconnectProps.disabled}
           className="rounded-lg bg-red-500 hover:bg-red-600 text-white px-4 py-2 flex items-center gap-2"

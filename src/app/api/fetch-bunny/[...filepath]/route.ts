@@ -1,34 +1,59 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+);
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ filepath: string[] }> },
 ) {
-  // 1. Authenticate the request using Clerk
-  // This reads the session cookies sent by the browser
   const { userId } = await auth();
 
   if (!userId) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  // 2. Parse the Request Body to get filePath
-  const { filepath } = await params; // Await params first
-  const filePath = filepath.join("/"); // Then access the property // Join the array of path segments into a single string
+  const { filepath } = await params;
+  const filePath = filepath.join("/");
 
   if (!filePath) {
-    return NextResponse.json({ error: `"Missing filePath"` }, { status: 400 });
+    return NextResponse.json({ error: "Missing filePath" }, { status: 400 });
   }
+
+  if (filepath[0] === "courses" && filepath[1]) {
+    const courseSlug = filepath[1];
+
+    const { data: course } = await supabaseAdmin
+      .from("courses")
+      .select("id")
+      .eq("slug", courseSlug)
+      .single();
+
+    if (course) {
+      const { data: enrollment } = await supabaseAdmin
+        .from("enrollments")
+        .select("user_id")
+        .eq("user_id", userId)
+        .eq("course_id", course.id)
+        .single();
+
+      if (!enrollment) {
+        return new NextResponse("Forbidden", { status: 403 });
+      }
+    }
+  }
+
   const bunnyUrl = `${process.env.BUNNY_STORAGE_PULL_ZONE_URL}/${filePath}`;
 
   try {
-    // 3. Fetch the file securely from your Bunny Pull Zone
     const response = await fetch(bunnyUrl, {
       headers: {
         AccessKey: process.env.BUNNY_STORAGE_API_KEY as string,
       },
-      // Important: Do not cache this fetch request so users always get fresh auth checks
       cache: "no-store",
     });
 
@@ -36,12 +61,11 @@ export async function GET(
       return new NextResponse("File not found", { status: 404 });
     }
 
-    // 4. Stream the file back to the authenticated client
     return new NextResponse(response.body, {
       headers: {
         "Content-Type":
           response.headers.get("Content-Type") || "application/json",
-        "Cache-Control": "private, max-age=3600", // Cache in the user's browser, but NOT on shared CDNs
+        "Cache-Control": "private, max-age=3600",
       },
     });
   } catch (error) {

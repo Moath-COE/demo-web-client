@@ -6,7 +6,8 @@ import { Suspense } from "react";
 
 function SignInContent() {
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect_url") || "/my-library";
+  const rawRedirect = searchParams.get("redirect_url") || "/my-library";
+  const redirectUrl = rawRedirect.startsWith("/") ? rawRedirect : "/my-library";
 
   return <SignIn forceRedirectUrl={redirectUrl} fallbackRedirectUrl="/" />;
 }

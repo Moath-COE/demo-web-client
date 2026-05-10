@@ -70,16 +70,17 @@ export default function LibraryPage() {
             <CardHeader>
               <div className="flex items-start justify-between relative">
                 <div className="space-y-1">
-                  <Image
-                    src={
-                      course.image_url || "/static/course-card-placeholder.png"
-                    }
-                    alt="Chapter"
-                    width={100}
-                    height={40}
-                    className="w-full rounded-t-lg"
-                    loading="eager"
-                  />
+                  <div className="relative w-full aspect-video rounded-t-lg overflow-hidden">
+                    <Image
+                      src={
+                        course.image_url || "/static/course-card-placeholder.png"
+                      }
+                      alt={course.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
                   <CardTitle className="text-xl">{course.title}</CardTitle>
                   <CardDescription>{course.description}</CardDescription>
                 </div>

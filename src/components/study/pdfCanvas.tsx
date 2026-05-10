@@ -124,7 +124,7 @@ export function PdfCanvas({
             );
           })}
         </CarouselContent>
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4">
+        <div className="mt-2 flex items-center gap-4 w-fit justify-center relative mx-auto">
           <CarouselPrevious className="p-2 rounded-full bg-[#1d5479] text-[#fffdff] hover:bg-[#ffa02f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1d5479]" />
 
           <ContentToolbar
