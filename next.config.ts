@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "ch14-mvp.b-cdn.net", // Allows all Supabase storage domains
+        hostname: "snd-zone.b-cdn.net", // Allows all Supabase storage domains
         pathname: "/**",
       },
     ],

@@ -37,26 +37,26 @@ const data = {
       url: "/my-library",
       icon: IconDashboard,
     },
-    {
-      title: "المهام اليومية",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "تحليلات الاداء",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "المشاريع",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "الفريق",
-      url: "#",
-      icon: IconUsers,
-    },
+    // {
+    //   title: "المهام اليومية",
+    //   url: "#",
+    //   icon: IconListDetails,
+    // },
+    // {
+    //   title: "تحليلات الاداء",
+    //   url: "#",
+    //   icon: IconChartBar,
+    // },
+    // {
+    //   title: "المشاريع",
+    //   url: "#",
+    //   icon: IconFolder,
+    // },
+    // {
+    //   title: "الفريق",
+    //   url: "#",
+    //   icon: IconUsers,
+    // },
   ],
 };
 

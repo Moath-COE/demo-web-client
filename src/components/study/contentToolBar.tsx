@@ -7,7 +7,6 @@ import {
   Maximize2,
   Printer,
 } from "lucide-react";
-import { useState } from "react";
 
 export function ContentToolbar({
   pageNumber,
@@ -30,15 +29,6 @@ export function ContentToolbar({
 
   const handleReset = () => {
     setZoom(1);
-  };
-
-  const handleDownload = () => {
-    // Download functionality
-    console.log("Download initiated");
-  };
-
-  const handlePrint = () => {
-    window.print();
   };
 
   const handleFullscreen = () => {
@@ -93,27 +83,9 @@ export function ContentToolbar({
         <Maximize2 className="w-4 h-4" />
       </button>
 
-      <button
-        onClick={handlePrint}
-        className="p-2 rounded hover:bg-[#ffa02f] text-[#fffdfd] transition-colors"
-        aria-label="Print"
-        title="Print"
-      >
-        <Printer className="w-4 h-4" />
-      </button>
-
-      <button
-        onClick={handleDownload}
-        className="p-2 rounded hover:bg-[#ffa02f] text-[#fffdfd] transition-colors"
-        aria-label="Download"
-        title="Download"
-      >
-        <Download className="w-4 h-4" />
-      </button>
-
       <div className="w-px h-6 bg-[#0e293c] mx-2" />
 
-      <div className="bg-foreground text-card px-1 rounded-sm">
+      <div className="bg-foreground px-1 rounded-sm text-background font-bold">
         {pageNumber} / {numPages}
       </div>
     </div>
