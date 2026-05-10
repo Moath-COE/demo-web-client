@@ -422,7 +422,7 @@ export default function AgentController({
             </div>
           </div>
           {/* Current Checkpoint Question */}
-          {currentCheckpointQuestion && (
+          {currentCheckpointQuestion && agentState === "listening" && (
             <div className="backdrop-blur-sm rounded-lg bg-gradient-to-br from-[#1d5479]/30 to-[#0e293c]/30 border border-[#ffa02f]/40 p-4">
               <div className="flex items-center gap-2 mb-3">
                 <CircleHelp className="h-4 w-4 text-[#ffa02f]" />
