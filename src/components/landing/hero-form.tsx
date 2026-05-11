@@ -175,7 +175,7 @@ export default function HeroForm({ institutions, majors }: HeroFormProps) {
       </section>
 
       <a
-        href="/about"
+        href="/sanad"
         className="bg-primary fixed bottom-6 right-6 z-50 hover:from-chart-3 hover:to-chart-1 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 rounded-full p-3 group hover:w-auto hover:px-5 hover:py-3 w-14 h-14 flex items-center justify-center"
       >
         <div className="flex items-start gap-3 overflow-hidden transition-all duration-300">
