@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Mic,
   MessageCircle,
@@ -134,7 +135,13 @@ export default function SanadProductPage() {
             </Link>
           </div>
           <div className="max-w-3xl mx-auto">
-            <ImagePlaceholder label="لقطة رئيسية للمنتج" />
+            <Image
+              src="/static/screen-shots/agent-page-not-started.png"
+              alt="واجهة سند أثناء جلسة شرح تفاعلية"
+              width={1200}
+              height={900}
+              className="rounded-2xl shadow-lg shadow-chart-2/20"
+            />
           </div>
         </div>
       </section>
@@ -173,7 +180,13 @@ export default function SanadProductPage() {
           </div>
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>
-              <ImagePlaceholder label="سند أثناء جلسة شرح تفاعلية" />
+              <Image
+                src="/static/screen-shots/agent-page-with-topic.png"
+                alt="واجهة سند أثناء جلسة شرح تفاعلية"
+                width={1200}
+                height={900}
+                className="rounded-2xl shadow-lg shadow-chart-2/20"
+              />
             </div>
             <div className="space-y-5">
               {tutorBenefits.map((benefit) => (
@@ -222,7 +235,13 @@ export default function SanadProductPage() {
             ))}
           </div>
           <div className="mt-14 max-w-2xl mx-auto">
-            <ImagePlaceholder label="واجهة سند أثناء التصفح والمذاكرة" />
+            <Image
+              src="/static/screen-shots/agent-page-no-topic.png"
+              alt="واجهة سند أثناء جلسة شرح تفاعلية"
+              width={1200}
+              height={900}
+              className="rounded-2xl shadow-lg shadow-chart-2/20"
+            />
           </div>
         </div>
       </section>

@@ -317,6 +317,7 @@ export default function AgentController({
         </h3>
       </div>
       <div
+        data-tour-id="topics-list"
         className="h-[10%] px-4 py-2 border-t overflow-y-auto border-[#1d5479]/30 bg-[#0e293c]/10 transition-all duration-200 ease-in flex flex-col gap-2"
         ref={containerRef}
         style={{ flexGrow: currentTopic ? "0" : "1" }}
@@ -452,7 +453,10 @@ export default function AgentController({
       ) : null}
 
       {/* Voice Assistant Controls */}
-      <div className="flex items-center justify-start gap-2 p-2 mt-auto">
+      <div
+        data-tour-id="agent-control-bar"
+        className="flex items-center justify-start gap-2 p-2 mt-auto"
+      >
         {/* Disconnect Button */}
         <Button
           onClick={() => {

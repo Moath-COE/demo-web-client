@@ -18,7 +18,7 @@ export function NavSecondary({
 }: React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
     <SidebarGroup {...props}>
-      <SidebarGroupContent>
+      <SidebarGroupContent data-tour-id="sidebar-footer">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
@@ -32,7 +32,7 @@ export function NavSecondary({
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               {/* <Link href="/feedback/help"></Link> */}
-              <Link href="/help">
+              <Link href="/sanad">
                 <IconHelp className="ml-2 size-4" />
                 <span>مساعدة</span>
               </Link>
