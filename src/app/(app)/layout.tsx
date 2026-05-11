@@ -5,6 +5,7 @@ import { useSession } from "@clerk/nextjs";
 import { DatabaseContext } from "@/context/databaseContext";
 import initializeSupabase from "@/lib/supabaseClient";
 import { useMemo } from "react";
+import { MobileWarningPopup } from "@/components/mobile-warning-popup";
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,6 +21,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <DatabaseContext.Provider value={supabase}>
+      <MobileWarningPopup />
       {children}
     </DatabaseContext.Provider>
   );

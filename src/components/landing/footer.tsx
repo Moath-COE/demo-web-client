@@ -24,28 +24,28 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-3">المنتج</h3>
+            <h3 className="font-semibold mb-3">سند</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="#features" className="hover:text-[#ffa02f]">
+                <Link href="/sanad" className="hover:text-[#ffa02f]">
+                  ما هو سند؟
+                </Link>
+              </li>
+              <li>
+                <Link href="/sanad#features" className="hover:text-[#ffa02f]">
                   المميزات
                 </Link>
               </li>
               <li>
-                <Link href="#pricing" className="hover:text-[#ffa02f]">
-                  الأسعار
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-[#ffa02f]">
-                  خريطة الطريق
+                <Link href="/sanad#how-to-use" className="hover:text-[#ffa02f]">
+                  كيف استخدمه؟
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-3">الشركة</h3>
+            <h3 className="font-semibold mb-3">تعرف علينا</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link href="/about" className="hover:text-[#ffa02f]">
@@ -66,11 +66,11 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-3">قانوني</h3>
+            <h3 className="font-semibold mb-3">مراجع</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link href="/privacy-policy" className="hover:text-[#ffa02f]">
-                  الخصوصية
+                  سياسة الخصوصية
                 </Link>
               </li>
               <li>
@@ -78,12 +78,12 @@ export default function Footer() {
                   href="/terms-and-services"
                   className="hover:text-[#ffa02f]"
                 >
-                  الشروط
+                  الشروط الاستخدام
                 </Link>
               </li>
               <li>
                 <Link href="/about/#contact" className="hover:text-[#ffa02f]">
-                  اتصل بنا
+                  تواصل معنا
                 </Link>
               </li>
             </ul>
