@@ -33,6 +33,7 @@ export function NavMain({
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
+              data-tour-id="add-courses-btn"
               tooltip="إضافة مزيد من المواد لمكتبتك"
               className="bg-accent text-primary-foreground hover:bg-accent/90 hover:text-primary-foreground min-w-8 duration-200 ease-linear"
               onClick={() => router.push("/enroll")}

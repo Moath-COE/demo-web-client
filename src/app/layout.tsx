@@ -5,6 +5,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { arSA } from "@clerk/localizations";
 import { DirectionProvider } from "@/components/ui/direction";
 import { Cairo } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const cairo = Cairo({
   subsets: ["arabic"], // IMPORTANT
@@ -54,6 +56,8 @@ export default function RootLayout({
       <html lang="ar" className="dark" dir="rtl">
         <body className={`${cairo.className} font-sans antialiased`}>
           <DirectionProvider dir="rtl">{children}</DirectionProvider>
+          <Analytics />
+          <SpeedInsights />
         </body>
       </html>
     </ClerkProvider>

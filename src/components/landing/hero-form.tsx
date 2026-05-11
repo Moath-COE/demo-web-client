@@ -27,7 +27,9 @@ export default function HeroForm({ institutions, majors }: HeroFormProps) {
 
   const filteredMajors = useMemo(() => {
     if (!selectedInstitution) return majors;
-    return majors.filter((m) => m.institution_id === Number(selectedInstitution));
+    return majors.filter(
+      (m) => m.institution_id === Number(selectedInstitution),
+    );
   }, [majors, selectedInstitution]);
 
   const handleInstitutionChange = (value: string) => {
@@ -100,7 +102,7 @@ export default function HeroForm({ institutions, majors }: HeroFormProps) {
         <div className="w-full max-w-3/4 space-y-10">
           <div className="text-center space-y-6">
             <h1 className="text-6xl font-bold text-center leading-tight tracking-tight bg-gradient-to-r from-foreground to-chart-1 bg-clip-text text-transparent text-nowrap">
-              مدرس خصوصي بالذكاء الاصطناعي
+              سند: مدرس خصوصي بالذكاء الاصطناعي
             </h1>
             <p className="text-lg sm:text-xl text-foreground max-w-2xl mx-auto leading-relaxed opacity-90">
               اكتشف عالماً جديداً من التعلم المخصص مع تقنيات الذكاء الاصطناعي
@@ -150,10 +152,7 @@ export default function HeroForm({ institutions, majors }: HeroFormProps) {
                   </SelectContent>
                 </Select>
 
-                <Select
-                  value={selectedMajor}
-                  onValueChange={handleMajorChange}
-                >
+                <Select value={selectedMajor} onValueChange={handleMajorChange}>
                   <SelectTrigger className="flex-1 h-14 bg-background border-border/50 shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
                     <SelectValue placeholder="اختر التخصص" />
                   </SelectTrigger>
@@ -176,7 +175,7 @@ export default function HeroForm({ institutions, majors }: HeroFormProps) {
       </section>
 
       <a
-        href="/about"
+        href="/sanad"
         className="bg-primary fixed bottom-6 right-6 z-50 hover:from-chart-3 hover:to-chart-1 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 rounded-full p-3 group hover:w-auto hover:px-5 hover:py-3 w-14 h-14 flex items-center justify-center"
       >
         <div className="flex items-start gap-3 overflow-hidden transition-all duration-300">
