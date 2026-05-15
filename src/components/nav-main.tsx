@@ -35,30 +35,22 @@ export function NavMain({
             <SidebarMenuButton
               data-tour-id="add-courses-btn"
               tooltip="إضافة مزيد من المواد لمكتبتك"
-              className="bg-accent text-primary-foreground hover:bg-accent/90 hover:text-primary-foreground min-w-8 duration-200 ease-linear"
+              className="cursor-pointer bg-accent text-primary-foreground hover:bg-accent/90 hover:text-primary-foreground min-w-8 duration-200 ease-linear"
               onClick={() => router.push("/enroll")}
             >
               <IconCirclePlusFilled />
               <span>إضافة مزيد من المواد</span>
             </SidebarMenuButton>
-            <Button
-              size="icon"
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
-              variant="outline"
-            >
-              <IconMessageReport />
-              <span className="sr-only">Inbox</span>
-            </Button>
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu className="pt-4 border-t border-[#1d5479]">
           {items.map((item, index) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
-                variant={"default"}
+                className="bg-background text-primary-foreground cursor-pointer"
                 tooltip={item.title}
-                isActive={index === 0}
-                disabled={index !== 0}
+                // isActive={index === 0}
+                // disabled={index !== 0}
               >
                 {item.icon && <item.icon />}
                 <Link href={item.url}>

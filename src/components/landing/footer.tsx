@@ -19,7 +19,7 @@ export default function Footer() {
               <span className="text-xl font-bold">Chapter-14</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              منصة تعليمية مدعومة بالذكاء الاصطناعي للطالب العصري
+              وجهتك في رحلتك التعليمية في عصر الذكاء الاصطناعي
             </p>
           </div>
 
@@ -91,7 +91,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t mt-12 pt-8 text-center text-sm text-muted-foreground">
-          <p>© 2025 منصة التعلم. جميع الحقوق محفوظة.</p>
+          <p>التقنية والذكاء الاصطناعي في التعليم والتدريب © 2026</p>
         </div>
       </div>
     </footer>

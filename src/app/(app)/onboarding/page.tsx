@@ -145,7 +145,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center gap-8 my-auto">
+    <div className="relative w-full h-full flex flex-col items-center justify-center gap-8 my-auto pt-8">
       <UserButton />
       <Card className="w-full max-w-sm">
         <CardHeader>

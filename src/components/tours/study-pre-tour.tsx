@@ -5,13 +5,6 @@ import { TourTooltip, type TourStep } from "@/components/ui/tour-tooltip";
 
 const STUDY_PRE_STEPS: TourStep[] = [
   {
-    targetId: "start-agent-btn",
-    title: "ابدأ جلسة الدراسة",
-    description:
-      "اضغط على زر \"ابدأ الان\" لبدء المحادثة مع سند، مدرسك الذكي. سند سيشرح لك المادة ويراجع معك.",
-    position: "bottom",
-  },
-  {
     targetId: "language-toggle",
     title: "تغيير اللغة",
     description:
@@ -25,12 +18,19 @@ const STUDY_PRE_STEPS: TourStep[] = [
       "من هنا يمكنك العودة إلى مكتبة دوراتك لاختيار مادة أخرى أو فصل مختلف.",
     position: "bottom",
   },
+  {
+    targetId: "start-agent-btn",
+    title: "ابدأ الجلسة مع سند",
+    description:
+      'اضغط على زر "ابدأ الان" لبدء المحادثة مع سند، مدرسك الذكي. سند سيشرح لك المادة ويراجع معك.',
+    position: "bottom",
+  },
 ];
 
 export function StudyPreTour() {
   const { currentStep, isActive, next, skip } = useTour(
     "study-pre",
-    STUDY_PRE_STEPS.length
+    STUDY_PRE_STEPS.length,
   );
 
   if (!isActive || currentStep < 0 || currentStep >= STUDY_PRE_STEPS.length)

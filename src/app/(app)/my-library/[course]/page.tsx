@@ -1,14 +1,9 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { BookOpen, Clock } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { useDatabase } from "@/context/databaseContext";
 import { useEffect, useState } from "react";
@@ -63,7 +58,6 @@ export default function CoursePage() {
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-2">
-      {/* Course Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-sm text-accent">
           <Link href="/my-library" className="hover:text-foreground">
@@ -74,56 +68,33 @@ export default function CoursePage() {
         </div>
         <h1 className="text-3xl font-bold">{course?.title || ""}</h1>
         <p className="text-card">{course?.description || ""}</p>
-        {/* <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-1">
-            <BookOpen className="h-4 w-4" />
-            <span>{course?.chapters || 0} فصول</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-4 w-4" />
-            <span>{course?.duration || 0} ساعات</span>
-          </div>
-        </div> */}
       </div>
 
-      {/* Chapters Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {chapters.length > 0 ? (
           chapters.map((chapter) => {
             return (
               <Card
                 key={chapter.id}
-                className="hover:shadow-lg transition-shadow cursor-pointer relative justify-between"
+                className="group hover:shadow-md transition-shadow cursor-pointer relative overflow-hidden"
               >
                 <Link
                   href={`/${course.slug}/${chapter.order_index}/study`}
                   className="absolute inset-0 z-10"
                 />
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-start gap-2 flex-1">
-                      <div className="space-y-1 flex-1">
-                        <CardTitle className="text-lg">
-                          الفصل {chapter.order_index}: {chapter.title}
-                        </CardTitle>
-                        <CardDescription>{chapter.description}</CardDescription>
-                      </div>
-                    </div>
-                  </div>
+                <CardHeader className="pb-2">
+                  <p className="text-xs font-medium text-muted-foreground">
+                    الفصل {String(chapter.order_index).padStart(2, "0")}
+                  </p>
+                  <CardTitle className="text-lg leading-snug line-clamp-1">
+                    {chapter.title}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                    {/* <div className="flex items-center gap-1">
-                      <BookOpen className="h-4 w-4" />
-                      <span>{chapter.lessons} دروس</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{chapter.duration} دقيقة</span>
-                    </div> */}
-                  </div>
-                  <Button className="w-full" variant="default">
-                    ذاكر الدرس
+                  <Separator className="mb-3" />
+                  <Button className="w-full justify-between bg-transparent text-muted-foreground hover:bg-primary hover:text-foreground group-hover:shadow-md transition-shadow">
+                    ابدأ الدرس
+                    <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                   </Button>
                 </CardContent>
               </Card>

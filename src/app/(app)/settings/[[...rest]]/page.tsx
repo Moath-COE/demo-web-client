@@ -5,12 +5,7 @@ import { useDatabase } from "@/context/databaseContext";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { Database } from "@/types/database.types";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -63,10 +58,7 @@ export default function Settings() {
 
       setLoading(true);
 
-      const [
-        profileRes,
-        coursesRes,
-      ] = await Promise.all([
+      const [profileRes, coursesRes] = await Promise.all([
         supabase
           .from("profiles")
           .select("*, quota_tiers(*), institutions(*), majors(*)")
@@ -76,20 +68,17 @@ export default function Settings() {
           .from("courses")
           .select("*, enrollments!inner(created_at, is_active)")
           .eq("enrollments.user_id", user.id)
-          .order("created_at", { referencedTable: "enrollments", ascending: false }),
+          .order("created_at", {
+            referencedTable: "enrollments",
+            ascending: false,
+          }),
       ]);
 
       if (profileRes.data) {
         setProfile(profileRes.data as unknown as Profile);
-        setTier(
-          (profileRes.data as any).quota_tiers as QuotaTier,
-        );
-        setInstitution(
-          (profileRes.data as any).institutions as Institution,
-        );
-        setMajor(
-          (profileRes.data as any).majors as Major,
-        );
+        setTier((profileRes.data as any).quota_tiers as QuotaTier);
+        setInstitution((profileRes.data as any).institutions as Institution);
+        setMajor((profileRes.data as any).majors as Major);
       }
 
       if (coursesRes.data) {
@@ -240,13 +229,13 @@ function AcademicInfoCard({
             <InfoRow
               icon={<Building2 className="h-4 w-4 text-[#5ba3cc]" />}
               label="الجامعة"
-              value={institution?.name}
+              value={institution?.slug?.toUpperCase()}
               fallback="غير محدد"
             />
             <InfoRow
               icon={<Layers className="h-4 w-4 text-[#7bb8d4]" />}
               label="التخصص"
-              value={major?.name}
+              value={major?.slug?.toUpperCase()}
               fallback="غير محدد"
             />
             <InfoRow
@@ -280,9 +269,7 @@ function InfoRow({
         <span className="text-sm text-[#8faabb]">{label}</span>
         <span className="text-sm font-semibold text-[#e8f0f5]">
           {value || (
-            <span className="text-[#8faabb] font-normal">
-              {fallback}
-            </span>
+            <span className="text-[#8faabb] font-normal">{fallback}</span>
           )}
         </span>
       </div>
@@ -333,62 +320,41 @@ function EnrolledCoursesCard({
             <p className="text-sm">لا توجد دورات مسجلة حالياً</p>
           </div>
         ) : (
-          <div className="rounded-xl border border-[#1d5479]/30 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gradient-to-l from-[#1b3d54] to-[#133848] hover:bg-transparent">
-                  <TableHead className="font-semibold text-[#e8f0f5]">
-                    اسم الدورة
-                  </TableHead>
-                  <TableHead className="font-semibold text-[#e8f0f5]">
-                    المستوى
-                  </TableHead>
-                  <TableHead className="font-semibold text-[#e8f0f5]">
-                    تاريخ التسجيل
-                  </TableHead>
-                  <TableHead className="font-semibold text-[#e8f0f5]">
-                    الحالة
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {courses.map((course) => (
-                  <TableRow
+          <>
+            <div className="flex flex-col gap-3 md:hidden">
+              {courses.map((course) => {
+                const enrollment = Array.isArray(course.enrollments)
+                  ? course.enrollments[0]
+                  : course.enrollments;
+                return (
+                  <div
                     key={course.id}
-                    className="group hover:bg-[#1b3d54]/60 transition-colors"
+                    className="rounded-xl bg-gradient-to-l from-[#1b3d54] to-[#133848] border border-[#1d5479]/20 p-4 space-y-3"
                   >
-                    <TableCell className="font-medium text-[#e8f0f5]">
-                      <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-md bg-gradient-to-bl from-[#ffa02f]/20 to-[#5ba3cc]/10 flex items-center justify-center flex-shrink-0">
-                          <BookOpen className="h-3.5 w-3.5 text-[#5ba3cc]" />
-                        </div>
-                        <span className="truncate max-w-[200px]">
-                          {course.title}
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-md bg-gradient-to-bl from-[#ffa02f]/20 to-[#5ba3cc]/10 flex items-center justify-center flex-shrink-0">
+                        <BookOpen className="h-3.5 w-3.5 text-[#5ba3cc]" />
+                      </div>
+                      <span className="font-medium text-[#e8f0f5] truncate text-sm">
+                        {course.title}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-4">
+                        {course.level ? (
+                          <Badge
+                            variant="outline"
+                            className="text-xs border-[#5ba3cc]/30 text-[#5ba3cc]"
+                          >
+                            {course.level}
+                          </Badge>
+                        ) : null}
+                        <span className="flex items-center gap-1 text-[#8faabb]">
+                          <CalendarDays className="h-3 w-3 opacity-50" />
+                          {formatDate((enrollment as any)?.created_at)}
                         </span>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      {course.level ? (
-                        <Badge
-                          variant="outline"
-                          className="text-xs border-[#5ba3cc]/30 text-[#5ba3cc]"
-                        >
-                          {course.level}
-                        </Badge>
-                      ) : (
-                        <span className="text-[#8faabb] text-xs">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-[#8faabb] text-sm">
-                      <div className="flex items-center gap-1.5">
-                        <CalendarDays className="h-3.5 w-3.5 opacity-50" />
-                        {formatDate(
-                          (course.enrollments as any).created_at,
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {(course.enrollments as any).is_active ? (
+                      {(enrollment as any)?.is_active ? (
                         <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/20 text-xs font-medium">
                           نشط
                         </Badge>
@@ -400,12 +366,88 @@ function EnrolledCoursesCard({
                           غير نشط
                         </Badge>
                       )}
-                    </TableCell>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="hidden md:block rounded-xl border border-[#1d5479]/30 overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gradient-to-l from-[#1b3d54] to-[#133848] hover:bg-transparent">
+                    <TableHead className="font-semibold text-[#e8f0f5]">
+                      اسم الدورة
+                    </TableHead>
+                    <TableHead className="font-semibold text-[#e8f0f5]">
+                      المستوى
+                    </TableHead>
+                    <TableHead className="font-semibold text-[#e8f0f5]">
+                      تاريخ التسجيل
+                    </TableHead>
+                    <TableHead className="font-semibold text-[#e8f0f5]">
+                      الحالة
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {courses.map((course) => {
+                    const enrollment = Array.isArray(course.enrollments)
+                      ? course.enrollments[0]
+                      : course.enrollments;
+                    return (
+                      <TableRow
+                        key={course.id}
+                        className="group hover:bg-[#1b3d54]/60 transition-colors"
+                      >
+                        <TableCell className="font-medium text-[#e8f0f5]">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-md bg-gradient-to-bl from-[#ffa02f]/20 to-[#5ba3cc]/10 flex items-center justify-center flex-shrink-0">
+                              <BookOpen className="h-3.5 w-3.5 text-[#5ba3cc]" />
+                            </div>
+                            <span className="truncate max-w-[140px] lg:max-w-[200px]">
+                              {course.title}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {course.level ? (
+                            <Badge
+                              variant="outline"
+                              className="text-xs border-[#5ba3cc]/30 text-[#5ba3cc]"
+                            >
+                              {course.level}
+                            </Badge>
+                          ) : (
+                            <span className="text-[#8faabb] text-xs">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-[#8faabb] text-sm">
+                          <div className="flex items-center gap-1.5">
+                            <CalendarDays className="h-3.5 w-3.5 opacity-50" />
+                            {formatDate((enrollment as any)?.created_at)}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {(enrollment as any)?.is_active ? (
+                            <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/20 text-xs font-medium">
+                              نشط
+                            </Badge>
+                          ) : (
+                            <Badge
+                              variant="secondary"
+                              className="text-xs font-medium bg-[#1b3d54] text-[#8faabb] border border-[#1d5479]/30"
+                            >
+                              غير نشط
+                            </Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </>
         )}
       </CardContent>
     </Card>
