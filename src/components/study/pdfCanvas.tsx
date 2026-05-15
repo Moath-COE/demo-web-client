@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, memo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { Loader2 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ContentToolbar } from "@/components/study/contentToolBar";
 import {
@@ -9,6 +10,10 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { markerPayload } from "@/types/types";
+import {
+  PdfDocumentLoading,
+  PdfPageLoading,
+} from "@/components/study/loadings/pdfCanvasLoading";
 
 // 1. Configure the worker to use a CDN (easiest setup)
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -95,7 +100,7 @@ export const PdfCanvas = memo(function PdfCanvas({
     <Document
       file={pdfUrl || undefined}
       onLoadSuccess={onDocumentLoadSuccess}
-      loading={<p className="text-white">Loading PDF...</p>}
+      loading={<PdfDocumentLoading />}
       className="w-full rounded-lg bg-clip-border max-w-350 mx-auto my-auto md:my-0"
     >
       <Carousel
@@ -135,19 +140,14 @@ export const PdfCanvas = memo(function PdfCanvas({
                         getTextRenderer(currentItemPage) as any
                       }
                       renderAnnotationLayer={false}
-                      loading={
-                        <div className="w-full h-full flex items-center justify-center text-slate-500">
-                          Rendering Page...
-                        </div>
-                      }
+                      loading={<PdfPageLoading />}
                     />
                   ) : (
-                    /* The Skeleton Fallback */
-                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-gray-200">
-                      <div className="animate-pulse flex flex-col items-center">
-                        <div className="h-8 w-8 border-4 border-slate-300 border-t-slate-500 rounded-full animate-spin mb-4"></div>
-                        <p>Preparing Slide {currentItemPage}</p>
-                      </div>
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-[#132f45]">
+                      <Loader2 className="size-7 text-slate-400 animate-spin" />
+                      <span className="text-xs text-slate-500">
+                        شريحة {currentItemPage}
+                      </span>
                     </div>
                   )}
                 </AspectRatio>
