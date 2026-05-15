@@ -21,7 +21,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <DatabaseContext.Provider value={supabase}>
-      <MobileWarningPopup />
+      {/* <MobileWarningPopup /> */}
       {children}
     </DatabaseContext.Provider>
   );
