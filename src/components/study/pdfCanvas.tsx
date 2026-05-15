@@ -36,6 +36,27 @@ export function PdfCanvas({
 }) {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+
+  useEffect(() => {
+    if (!api) return;
+    const measure = () => {
+      const slides = api.slideNodes();
+      if (slides.length > 0) {
+        const style = getComputedStyle(slides[0]);
+        const paddingH =
+          parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+        setContainerWidth(slides[0].clientWidth - paddingH);
+      }
+    };
+    measure();
+    const container = api.containerNode();
+    if (container) {
+      const observer = new ResizeObserver(measure);
+      observer.observe(container);
+      return () => observer.disconnect();
+    }
+  }, [api]);
 
   // Agent page control logic
   useEffect(() => {
@@ -93,10 +114,14 @@ export function PdfCanvas({
 
             return (
               <CarouselItem key={index} data-page-index={currentItemPage}>
-                <AspectRatio className="bg-gray-300 mx-auto overflow-y-auto flex justify-center scrollbar-show-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400/60 scrollbar-track-gray-200/10 max-h-[calc(100vh-8rem)]">
-                  {isVisible ? (
+                <AspectRatio
+                  ratio={5 / 3}
+                  className="bg-gray-300 mx-auto overflow-y-auto flex justify-center scrollbar-show-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400/60 scrollbar-track-gray-200/10 max-h-[calc(100vh-8rem)]"
+                >
+                  {isVisible && containerWidth > 0 ? (
                     <Page
                       pageNumber={currentItemPage}
+                      width={containerWidth}
                       scale={scale}
                       renderTextLayer={true}
                       // Execute the factory function with the current page

@@ -98,7 +98,7 @@ export default function Study() {
     <>
       <div className="flex overflow-x-hidden bg-background max-h-screen">
         {/* AI sidebar */}
-        <div className="relative right-0 top-0 bg-card z-50 w-[33.3333%]">
+        {/* <div className="relative right-0 top-0 bg-card z-50 w-[33.3333%]">
           <AISideBar
             isOpen={sidebarOpen}
             onClose={() => setSidebarOpen(false)}
@@ -110,7 +110,7 @@ export default function Study() {
             setMenuOpen={setMenuOpen}
             setActiveMarker={setActiveMarker}
           />
-        </div>
+        </div> */}
 
         {/* Main Canvas - shrinks when sidebar opens on desktop */}
         <div className="flex-1 transition-all duration-300 relative h-screen w-[66.6667%]">
