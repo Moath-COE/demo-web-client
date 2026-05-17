@@ -56,8 +56,6 @@ export interface StudyLauncherProps {
   topicsJSON: Json;
   courseSlug: string;
   chapterIndex: number;
-  showTopicsModal: boolean;
-  onShowTopicsModalChange: (show: boolean) => void;
   setActiveMarker: React.Dispatch<
     React.SetStateAction<Record<string, markerPayload>>
   >;
@@ -66,13 +64,18 @@ export interface StudyLauncherProps {
     sections: number | null,
     sectionIndex: number | null,
   ) => void;
-  onConnectedChange?: (connected: boolean) => void;
+  onListeningChange?: (listening: boolean) => void;
+  onTopicsDataChange?: (
+    topics: Topic[],
+    topicStates: Record<string, TopicState>,
+    onTopicSelect: (slug: string) => void,
+  ) => void;
+  onAutoOpenTopicsChange?: (shouldAutoOpen: boolean) => void;
 }
 
 export interface ConnectedStateHandlerProps {
   api: CarouselApi | null;
   numPages: number;
-  topicsJSON: Json;
   setActiveMarker: React.Dispatch<
     React.SetStateAction<Record<string, markerPayload>>
   >;

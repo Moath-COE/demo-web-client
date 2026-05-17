@@ -23,9 +23,9 @@ export default function CoursePage() {
 
   useEffect(() => {
     if (!supabase) return;
-    setLoading(true);
 
     const fetchData = async () => {
+      setLoading(true);
       const [courseResult, chaptersResult] = await Promise.all([
         supabase.from("courses").select("*").eq("slug", courseSlug).single(),
         supabase

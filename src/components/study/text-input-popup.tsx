@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Send, X } from "lucide-react";
+import { Send, X, CircleHelp } from "lucide-react";
 
 interface TextInputPopupProps {
   textInput: string;
@@ -10,6 +10,7 @@ interface TextInputPopupProps {
   onSend: () => void;
   onClose: () => void;
   isSending: boolean;
+  checkpointQuestion?: string | null;
 }
 
 export function TextInputPopup({
@@ -18,6 +19,7 @@ export function TextInputPopup({
   onSend,
   onClose,
   isSending,
+  checkpointQuestion,
 }: TextInputPopupProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -44,6 +46,19 @@ export function TextInputPopup({
             <X className="h-4 w-4" />
           </button>
         </div>
+        {checkpointQuestion && (
+          <div className="mb-3 p-3 rounded-xl bg-[#ffa02f]/5 border border-[#ffa02f]/20">
+            <div className="flex items-center gap-2 mb-2">
+              <CircleHelp className="h-4 w-4 text-[#ffa02f] shrink-0" />
+              <h3 className="text-sm font-medium text-[#ffa02f]">
+                تحقق من فهمك
+              </h3>
+            </div>
+            <p className="text-sm text-[#fffdfd] leading-relaxed">
+              {checkpointQuestion}
+            </p>
+          </div>
+        )}
         <div className="flex gap-2">
           <textarea
             ref={textareaRef}

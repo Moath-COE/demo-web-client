@@ -1,16 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { PdfCanvas } from "@/components/study/pdfCanvas";
 import { useParams } from "next/navigation";
 import { useDatabase } from "@/context/databaseContext";
-import { Database, Json } from "@/types/database.types";
+import { Json } from "@/types/database.types";
 import { CarouselApi } from "@/components/ui/carousel";
-import { markerPayload } from "@/types/types";
+import { markerPayload, Topic, TopicState } from "@/types/types";
 import { TopNav } from "@/components/study/top-nav";
 import { StudyLauncher } from "@/components/study/study-launcher";
-
-type Chapter = Database["public"]["Tables"]["chapters"]["Row"];
 
 export default function Study() {
   const params = useParams<{
@@ -40,25 +38,28 @@ export default function Study() {
   const [currentSectionIndex, setCurrentSectionIndex] = useState<number | null>(
     null,
   );
-  const [showTopicsModal, setShowTopicsModal] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [topics, setTopics] = useState<Topic[]>([]);
+  const [topicStates, setTopicStates] = useState<Record<string, TopicState>>(
+    {},
+  );
+  const topicSelectRef = useRef<(slug: string) => void>(() => {});
 
   const supabase = useDatabase();
 
   useEffect(() => {
     async function fetchChapterPDF() {
-      const { data: chapter, error }: { data: Chapter | null; error: any } =
-        await supabase
-          .from("chapters")
-          .select(
-            `
+      const { data: chapter, error } = await supabase
+        .from("chapters")
+        .select(
+          `
           *,
           courses!inner(slug)
         `,
-          )
-          .eq("courses.slug", courseSlug)
-          .eq("order_index", chapterIndex)
-          .single();
+        )
+        .eq("courses.slug", courseSlug)
+        .eq("order_index", chapterIndex)
+        .single();
 
       if (error) {
         console.error("Error fetching courses:", error);
@@ -105,10 +106,23 @@ export default function Study() {
     [],
   );
 
+  const handleTopicsDataChange = useCallback(
+    (
+      newTopics: Topic[],
+      newTopicStates: Record<string, TopicState>,
+      newOnTopicSelect: (slug: string) => void,
+    ) => {
+      setTopics(newTopics);
+      setTopicStates(newTopicStates);
+      topicSelectRef.current = newOnTopicSelect;
+    },
+    [],
+  );
+
   return (
     <>
       <div
-        className="flex flex-col relative bg-background max-h-screen h-screen overflow-hidden"
+        className="flex flex-col relative bg-background max-h-screen h-svh overflow-hidden items-center"
         style={{
           paddingTop: "env(safe-area-inset-top)",
           paddingBottom: "env(safe-area-inset-bottom)",
@@ -119,8 +133,21 @@ export default function Study() {
           chapterTitle={chapterTitle}
           totalSections={totalSections}
           currentSectionIndex={currentSectionIndex}
-          isConnected={isConnected}
-          onTopicTitleClick={() => setShowTopicsModal(true)}
+          isListening={isListening}
+          topics={topics}
+          topicStates={topicStates}
+          onTopicSelect={(slug) => topicSelectRef.current(slug)}
+        />
+        <StudyLauncher
+          api={api}
+          numPages={numPages}
+          topicsJSON={topicsJSON}
+          courseSlug={courseSlug}
+          chapterIndex={chapterIndex}
+          setActiveMarker={setActiveMarker}
+          onTopicChange={handleTopicChange}
+          onListeningChange={setIsListening}
+          onTopicsDataChange={handleTopicsDataChange}
         />
         <PdfCanvas
           pdfUrl={pdfUrl}
@@ -129,18 +156,6 @@ export default function Study() {
           numPages={numPages}
           setNumPages={setNumPages}
           activeMarker={activeMarker}
-        />
-        <StudyLauncher
-          api={api}
-          numPages={numPages}
-          topicsJSON={topicsJSON}
-          courseSlug={courseSlug}
-          chapterIndex={chapterIndex}
-          showTopicsModal={showTopicsModal}
-          onShowTopicsModalChange={setShowTopicsModal}
-          setActiveMarker={setActiveMarker}
-          onTopicChange={handleTopicChange}
-          onConnectedChange={setIsConnected}
         />
       </div>
     </>

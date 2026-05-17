@@ -3,7 +3,6 @@ import { ZoomIn, ZoomOut } from "lucide-react";
 import {
   CarouselNext,
   CarouselPrevious,
-  type CarouselApi,
 } from "@/components/ui/carousel";
 
 export function ContentToolbar({

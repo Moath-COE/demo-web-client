@@ -20,7 +20,6 @@ import {
   TopicState,
   StudyLauncherProps,
 } from "@/types/types";
-import { TopicsModal } from "@/components/study/topicsModal";
 import { TextInputPopup } from "@/components/study/text-input-popup";
 import { CheckpointPopup } from "@/components/study/checkpoint-popup";
 import { MenuPopup } from "@/components/study/menu-popup";
@@ -32,15 +31,13 @@ export function StudyLauncher({
   topicsJSON,
   courseSlug,
   chapterIndex,
-  showTopicsModal,
-  onShowTopicsModalChange,
   setActiveMarker,
   onTopicChange,
-  onConnectedChange,
+  onListeningChange,
+  onTopicsDataChange,
+  onAutoOpenTopicsChange,
 }: StudyLauncherProps) {
   const [launcherState, setLauncherState] = useState<LauncherState>("idle");
-  const [extensionsVisible, setExtensionsVisible] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [language, setLanguage] = useState<"English" | "Arabic">("English");
   const { user } = useUser();
@@ -67,7 +64,7 @@ export function StudyLauncher({
     {},
   );
 
-  const micToggleRef = useRef<{
+  const micStateRef = useRef<{
     toggle: () => void;
     enabled: boolean;
     pending: boolean;
@@ -76,6 +73,9 @@ export function StudyLauncher({
     enabled: true,
     pending: false,
   });
+
+  const [micEnabled, setMicEnabled] = useState(true);
+  const [micPending, setMicPending] = useState(false);
   const disconnectPropsRef = useRef<{ onClick: () => void; disabled: boolean }>(
     {
       onClick: () => {},
@@ -111,21 +111,33 @@ export function StudyLauncher({
   const isConnected = session.connectionState !== "disconnected";
 
   useEffect(() => {
-    onConnectedChange?.(isConnected);
-  }, [isConnected, onConnectedChange]);
+    onListeningChange?.(agentState === "listening");
+  }, [agentState, onListeningChange]);
 
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, []);
+  const topics: Topic[] = useMemo(
+    () =>
+      topicsJSON && typeof topicsJSON === "object" && "topics" in topicsJSON
+        ? (topicsJSON as { topics: unknown[] }).topics.filter(
+            (item): item is Topic =>
+              !!item &&
+              typeof item === "object" &&
+              "name" in item &&
+              "slug" in item,
+          )
+        : [],
+    [topicsJSON],
+  );
+
+  const slugToName = useMemo(
+    () => new Map(topics.map((t) => [t.slug, t.name])),
+    [topics],
+  );
 
   useEffect(() => {
     onTopicChange?.(currentTopicName, numberOfSections, currentSectionIndex);
   }, [currentTopicName, numberOfSections, currentSectionIndex, onTopicChange]);
 
   const handleLogoClick = useCallback(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (launcherState === "idle") {
       setLauncherState("menu-open");
     } else if (launcherState === "menu-open") {
@@ -135,9 +147,6 @@ export function StudyLauncher({
 
   const handleStart = useCallback(async () => {
     setLauncherState("active");
-    timeoutRef.current = setTimeout(() => {
-      setExtensionsVisible(true);
-    }, 500);
     try {
       await session.start({
         tracks: {
@@ -148,7 +157,6 @@ export function StudyLauncher({
       });
     } catch (error) {
       console.error("Failed to start session:", error);
-      setExtensionsVisible(false);
       setLauncherState("idle");
     }
   }, [session]);
@@ -200,14 +208,13 @@ export function StudyLauncher({
       });
     });
     setIsAudioMuted(!isAudioMuted);
-  }, [isAudioMuted, session.room]);
+  }, [session.room, isAudioMuted]);
 
   const handleDisconnect = useCallback(() => {
     const name = session.room?.name || "";
     disconnectPropsRef.current.onClick();
     setActiveMarker({});
     setActiveMarker({});
-    setExtensionsVisible(false);
     setLauncherState("idle");
     setCurrentTopicName(null);
     setNumberOfSections(null);
@@ -215,9 +222,8 @@ export function StudyLauncher({
     setCurrentCheckpointQuestion(null);
     setIsTextInputOpen(false);
     setAgentState("disconnected");
-    onShowTopicsModalChange(false);
     if (name) handleSessionEnd(name);
-  }, [session.room, setActiveMarker, handleSessionEnd, onShowTopicsModalChange]);
+  }, [session.room, setActiveMarker, handleSessionEnd]);
 
   const handleTopicClick = useCallback(
     (slug: string) => {
@@ -233,27 +239,60 @@ export function StudyLauncher({
     [sendUserMessage],
   );
 
-  const topics: Topic[] = useMemo(
-    () =>
-      topicsJSON && typeof topicsJSON === "object" && "topics" in topicsJSON
-        ? (topicsJSON as { topics: unknown[] }).topics.filter(
-            (item): item is Topic =>
-              !!item &&
-              typeof item === "object" &&
-              "name" in item &&
-              "slug" in item,
-          )
-        : [],
-    [topicsJSON],
+  useEffect(() => {
+    onTopicsDataChange?.(topics, topicStates, handleTopicClick);
+  }, [topics, topicStates, handleTopicClick, onTopicsDataChange]);
+
+  useEffect(() => {
+    if (agentState === "listening" && !currentTopicName) {
+      onAutoOpenTopicsChange?.(true);
+    }
+  }, [agentState, currentTopicName, onAutoOpenTopicsChange]);
+
+  const handleTopicNameChange = useCallback(
+    (slug: string | null) => {
+      setCurrentTopicName(slug ? (slugToName.get(slug) ?? slug) : null);
+    },
+    [slugToName],
   );
 
-  const slugToName = useMemo(
-    () => new Map(topics.map((t) => [t.slug, t.name])),
-    [topics],
+  const handleSectionsChange = useCallback(
+    (total: number | null, index: number | null) => {
+      if (total !== null) setNumberOfSections(total);
+      if (index !== null) setCurrentSectionIndex(index);
+    },
+    [],
   );
+
+  const handleMicToggleChange = useCallback(
+    (toggle: { toggle: () => void; enabled: boolean; pending: boolean }) => {
+      micStateRef.current = toggle;
+      setMicEnabled(toggle.enabled);
+      setMicPending(toggle.pending);
+    },
+    [],
+  );
+
+  const handleDisconnectPropsChange = useCallback(
+    (props: { onClick: () => void; disabled: boolean }) => {
+      disconnectPropsRef.current = props;
+    },
+    [],
+  );
+
+  const handleLanguageChange = useCallback((val: "English" | "Arabic") => {
+    setLanguage(val);
+  }, []);
+
+  const handleMenuPopupOpenChange = useCallback((open: boolean) => {
+    if (!open) setLauncherState("idle");
+  }, []);
+
+  const handleTextInputToggle = useCallback(() => {
+    setIsTextInputOpen((prev) => !prev);
+  }, []);
 
   const isAgentListening = agentState === "listening";
-  const showTopicsPopup = isConnected && ((isAgentListening && !currentTopicName) || showTopicsModal);
   const showCheckpoint =
     isConnected && currentCheckpointQuestion && isAgentListening;
 
@@ -262,20 +301,6 @@ export function StudyLauncher({
 
   return (
     <>
-      {showTopicsPopup && (
-        <TopicsModal
-          topics={topics}
-          topicStates={topicStates}
-          currentTopicName={currentTopicName}
-          onTopicSelect={handleTopicClick}
-          handleTopicClick={(slug) => {
-            handleTopicClick(slug);
-            onShowTopicsModalChange(false);
-          }}
-          onClose={currentTopicName ? () => onShowTopicsModalChange(false) : undefined}
-        />
-      )}
-
       {isTextInputOpen && isConnected && (
         <TextInputPopup
           textInput={textInput}
@@ -286,77 +311,33 @@ export function StudyLauncher({
             setTextInput("");
           }}
           isSending={isSending}
+          checkpointQuestion={currentCheckpointQuestion}
         />
       )}
 
       {/* Launcher */}
-      <div
-        className={`absolute z-50 transition-all duration-500 ease-out ${
-          isActive
-            ? "left-1/2 -translate-x-1/2 bottom-16 sm:bottom-24"
-            : "left-4 sm:left-8 bottom-4 sm:bottom-4 translate-x-0"
-        }`}
-      >
+      <div className="z-50 mt-auto md:my-4">
         {showCheckpoint && (
           <CheckpointPopup question={currentCheckpointQuestion!} />
         )}
-        <div className="flex items-center">
-          {/* Right extension — Bar Visualizer */}
-          <div
-            className={`overflow-hidden transition-all duration-500 ease-out -ml-2 ${
-              extensionsVisible ? "w-[160px] sm:w-[250px]" : "w-0"
-            } h-10 ${extensionsVisible ? "opacity-100" : "opacity-0"}`}
-          >
-            {isConnected && (
+        {isActive ? (
+          <div className="flex items-center ">
+            {/* Left extension — Control Buttons */}
+            <div className=" h-full flex items-center justify-center gap-1 sm:gap-1.5 bg-[#045687] backdrop-blur-md rounded-2xl border border-white/10 p-1 shadow-2xl ">
               <SessionProvider session={session}>
                 <ConnectedStateHandler
                   api={api}
                   numPages={numPages}
-                  topicsJSON={topicsJSON}
                   setActiveMarker={setActiveMarker}
                   onAgentStateChange={setAgentState}
-                  onTopicNameChange={(slug) =>
-                    setCurrentTopicName(slug ? (slugToName.get(slug) ?? slug) : null)
-                  }
-                  onSectionsChange={(total, index) => {
-                    if (total !== null) setNumberOfSections(total);
-                    if (index !== null) setCurrentSectionIndex(index);
-                  }}
+                  onTopicNameChange={handleTopicNameChange}
+                  onSectionsChange={handleSectionsChange}
                   onCheckpointChange={setCurrentCheckpointQuestion}
                   onDisconnect={handleSessionEnd}
-                  onMicToggleChange={(toggle) => {
-                    micToggleRef.current = toggle;
-                  }}
-                  onDisconnectPropsChange={(props) => {
-                    disconnectPropsRef.current = props;
-                  }}
+                  onMicToggleChange={handleMicToggleChange}
+                  onDisconnectPropsChange={handleDisconnectPropsChange}
                 />
               </SessionProvider>
-            )}
-          </div>
-
-          {/* Center Logo + Menu Popover */}
-          <div className="shrink-0 z-60">
-            <MenuPopup
-              open={isMenuOpen && !isConnected}
-              onOpenChange={(open) => {
-                if (!open) setLauncherState("idle");
-              }}
-              launcherState={launcherState}
-              onLogoClick={handleLogoClick}
-              language={language}
-              onLanguageChange={(val) => setLanguage(val)}
-              onStart={handleStart}
-            />
-          </div>
-
-          {/* Left extension — Control Buttons */}
-          <div
-            className={`overflow-hidden transition-all duration-500 ease-out -mr-2 ${
-              extensionsVisible ? "w-[160px] sm:w-[250px]" : "w-0"
-            } h-10 ${extensionsVisible ? "opacity-100" : "opacity-0"}`}
-          >
-            <div className="w-[160px] sm:w-[250px] h-full flex items-center justify-center gap-1 sm:gap-1.5 bg-[#045687] backdrop-blur-md rounded-l-2xl border border-white/10 p-1 shadow-2xl">
               <button
                 onClick={handleDisconnect}
                 className="rounded-lg bg-red-500 hover:bg-red-600 text-white p-1.5 sm:p-2 transition-colors"
@@ -366,12 +347,12 @@ export function StudyLauncher({
               </button>
 
               <button
-                onClick={() => micToggleRef.current.toggle()}
-                disabled={micToggleRef.current.pending}
+                onClick={() => micStateRef.current.toggle()}
+                disabled={micPending}
                 className="rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white p-1.5 sm:p-2 transition-colors disabled:opacity-50"
                 aria-label="Toggle microphone"
               >
-                {micToggleRef.current.enabled ? (
+                {micEnabled ? (
                   <Mic className="h-4 w-4" />
                 ) : (
                   <MicOff className="h-4 w-4" />
@@ -391,7 +372,7 @@ export function StudyLauncher({
               </button>
 
               <button
-                onClick={() => setIsTextInputOpen(!isTextInputOpen)}
+                onClick={handleTextInputToggle}
                 className={`rounded-lg p-1.5 sm:p-2 transition-colors ${
                   isTextInputOpen
                     ? "bg-[#ffa02f] text-white"
@@ -403,7 +384,16 @@ export function StudyLauncher({
               </button>
             </div>
           </div>
-        </div>
+        ) : (
+          <MenuPopup
+            open={isMenuOpen && !isConnected}
+            onOpenChange={handleMenuPopupOpenChange}
+            onLogoClick={handleLogoClick}
+            language={language}
+            onLanguageChange={handleLanguageChange}
+            onStart={handleStart}
+          />
+        )}
       </div>
 
       {/* Feedback Dialog */}

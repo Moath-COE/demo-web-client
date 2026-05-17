@@ -94,12 +94,6 @@ function EnrollPageContent() {
     );
   }, [majors, selectedInstitution]);
 
-  useEffect(() => {
-    setSearchQuery(q || "");
-    setSelectedInstitution(institutionParam || "");
-    setSelectedMajor(majorParam || "");
-  }, [q, institutionParam, majorParam]);
-
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const query = searchQuery.trim();
@@ -148,7 +142,7 @@ function EnrollPageContent() {
       setLoading(true);
       const { data: courses, error } = await supabase.rpc(
         "get_unenrolled_courses",
-        { check_user_id: user?.id || "" } as any,
+        { check_user_id: user?.id || "" },
       );
 
       if (error) {

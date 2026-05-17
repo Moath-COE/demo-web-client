@@ -16,12 +16,7 @@ import {
   DataPacket_Kind,
   Track,
 } from "livekit-client";
-import { Json } from "@/types/database.types";
-import {
-  ConnectedStateHandlerProps,
-  UIControlData,
-  markerPayload,
-} from "@/types/types";
+import { ConnectedStateHandlerProps, UIControlData } from "@/types/types";
 
 export function ConnectedStateHandler({
   api,
@@ -47,20 +42,11 @@ export function ConnectedStateHandler({
 
   useEffect(() => {
     onMicToggleChange(micToggle);
-  }, [
-    micToggle.toggle,
-    micToggle.enabled,
-    micToggle.pending,
-    onMicToggleChange,
-  ]);
+  }, [micToggle, onMicToggleChange]);
 
   useEffect(() => {
     onDisconnectPropsChange(disconnectProps);
-  }, [
-    disconnectProps.onClick,
-    disconnectProps.disabled,
-    onDisconnectPropsChange,
-  ]);
+  }, [disconnectProps, onDisconnectPropsChange]);
 
   useEffect(() => {
     const handleData = (
@@ -137,7 +123,7 @@ export function ConnectedStateHandler({
     <>
       <RoomAudioRenderer />
       <div
-        className="w-[160px] sm:w-[250px] h-[40px] bg-[#045687] backdrop-blur-md rounded-r-2xl border border-white/10 p-1 pl-4 shadow-2xl"
+        className="w-[160px] sm:w-[250px] h-[40px] bg-[#045687]   p-1 pl-4 "
         data-lk-theme="default"
       >
         <BarVisualizer

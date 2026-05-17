@@ -3,6 +3,15 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { CheckSquare, Square } from "lucide-react";
+import { Topic, TopicState } from "@/types/types";
+import { useState } from "react";
 
 function CompletionCircle({
   current,
@@ -51,57 +60,93 @@ function CompletionCircle({
   );
 }
 
+const TOPIC_STATE_STYLES: Record<TopicState, string> = {
+  not_started: "hover:bg-white/5",
+  current: "bg-[#ffa02f]/10 border border-[#ffa02f]/40 opacity-60",
+  done: "opacity-50",
+};
+
 export function TopNav({
   topicName,
   chapterTitle,
   totalSections,
   currentSectionIndex,
-  isConnected,
-  onTopicTitleClick,
+  isListening,
+  topics,
+  topicStates,
+  onTopicSelect,
 }: {
   topicName: string | null;
   chapterTitle: string | null;
   totalSections: number | null;
   currentSectionIndex: number | null;
-  isConnected: boolean;
-  onTopicTitleClick: () => void;
+  isListening: boolean;
+  topics: Topic[];
+  topicStates: Record<string, TopicState>;
+  onTopicSelect: (slug: string) => void;
 }) {
+  const [open, setOpen] = useState(false);
+
   const displayText = topicName || chapterTitle || "سند";
 
   return (
     <nav className="flex items-center justify-between w-full h-12 sm:h-16 px-3 sm:px-6 border-b border-[#1d5479]">
-      {isConnected && topicName ? (
-        <button
-          onClick={onTopicTitleClick}
-          className="group text-sm sm:text-xl font-bold flex items-center gap-1.5 sm:gap-2 rounded-lg px-2 py-1 -ml-2 transition-colors hover:bg-white/5 min-w-0"
+      <DropdownMenu
+        open={open || (isListening && topicName === null)}
+        onOpenChange={setOpen}
+      >
+        <DropdownMenuTrigger asChild>
+          <button className="group text-sm sm:text-xl font-bold flex items-center gap-1.5 sm:gap-2 rounded-lg px-2 py-1 -ml-2 transition-colors hover:bg-white/5 min-w-0">
+            <div className="outline-1 outline-primary rounded-sm flex items-center gap-1.5 sm:gap-2 min-w-0 py-1 px-4">
+              <span className="border-b border-transparent group-hover:border-[#ffa02f] transition-all duration-200 truncate">
+                {displayText}
+              </span>
+              <ChevronDown className="h-4 w-4 text-white/40 group-hover:text-[#ffa02f] transition-colors shrink-0" />
+            </div>
+            {(totalSections !== null || currentSectionIndex !== null) && (
+              <CompletionCircle
+                current={currentSectionIndex}
+                total={totalSections}
+              />
+            )}
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          data-tour-id="topics-list"
+          className="w-64 sm:w-72 max-h-[60vh] overflow-y-auto bg-[#0a1f2e]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl p-2 space-y-1"
         >
-          <div className="outline-1 outline-primary rounded-sm flex items-center gap-1.5 sm:gap-2 min-w-0 py-1 px-4">
-            <span className="border-b border-transparent group-hover:border-[#ffa02f] transition-all duration-200 truncate">
-              {displayText}
-            </span>
-            <ChevronDown className="h-4 w-4 text-white/40 group-hover:text-[#ffa02f] transition-colors shrink-0" />
-          </div>
-          {(totalSections !== null || currentSectionIndex !== null) && (
-            <CompletionCircle
-              current={currentSectionIndex}
-              total={totalSections}
-            />
-          )}
-        </button>
-      ) : (
-        <Link
-          href="/my-library"
-          className="text-sm sm:text-xl font-bold flex items-center gap-2 sm:gap-2.5 min-w-0"
-        >
-          <span className="truncate">{displayText}</span>
-          {(totalSections !== null || currentSectionIndex !== null) && (
-            <CompletionCircle
-              current={currentSectionIndex}
-              total={totalSections}
-            />
-          )}
-        </Link>
-      )}
+          {topics.map((topic) => {
+            const topicState: TopicState =
+              topic.slug === topicName
+                ? "current"
+                : topicStates[topic.slug] || "not_started";
+            const isDisabled =
+              topicState === "current" || topicState === "done";
+            return (
+              <DropdownMenuItem
+                key={topic.slug}
+                onClick={() => {
+                  if (!isDisabled) onTopicSelect(topic.slug);
+                  setOpen(false);
+                }}
+                disabled={isDisabled}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg w-full text-right transition-all duration-200 ${TOPIC_STATE_STYLES[topicState]}`}
+              >
+                <div className="relative shrink-0">
+                  {topicState === "done" ? (
+                    <CheckSquare className="h-4 w-4 text-green-400" />
+                  ) : (
+                    <Square className="h-4 w-4 text-white/40" />
+                  )}
+                </div>
+                <span className="text-sm text-[#fffdfd] truncate">
+                  {topic.name}
+                </span>
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <Button asChild size="sm" variant={"default"}>
           <Link href="/my-library">
