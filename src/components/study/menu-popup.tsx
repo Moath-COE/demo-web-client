@@ -8,7 +8,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Play } from "lucide-react";
-import Image from "next/image";
 
 interface MenuPopupProps {
   open: boolean;

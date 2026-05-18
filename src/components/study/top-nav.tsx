@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CheckSquare, Square } from "lucide-react";
 import { Topic, TopicState } from "@/types/types";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 function CompletionCircle({
   current,
@@ -68,6 +68,7 @@ const TOPIC_STATE_STYLES: Record<TopicState, string> = {
 
 export function TopNav({
   topicName,
+  currentTopicSlug,
   chapterTitle,
   totalSections,
   currentSectionIndex,
@@ -77,6 +78,7 @@ export function TopNav({
   onTopicSelect,
 }: {
   topicName: string | null;
+  currentTopicSlug: string | null;
   chapterTitle: string | null;
   totalSections: number | null;
   currentSectionIndex: number | null;
@@ -86,15 +88,24 @@ export function TopNav({
   onTopicSelect: (slug: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const hasAutoOpenedRef = useRef(false);
+
+  useEffect(() => {
+    if (isListening && currentTopicSlug === null && !hasAutoOpenedRef.current) {
+      setOpen(true);
+      hasAutoOpenedRef.current = true;
+    }
+    if (currentTopicSlug !== null) {
+      hasAutoOpenedRef.current = false;
+    }
+  }, [isListening, currentTopicSlug]);
 
   const displayText = topicName || chapterTitle || "سند";
 
   return (
     <nav className="flex items-center justify-between w-full h-12 sm:h-16 px-3 sm:px-6 border-b border-[#1d5479]">
-      <DropdownMenu
-        open={open || (isListening && topicName === null)}
-        onOpenChange={setOpen}
-      >
+      <DropdownMenu open={open} onOpenChange={setOpen}>
+
         <DropdownMenuTrigger asChild>
           <button className="group text-sm sm:text-xl font-bold flex items-center gap-1.5 sm:gap-2 rounded-lg px-2 py-1 -ml-2 transition-colors hover:bg-white/5 min-w-0">
             <div className="outline-1 outline-primary rounded-sm flex items-center gap-1.5 sm:gap-2 min-w-0 py-1 px-4">
@@ -117,7 +128,7 @@ export function TopNav({
         >
           {topics.map((topic) => {
             const topicState: TopicState =
-              topic.slug === topicName
+              topic.slug === currentTopicSlug
                 ? "current"
                 : topicStates[topic.slug] || "not_started";
             const isDisabled =

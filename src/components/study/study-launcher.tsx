@@ -35,7 +35,6 @@ export function StudyLauncher({
   onTopicChange,
   onListeningChange,
   onTopicsDataChange,
-  onAutoOpenTopicsChange,
 }: StudyLauncherProps) {
   const [launcherState, setLauncherState] = useState<LauncherState>("idle");
 
@@ -48,11 +47,14 @@ export function StudyLauncher({
   const [roomName, setRoomName] = useState("");
 
   const [agentState, setAgentState] = useState<string>("disconnected");
-  const [currentTopicName, setCurrentTopicName] = useState<string | null>(null);
-  const [numberOfSections, setNumberOfSections] = useState<number | null>(null);
-  const [currentSectionIndex, setCurrentSectionIndex] = useState<number | null>(
-    null,
-  );
+  const topicNameRef = useRef<string | null>(null);
+  const topicSlugRef = useRef<string | null>(null);
+  const numberOfSectionsRef = useRef<number | null>(null);
+  const currentSectionIndexRef = useRef<number | null>(null);
+  const topicStatesRef = useRef<Record<string, TopicState>>({});
+  const handleTopicClickRef = useRef<(slug: string) => void>(() => {});
+  const sendingRef = useRef(false);
+  const sendUserMessageRef = useRef<(message: string) => Promise<void>>(async () => {});
   const [currentCheckpointQuestion, setCurrentCheckpointQuestion] = useState<
     string | null
   >(null);
@@ -60,9 +62,6 @@ export function StudyLauncher({
   const [isTextInputOpen, setIsTextInputOpen] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const [topicStates, setTopicStates] = useState<Record<string, TopicState>>(
-    {},
-  );
 
   const micStateRef = useRef<{
     toggle: () => void;
@@ -110,9 +109,13 @@ export function StudyLauncher({
 
   const isConnected = session.connectionState !== "disconnected";
 
-  useEffect(() => {
-    onListeningChange?.(agentState === "listening");
-  }, [agentState, onListeningChange]);
+  const handleAgentStateChange = useCallback(
+    (state: string) => {
+      setAgentState(state);
+      onListeningChange?.(state === "listening");
+    },
+    [onListeningChange],
+  );
 
   const topics: Topic[] = useMemo(
     () =>
@@ -132,10 +135,6 @@ export function StudyLauncher({
     () => new Map(topics.map((t) => [t.slug, t.name])),
     [topics],
   );
-
-  useEffect(() => {
-    onTopicChange?.(currentTopicName, numberOfSections, currentSectionIndex);
-  }, [currentTopicName, numberOfSections, currentSectionIndex, onTopicChange]);
 
   const handleLogoClick = useCallback(() => {
     if (launcherState === "idle") {
@@ -173,7 +172,8 @@ export function StudyLauncher({
 
   const sendUserMessage = useCallback(
     async (message: string) => {
-      if (isSending || !isConnected) return;
+      if (sendingRef.current || !isConnected) return;
+      sendingRef.current = true;
       setIsSending(true);
       try {
         await session.room?.localParticipant.sendText(message, {
@@ -182,18 +182,23 @@ export function StudyLauncher({
       } catch (error) {
         console.error("Failed to send message:", error);
       } finally {
+        sendingRef.current = false;
         setIsSending(false);
       }
     },
-    [isSending, isConnected, session.room],
+    [isConnected, session.room],
   );
 
+  useEffect(() => {
+    sendUserMessageRef.current = sendUserMessage;
+  }, [sendUserMessage]);
+
   const sendTextMessage = useCallback(async () => {
-    if (!textInput.trim() || isSending) return;
-    await sendUserMessage(textInput.trim());
+    if (!textInput.trim() || sendingRef.current) return;
+    await sendUserMessageRef.current(textInput.trim());
     setTextInput("");
     setIsTextInputOpen(false);
-  }, [textInput, isSending, sendUserMessage]);
+  }, [textInput]);
 
   const toggleAudioMute = useCallback(() => {
     if (!session.room) return;
@@ -214,54 +219,59 @@ export function StudyLauncher({
     const name = session.room?.name || "";
     disconnectPropsRef.current.onClick();
     setActiveMarker({});
-    setActiveMarker({});
     setLauncherState("idle");
-    setCurrentTopicName(null);
-    setNumberOfSections(null);
-    setCurrentSectionIndex(null);
+    topicNameRef.current = null;
+    topicSlugRef.current = null;
+    numberOfSectionsRef.current = null;
+    currentSectionIndexRef.current = null;
+    topicStatesRef.current = {};
     setCurrentCheckpointQuestion(null);
     setIsTextInputOpen(false);
     setAgentState("disconnected");
+    onTopicChange?.(null, null, null, null);
     if (name) handleSessionEnd(name);
-  }, [session.room, setActiveMarker, handleSessionEnd]);
+  }, [session.room, setActiveMarker, handleSessionEnd, onTopicChange]);
 
   const handleTopicClick = useCallback(
     (slug: string) => {
-      setTopicStates((prev) => {
-        const updated = { ...prev };
-        if (!updated[slug] || updated[slug] === "not_started") {
-          updated[slug] = "current";
-        }
-        return updated;
-      });
-      sendUserMessage(`Please explain the topic ${slug}`);
+      const updated = { ...topicStatesRef.current };
+      if (!updated[slug] || updated[slug] === "not_started") {
+        updated[slug] = "current";
+      }
+      topicStatesRef.current = updated;
+      onTopicsDataChange?.(topics, updated, handleTopicClickRef.current);
+      sendUserMessageRef.current(`Please explain the topic ${slug}`);
     },
-    [sendUserMessage],
+    [topics, onTopicsDataChange],
   );
 
   useEffect(() => {
-    onTopicsDataChange?.(topics, topicStates, handleTopicClick);
-  }, [topics, topicStates, handleTopicClick, onTopicsDataChange]);
+    handleTopicClickRef.current = handleTopicClick;
+  }, [handleTopicClick]);
 
   useEffect(() => {
-    if (agentState === "listening" && !currentTopicName) {
-      onAutoOpenTopicsChange?.(true);
+    if (topics.length > 0) {
+      onTopicsDataChange?.(topics, topicStatesRef.current, handleTopicClickRef.current);
     }
-  }, [agentState, currentTopicName, onAutoOpenTopicsChange]);
+  }, [topics, onTopicsDataChange]);
 
   const handleTopicNameChange = useCallback(
     (slug: string | null) => {
-      setCurrentTopicName(slug ? (slugToName.get(slug) ?? slug) : null);
+      const name = slug ? (slugToName.get(slug) ?? slug) : null;
+      topicNameRef.current = name;
+      topicSlugRef.current = slug;
+      onTopicChange?.(name, slug, numberOfSectionsRef.current, currentSectionIndexRef.current);
     },
-    [slugToName],
+    [slugToName, onTopicChange],
   );
 
   const handleSectionsChange = useCallback(
     (total: number | null, index: number | null) => {
-      if (total !== null) setNumberOfSections(total);
-      if (index !== null) setCurrentSectionIndex(index);
+      if (total !== null) numberOfSectionsRef.current = total;
+      if (index !== null) currentSectionIndexRef.current = index;
+      onTopicChange?.(topicNameRef.current, topicSlugRef.current, numberOfSectionsRef.current, currentSectionIndexRef.current);
     },
-    [],
+    [onTopicChange],
   );
 
   const handleMicToggleChange = useCallback(
@@ -317,9 +327,6 @@ export function StudyLauncher({
 
       {/* Launcher */}
       <div className="z-50 mt-auto md:my-4">
-        {showCheckpoint && (
-          <CheckpointPopup question={currentCheckpointQuestion!} />
-        )}
         {isActive ? (
           <div className="flex items-center ">
             {/* Left extension — Control Buttons */}
@@ -329,7 +336,7 @@ export function StudyLauncher({
                   api={api}
                   numPages={numPages}
                   setActiveMarker={setActiveMarker}
-                  onAgentStateChange={setAgentState}
+                  onAgentStateChange={handleAgentStateChange}
                   onTopicNameChange={handleTopicNameChange}
                   onSectionsChange={handleSectionsChange}
                   onCheckpointChange={setCurrentCheckpointQuestion}
@@ -395,6 +402,9 @@ export function StudyLauncher({
           />
         )}
       </div>
+      {showCheckpoint && (
+        <CheckpointPopup question={currentCheckpointQuestion!} />
+      )}
 
       {/* Feedback Dialog */}
       <FeedbackDialog

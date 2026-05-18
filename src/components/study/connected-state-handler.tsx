@@ -9,7 +9,7 @@ import {
   BarVisualizer,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   RoomEvent,
   RemoteParticipant,
@@ -35,6 +35,7 @@ export function ConnectedStateHandler({
   const { buttonProps: disconnectProps } = useDisconnectButton({
     stopTracks: true,
   });
+  const pendingTimeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
     onAgentStateChange(agentState);
@@ -93,9 +94,13 @@ export function ConnectedStateHandler({
           if (data.add) {
             for (const [id, marker] of Object.entries(data.add)) {
               if (marker.delay > 0) {
-                setTimeout(() => {
+                const tid = setTimeout(() => {
                   setActiveMarker((prev) => ({ ...prev, [id]: marker }));
+                  pendingTimeouts.current = pendingTimeouts.current.filter(
+                    (t) => t !== tid,
+                  );
                 }, marker.delay);
+                pendingTimeouts.current.push(tid);
               } else {
                 setActiveMarker((prev) => ({ ...prev, [id]: marker }));
               }
@@ -108,6 +113,10 @@ export function ConnectedStateHandler({
     room.on(RoomEvent.DataReceived, handleData);
     return () => {
       room.off(RoomEvent.DataReceived, handleData);
+      for (const tid of pendingTimeouts.current) {
+        clearTimeout(tid);
+      }
+      pendingTimeouts.current = [];
     };
   }, [
     room,

@@ -61,6 +61,7 @@ export interface StudyLauncherProps {
   >;
   onTopicChange?: (
     topicName: string | null,
+    topicSlug: string | null,
     sections: number | null,
     sectionIndex: number | null,
   ) => void;
@@ -70,7 +71,6 @@ export interface StudyLauncherProps {
     topicStates: Record<string, TopicState>,
     onTopicSelect: (slug: string) => void,
   ) => void;
-  onAutoOpenTopicsChange?: (shouldAutoOpen: boolean) => void;
 }
 
 export interface ConnectedStateHandlerProps {

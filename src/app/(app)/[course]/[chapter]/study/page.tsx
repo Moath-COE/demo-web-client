@@ -34,6 +34,7 @@ export default function Study() {
   >({});
 
   const [currentTopicName, setCurrentTopicName] = useState<string | null>(null);
+  const [currentTopicSlug, setCurrentTopicSlug] = useState<string | null>(null);
   const [totalSections, setTotalSections] = useState<number | null>(null);
   const [currentSectionIndex, setCurrentSectionIndex] = useState<number | null>(
     null,
@@ -96,10 +97,12 @@ export default function Study() {
   const handleTopicChange = useCallback(
     (
       topicName: string | null,
+      topicSlug: string | null,
       sections: number | null,
       sectionIndex: number | null,
     ) => {
       setCurrentTopicName(topicName);
+      setCurrentTopicSlug(topicSlug);
       setTotalSections(sections);
       setCurrentSectionIndex(sectionIndex);
     },
@@ -130,6 +133,7 @@ export default function Study() {
       >
         <TopNav
           topicName={currentTopicName}
+          currentTopicSlug={currentTopicSlug}
           chapterTitle={chapterTitle}
           totalSections={totalSections}
           currentSectionIndex={currentSectionIndex}
