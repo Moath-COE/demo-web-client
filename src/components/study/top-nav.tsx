@@ -12,6 +12,7 @@ import {
 import { CheckSquare, Square } from "lucide-react";
 import { Topic, TopicState } from "@/types/types";
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 function CompletionCircle({
   current,
@@ -41,7 +42,8 @@ function CompletionCircle({
         cy={radius}
         r={normalizedRadius}
         fill="none"
-        stroke="rgba(255,255,255,0.1)"
+        stroke="var(--muted-foreground)"
+        strokeOpacity={0.3}
         strokeWidth={stroke}
       />
       <circle
@@ -49,7 +51,7 @@ function CompletionCircle({
         cy={radius}
         r={normalizedRadius}
         fill="none"
-        stroke="#ffa02f"
+        stroke="var(--accent)"
         strokeWidth={stroke}
         strokeDasharray={circumference + " " + circumference}
         strokeDashoffset={strokeDashoffset}
@@ -61,9 +63,9 @@ function CompletionCircle({
 }
 
 const TOPIC_STATE_STYLES: Record<TopicState, string> = {
-  not_started: "hover:bg-white/5",
-  current: "bg-[#ffa02f]/10 border border-[#ffa02f]/40 opacity-60",
-  done: "opacity-50",
+  not_started: "hover:bg-muted/50",
+  current: "bg-accent/10 border border-accent/40 opacity-80",
+  done: "opacity-60",
 };
 
 export function TopNav({
@@ -103,16 +105,19 @@ export function TopNav({
   const displayText = topicName || chapterTitle || "سند";
 
   return (
-    <nav className="flex items-center justify-between w-full h-12 sm:h-16 px-3 sm:px-6 border-b border-[#1d5479]">
+    <nav className="flex items-center justify-between w-full h-12 sm:h-16 px-3 sm:px-6 border-b border-border/60 bg-secondary backdrop-blur">
+      <div className="md:flex justify-start items-center gap-2 hidden">
+        <Image src="/static/logo.png" alt="Logo" width={32} height={32} />
+        <h2 className="text-sm sm:text-xl font-bold ">سند</h2>
+      </div>
       <DropdownMenu open={open} onOpenChange={setOpen}>
-
         <DropdownMenuTrigger asChild>
-          <button className="group text-sm sm:text-xl font-bold flex items-center gap-1.5 sm:gap-2 rounded-lg px-2 py-1 -ml-2 transition-colors hover:bg-white/5 min-w-0">
-            <div className="outline-1 outline-primary rounded-sm flex items-center gap-1.5 sm:gap-2 min-w-0 py-1 px-4">
-              <span className="border-b border-transparent group-hover:border-[#ffa02f] transition-all duration-200 truncate">
+          <button className="group text-sm sm:text-xl font-bold flex items-center gap-1.5 sm:gap-2 rounded-lg px-2 py-1 -ml-2 transition-colors hover:bg-muted/50 min-w-0">
+            <div className="outline-1 outline-primary/60 rounded-sm flex items-center gap-1.5 sm:gap-2 min-w-0 py-1 px-4">
+              <span className="border-b border-transparent group-hover:border-accent transition-all duration-200 truncate">
                 {displayText}
               </span>
-              <ChevronDown className="h-4 w-4 text-white/40 group-hover:text-[#ffa02f] transition-colors shrink-0" />
+              <ChevronDown className="h-4 w-4 text-muted-foreground/70 group-hover:text-accent transition-colors shrink-0" />
             </div>
             {(totalSections !== null || currentSectionIndex !== null) && (
               <CompletionCircle
@@ -124,7 +129,7 @@ export function TopNav({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           data-tour-id="topics-list"
-          className="w-64 sm:w-72 max-h-[60vh] overflow-y-auto bg-[#0a1f2e]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl p-2 space-y-1"
+          className="w-64 sm:w-72 max-h-[60vh] overflow-y-auto bg-secondary/95 backdrop-blur-md border border-border/70 rounded-xl shadow-2xl p-2 space-y-1"
         >
           {topics.map((topic) => {
             const topicState: TopicState =
@@ -150,7 +155,7 @@ export function TopNav({
                     <Square className="h-4 w-4 text-white/40" />
                   )}
                 </div>
-                <span className="text-sm text-[#fffdfd] truncate">
+                <span className="text-sm text-foreground truncate">
                   {topic.name}
                 </span>
               </DropdownMenuItem>

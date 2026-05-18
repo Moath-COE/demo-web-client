@@ -54,7 +54,9 @@ export function StudyLauncher({
   const topicStatesRef = useRef<Record<string, TopicState>>({});
   const handleTopicClickRef = useRef<(slug: string) => void>(() => {});
   const sendingRef = useRef(false);
-  const sendUserMessageRef = useRef<(message: string) => Promise<void>>(async () => {});
+  const sendUserMessageRef = useRef<(message: string) => Promise<void>>(
+    async () => {},
+  );
   const [currentCheckpointQuestion, setCurrentCheckpointQuestion] = useState<
     string | null
   >(null);
@@ -251,7 +253,11 @@ export function StudyLauncher({
 
   useEffect(() => {
     if (topics.length > 0) {
-      onTopicsDataChange?.(topics, topicStatesRef.current, handleTopicClickRef.current);
+      onTopicsDataChange?.(
+        topics,
+        topicStatesRef.current,
+        handleTopicClickRef.current,
+      );
     }
   }, [topics, onTopicsDataChange]);
 
@@ -260,7 +266,12 @@ export function StudyLauncher({
       const name = slug ? (slugToName.get(slug) ?? slug) : null;
       topicNameRef.current = name;
       topicSlugRef.current = slug;
-      onTopicChange?.(name, slug, numberOfSectionsRef.current, currentSectionIndexRef.current);
+      onTopicChange?.(
+        name,
+        slug,
+        numberOfSectionsRef.current,
+        currentSectionIndexRef.current,
+      );
     },
     [slugToName, onTopicChange],
   );
@@ -269,7 +280,12 @@ export function StudyLauncher({
     (total: number | null, index: number | null) => {
       if (total !== null) numberOfSectionsRef.current = total;
       if (index !== null) currentSectionIndexRef.current = index;
-      onTopicChange?.(topicNameRef.current, topicSlugRef.current, numberOfSectionsRef.current, currentSectionIndexRef.current);
+      onTopicChange?.(
+        topicNameRef.current,
+        topicSlugRef.current,
+        numberOfSectionsRef.current,
+        currentSectionIndexRef.current,
+      );
     },
     [onTopicChange],
   );
@@ -326,11 +342,11 @@ export function StudyLauncher({
       )}
 
       {/* Launcher */}
-      <div className="z-50 mt-auto md:my-4">
+      <div className="z-50 mt-auto  w-full bg-secondary rounded-top-lg max-w-270">
         {isActive ? (
           <div className="flex items-center ">
             {/* Left extension — Control Buttons */}
-            <div className=" h-full flex items-center justify-center gap-1 sm:gap-1.5 bg-[#045687] backdrop-blur-md rounded-2xl border border-white/10 p-1 shadow-2xl ">
+            <div className="mx-auto h-full flex items-center justify-center gap-1 sm:gap-1.5 bg-[#045687] backdrop-blur-md rounded-2xl border border-white/10 p-1 shadow-2xl ">
               <SessionProvider session={session}>
                 <ConnectedStateHandler
                   api={api}
@@ -347,7 +363,7 @@ export function StudyLauncher({
               </SessionProvider>
               <button
                 onClick={handleDisconnect}
-                className="rounded-lg bg-red-500 hover:bg-red-600 text-white p-1.5 sm:p-2 transition-colors"
+                className="rounded-lg bg-red-500 hover:bg-red-600 text-white p-1.5 sm:p-2 transition-colors flex-1"
                 aria-label="Disconnect"
               >
                 <SquareArrowRight className="h-4 w-4" />
@@ -356,7 +372,7 @@ export function StudyLauncher({
               <button
                 onClick={() => micStateRef.current.toggle()}
                 disabled={micPending}
-                className="rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white p-1.5 sm:p-2 transition-colors disabled:opacity-50"
+                className="rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white p-1.5 sm:p-2 transition-colors disabled:opacity-50 flex-1"
                 aria-label="Toggle microphone"
               >
                 {micEnabled ? (
@@ -368,7 +384,7 @@ export function StudyLauncher({
 
               <button
                 onClick={toggleAudioMute}
-                className="rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white p-1.5 sm:p-2 transition-colors"
+                className="rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white p-1.5 sm:p-2 transition-colors flex-1"
                 aria-label="Toggle audio output"
               >
                 {isAudioMuted ? (
@@ -385,7 +401,7 @@ export function StudyLauncher({
                     ? "bg-[#ffa02f] text-white"
                     : "bg-[#1d5479] hover:bg-[#1d5479]/80 text-white"
                 }`}
-                aria-label="Toggle text input"
+                aria-label="Toggle text input flex-1"
               >
                 <Keyboard className="h-4 w-4" />
               </button>

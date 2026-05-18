@@ -40,6 +40,7 @@ export default function Study() {
     null,
   );
   const [isListening, setIsListening] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [topicStates, setTopicStates] = useState<Record<string, TopicState>>(
     {},
@@ -125,10 +126,15 @@ export default function Study() {
   return (
     <>
       <div
-        className="flex flex-col relative bg-background max-h-screen h-svh overflow-hidden items-center"
+        className="flex flex-col relative max-h-screen h-svh overflow-hidden items-center bg-background"
         style={{
           paddingTop: "env(safe-area-inset-top)",
           paddingBottom: "env(safe-area-inset-bottom)",
+          backgroundImage: "url('/static/assets/texture-gold.png')",
+          backgroundBlendMode: "lighten",
+          backgroundRepeat: "repeat",
+          backgroundSize: "auto",
+          backgroundPosition: "top left",
         }}
       >
         <TopNav

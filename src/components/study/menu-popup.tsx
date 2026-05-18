@@ -31,7 +31,7 @@ export function MenuPopup({
       <PopoverTrigger asChild>
         <button
           onClick={onLogoClick}
-          className="rounded-lg shadow-lg flex items-center justify-center bg-accent group py-2 px-6 font-bold"
+          className="rounded-lg shadow-lg flex items-center justify-center bg-accent group py-2 px-6 font-bold mx-auto"
         >
           ابدا مع سند الان!
         </button>
