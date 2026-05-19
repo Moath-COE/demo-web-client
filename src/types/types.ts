@@ -36,7 +36,7 @@ export interface Topic {
   slug: string;
 }
 
-export type TopicState = "not_started" | "current" | "done";
+export type TopicState = "not_started" | "current";
 
 export interface UIControlData {
   action: string;
@@ -53,42 +53,38 @@ export interface UIControlData {
 export interface StudyLauncherProps {
   api: CarouselApi | null;
   numPages: number;
-  topicsJSON: Json;
+  topics: Topic[];
   courseSlug: string;
   chapterIndex: number;
   setActiveMarker: React.Dispatch<
     React.SetStateAction<Record<string, markerPayload>>
   >;
-  onTopicChange?: (
-    topicName: string | null,
-    topicSlug: string | null,
-    sections: number | null,
-    sectionIndex: number | null,
-  ) => void;
   onListeningChange?: (listening: boolean) => void;
-  onTopicsDataChange?: (
-    topics: Topic[],
-    topicStates: Record<string, TopicState>,
-    onTopicSelect: (slug: string) => void,
-  ) => void;
 }
 
 export interface ConnectedStateHandlerProps {
   api: CarouselApi | null;
   numPages: number;
+  setSelectedTopic: React.Dispatch<
+    React.SetStateAction<{
+      slug: string;
+      totalSections: number;
+    } | null>
+  >;
+  setSelectedSection: React.Dispatch<
+    React.SetStateAction<{ name: string; index: number } | null>
+  >;
   setActiveMarker: React.Dispatch<
     React.SetStateAction<Record<string, markerPayload>>
   >;
   onAgentStateChange: (state: string) => void;
-  onTopicNameChange: (name: string | null) => void;
-  onSectionsChange: (total: number | null, index: number | null) => void;
   onCheckpointChange: (question: string | null) => void;
-  onDisconnect: (roomName: string) => void;
   onMicToggleChange: (toggle: {
     toggle: () => void;
     enabled: boolean;
     pending: boolean;
   }) => void;
+
   onDisconnectPropsChange: (props: {
     onClick: () => void;
     disabled: boolean;

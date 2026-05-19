@@ -21,10 +21,10 @@ import { ConnectedStateHandlerProps, UIControlData } from "@/types/types";
 export function ConnectedStateHandler({
   api,
   numPages,
+  setSelectedTopic,
+  setSelectedSection,
   setActiveMarker,
   onAgentStateChange,
-  onTopicNameChange,
-  onSectionsChange,
   onCheckpointChange,
   onMicToggleChange,
   onDisconnectPropsChange,
@@ -67,19 +67,26 @@ export function ConnectedStateHandler({
           }
         } else if (data.action === "set_topic") {
           if (data.topic) {
-            onTopicNameChange(data.topic);
-            onSectionsChange(data.number_of_sections || null, null);
+            // onTopicNameChange(data.topic);
+            // onSectionsChange(data.number_of_sections || null, null);
+            setSelectedTopic({
+              slug: data.topic,
+              totalSections: data.number_of_sections || 0,
+            });
           }
         } else if (data.action === "set_section") {
           if (data.section) {
-            onSectionsChange(null, data.current_section_index || null);
+            setSelectedSection({
+              name: data.section,
+              index: data.current_section_index || 0,
+            });
           }
         } else if (data.action === "set_checkpoint") {
           if (data.checkpoint_question) {
             onCheckpointChange(data.checkpoint_question);
           }
         } else if (data.action === "section_done") {
-          onSectionsChange(null, null);
+          setSelectedSection(null);
         } else if (data.action === "remove_markers") {
           if (data.remove) {
             setActiveMarker((prev) => {
@@ -118,21 +125,13 @@ export function ConnectedStateHandler({
       }
       pendingTimeouts.current = [];
     };
-  }, [
-    room,
-    api,
-    numPages,
-    setActiveMarker,
-    onTopicNameChange,
-    onSectionsChange,
-    onCheckpointChange,
-  ]);
+  }, [room, api, numPages, setActiveMarker, onCheckpointChange]);
 
   return (
     <>
       <RoomAudioRenderer />
       <div
-        className="w-[160px] sm:w-[250px] h-[40px] bg-[#045687]   p-1 pl-4 "
+        className="w-[80px] sm:w-[140px] md:w-[200px] h-[36px] sm:h-[40px] bg-[#045687] p-1 pl-2 sm:pl-4"
         data-lk-theme="default"
       >
         <BarVisualizer
