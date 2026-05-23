@@ -1,10 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
-import {
-  Circle,
-  ChevronDown,
-} from "lucide-react";
+import { Circle, ChevronDown } from "lucide-react";
 import { useSession, SessionProvider } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { TokenSource } from "livekit-client";
@@ -196,9 +193,13 @@ export function AgentLauncher({
         className="z-50 mt-auto w-full bg-secondary rounded-t-lg max-w-270 p-1.5 sm:p-2 relative overflow-hidden"
       >
         {isActive ? (
-          <div className="flex flex-col gap-1.5 sm:flex-row sm:gap-1.5 sm:items-center w-1/2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:gap-1.5 sm:items-center ">
             <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-              <DropdownMenuTrigger asChild disabled={!isActive}>
+              <DropdownMenuTrigger
+                asChild
+                disabled={!isActive}
+                className="w-full"
+              >
                 <button
                   id="topics-list"
                   className={`w-full sm:flex-1 sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-all duration-300 min-w-0 ${
@@ -253,7 +254,7 @@ export function AgentLauncher({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <div className="flex items-center gap-1 sm:contents">
+            <div className="flex items-center gap-1 sm:contents bg-red-600">
               <SessionProvider session={session}>
                 <SessionManager
                   api={api}

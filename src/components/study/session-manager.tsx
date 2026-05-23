@@ -57,9 +57,7 @@ export function SessionManager({
   }, [disconnectProps, onDisconnect]);
 
   const toggleAudioMute = useCallback(() => {
-    const remoteParticipants = Array.from(
-      room.remoteParticipants.values(),
-    );
+    const remoteParticipants = Array.from(room.remoteParticipants.values());
     remoteParticipants.forEach((participant) => {
       participant.audioTrackPublications.forEach((publication) => {
         if (publication.track) {
@@ -144,12 +142,20 @@ export function SessionManager({
       }
       pendingTimeouts.current = [];
     };
-  }, [room, api, numPages, setActiveMarker, setSelectedTopic, setSelectedSection, onCheckpointChange]);
+  }, [
+    room,
+    api,
+    numPages,
+    setActiveMarker,
+    setSelectedTopic,
+    setSelectedSection,
+    onCheckpointChange,
+  ]);
 
   return (
     <>
       <RoomAudioRenderer />
-      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 mr-auto">
         <button
           onClick={handleDisconnect}
           className="rounded-lg bg-red-500 hover:bg-red-600 text-white p-1 sm:p-1.5 transition-colors"
@@ -196,7 +202,7 @@ export function SessionManager({
         </button>
       </div>
       <div
-        className="w-[80px] sm:w-[140px] md:w-[200px] h-[36px] sm:h-[40px] bg-[#045687] p-1 pl-2 sm:pl-4"
+        className="w-[80px] sm:w-[140px] md:w-[200px] h-[36px] sm:h-[40px] bg-[#045687] p-1 pl-2 sm:pl-4 ml-auto rounded-lg"
         data-lk-theme="default"
       >
         <BarVisualizer
