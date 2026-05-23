@@ -46,6 +46,32 @@ export function SessionManager({
   });
   const pendingTimeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
+  const [breakpoint, setBreakpoint] = useState<"md" | "sm" | "xs">("md");
+
+  useEffect(() => {
+    const mdQuery = window.matchMedia("(min-width: 768px)");
+    const smQuery = window.matchMedia("(min-width: 640px)");
+
+    const update = () => {
+      if (mdQuery.matches) setBreakpoint("md");
+      else if (smQuery.matches) setBreakpoint("sm");
+      else setBreakpoint("xs");
+    };
+
+    update();
+    mdQuery.addEventListener("change", update);
+    smQuery.addEventListener("change", update);
+    return () => {
+      mdQuery.removeEventListener("change", update);
+      smQuery.removeEventListener("change", update);
+    };
+  }, []);
+
+  const barConfig = {
+    xs: { barCount: 8, barWidth: 4, barGap: 3, borderRadius: 3, minHeight: 20 },
+    sm: { barCount: 12, barWidth: 5, barGap: 5, borderRadius: 5, minHeight: 24 },
+    md: { barCount: 15, barWidth: 6, barGap: 6, borderRadius: 8, minHeight: 28 },
+  }[breakpoint];
 
   useEffect(() => {
     onAgentStateChange(agentState);
@@ -202,14 +228,14 @@ export function SessionManager({
         </button>
       </div>
       <div
-        className="w-[80px] sm:w-[140px] md:w-[200px] h-[36px] sm:h-[40px] bg-[#045687] p-1 pl-2 sm:pl-4 ml-auto rounded-lg"
+        className="w-[70px] sm:w-[130px] md:w-[200px] h-[32px] sm:h-[38px] md:h-[40px] bg-[#045687] p-1 pl-1.5 sm:pl-3 md:pl-4 ml-auto rounded-lg"
         data-lk-theme="default"
       >
         <BarVisualizer
           state={agentState}
           trackRef={audioTrack}
-          barCount={15}
-          options={{ minHeight: 28 }}
+          barCount={barConfig.barCount}
+          options={{ minHeight: barConfig.minHeight }}
           style={
             {
               "--lk-fg":
@@ -222,9 +248,9 @@ export function SessionManager({
                       : "#60a5fa",
               "--lk-bg": "rgba(29, 84, 121, 0.15)",
               "--lk-va-bar-height": "60px",
-              "--lk-va-bar-width": "6px",
-              "--lk-va-bar-gap": "6px",
-              "--lk-va-border-radius": "8px",
+              "--lk-va-bar-width": `${barConfig.barWidth}px`,
+              "--lk-va-bar-gap": `${barConfig.barGap}px`,
+              "--lk-va-border-radius": `${barConfig.borderRadius}px`,
             } as React.CSSProperties
           }
           className="w-full h-full drop-shadow-[0_0_8px_rgba(255,160,47,0.3)]"

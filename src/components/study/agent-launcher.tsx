@@ -190,7 +190,7 @@ export function AgentLauncher({
 
       <div
         id="agent-control-bar"
-        className="z-50 mt-auto w-full bg-secondary rounded-t-lg max-w-270 p-1.5 sm:p-2 relative overflow-hidden"
+        className="z-50 mt-auto w-full bg-secondary rounded-t-lg max-w-270 p-1.5 sm:p-2 relative"
       >
         {isActive ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-1.5 sm:items-center ">
@@ -254,7 +254,7 @@ export function AgentLauncher({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <div className="flex items-center gap-1 sm:contents bg-red-600">
+            <div className="flex items-center gap-1 sm:contents">
               <SessionProvider session={session}>
                 <SessionManager
                   api={api}
@@ -281,10 +281,10 @@ export function AgentLauncher({
             onStart={handleStart}
           />
         )}
+        {currentCheckpointQuestion && isAgentListening && (
+          <CheckpointPopup question={currentCheckpointQuestion!} />
+        )}
       </div>
-      {currentCheckpointQuestion && isAgentListening && (
-        <CheckpointPopup question={currentCheckpointQuestion!} />
-      )}
     </>
   );
 }

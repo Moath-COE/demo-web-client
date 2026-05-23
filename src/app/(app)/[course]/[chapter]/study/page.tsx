@@ -82,37 +82,35 @@ export default function Study() {
   }, [courseSlug, chapterIndex, supabase]);
 
   return (
-    <>
-      <div
-        className="flex flex-col relative max-h-screen h-svh overflow-hidden items-center bg-background"
-        style={{
-          paddingTop: "env(safe-area-inset-top)",
-          paddingBottom: "env(safe-area-inset-bottom)",
-          backgroundImage: "url('/static/assets/texture-gold.png')",
-          backgroundBlendMode: "lighten",
-          backgroundRepeat: "repeat",
-          backgroundSize: "auto",
-          backgroundPosition: "top left",
-        }}
-      >
-        <TopNav chapterTitle={chapterTitle} />
-        <AgentLauncher
-          api={api}
-          numPages={numPages}
-          topics={topics}
-          courseSlug={courseSlug}
-          chapterIndex={chapterIndex}
-          setActiveMarker={setActiveMarker}
-        />
-        <PdfCanvas
-          pdfUrl={pdfUrl}
-          api={api}
-          setApi={setApi}
-          numPages={numPages}
-          setNumPages={setNumPages}
-          activeMarker={activeMarker}
-        />
-      </div>
-    </>
+    <div
+      className="flex flex-col relative max-h-[130vh] min-h-svh overflow-hidden items-center bg-background"
+      style={{
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        backgroundImage: "url('/static/assets/texture-gold.png')",
+        backgroundBlendMode: "lighten",
+        backgroundRepeat: "repeat",
+        backgroundSize: "auto",
+        backgroundPosition: "top left",
+      }}
+    >
+      <TopNav chapterTitle={chapterTitle} />
+      <AgentLauncher
+        api={api}
+        numPages={numPages}
+        topics={topics}
+        courseSlug={courseSlug}
+        chapterIndex={chapterIndex}
+        setActiveMarker={setActiveMarker}
+      />
+      <PdfCanvas
+        pdfUrl={pdfUrl}
+        api={api}
+        setApi={setApi}
+        numPages={numPages}
+        setNumPages={setNumPages}
+        activeMarker={activeMarker}
+      />
+    </div>
   );
 }

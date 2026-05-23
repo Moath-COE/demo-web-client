@@ -8,7 +8,7 @@ export function TopNav({ chapterTitle }: { chapterTitle: string | null }) {
   const displayText = chapterTitle || "عنوان الفصل";
 
   return (
-    <nav className="flex items-center justify-between w-full h-12 sm:h-16 px-3 sm:px-6 border-b border-border/60 bg-secondary backdrop-blur">
+    <nav className="mb-2 flex items-center justify-between w-full h-12 sm:h-16 px-3 sm:px-6 border-b border-border/60 bg-secondary backdrop-blur">
       <div className="md:flex justify-start items-center gap-2 hidden">
         <Image src="/static/logo.png" alt="Logo" width={32} height={32} />
         <h2 className="text-sm sm:text-xl font-bold ">سند</h2>
