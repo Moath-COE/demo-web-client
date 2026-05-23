@@ -18,6 +18,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CompletionCircle } from "@/components/study/completionCircle";
+import { FeedbackDialog } from "./feedback-dialog";
+import { set } from "zod";
 
 export function AgentLauncher({
   api,
@@ -46,6 +48,8 @@ export function AgentLauncher({
   const [isTextInputOpen, setIsTextInputOpen] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [FeedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
+  const [roomName, setRoomName] = useState<string | null>(null);
 
   const [selectedTopic, setSelectedTopic] = useState<{
     slug: string;
@@ -109,6 +113,7 @@ export function AgentLauncher({
           },
         },
       });
+      setRoomName(session.room?.name || null);
     } catch (error) {
       console.error("Failed to start session:", error);
       setLauncherState("idle");
@@ -154,6 +159,7 @@ export function AgentLauncher({
     setAgentState("disconnected");
     setSelectedTopic(null);
     setSelectedSection(null);
+    setFeedbackDialogOpen(true);
   }, [setActiveMarker]);
 
   const handleLanguageChange = useCallback((val: "English" | "Arabic") => {
@@ -283,6 +289,13 @@ export function AgentLauncher({
         )}
         {currentCheckpointQuestion && isAgentListening && (
           <CheckpointPopup question={currentCheckpointQuestion!} />
+        )}
+        {FeedbackDialogOpen && (
+          <FeedbackDialog
+            onClose={() => setFeedbackDialogOpen(false)}
+            open={FeedbackDialogOpen}
+            roomName={roomName!}
+          />
         )}
       </div>
     </>
