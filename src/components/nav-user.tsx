@@ -1,14 +1,13 @@
 "use client";
 
 import { IconDotsVertical } from "@tabler/icons-react";
-import { useClerk, UserButton } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 
 export function NavUser({
@@ -20,9 +19,6 @@ export function NavUser({
     avatar: string;
   };
 }) {
-  const { isMobile } = useSidebar();
-  const { openUserProfile } = useClerk();
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>

@@ -711,7 +711,7 @@ export default function TermsOfServicePage() {
               </div>
               <p className="leading-relaxed mt-4 text-foreground/60 text-sm">
                 لممارسة أي من هذه الحقوق، يمكنك التواصل معنا عبر البيانات
-                المبينة في قسم "تواصل معنا" أدناه. سيتم الرد على طلبك خلال (٣٠)
+                المبينة في قسم &quot;تواصل معنا&quot; أدناه. سيتم الرد على طلبك خلال (٣٠)
                 يوماً كحد أقصى وفقاً لما ينص عليه النظام.
               </p>
             </SectionWrapper>
@@ -750,7 +750,7 @@ export default function TermsOfServicePage() {
             >
               <div className="space-y-4 text-foreground/80">
                 <p className="leading-relaxed">
-                  تُقدم المنصة والخدمات المتعلقة بها "كما هي" و"حسب التوفر" دون
+                  تُقدم المنصة والخدمات المتعلقة بها &quot;كما هي&quot; و&quot;حسب التوفر&quot; دون
                   أي ضمانات صريحة أو ضمنية. لا نضمن أن الخدمة ستكون خالية من
                   الأخطاء أو متاحة دون انقطاع أو أن نتائج المساعد الذكي ستكون
                   دقيقة في جميع الأحوال.

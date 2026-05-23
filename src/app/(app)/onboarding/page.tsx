@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useUser, UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useDatabase } from "@/context/databaseContext";
@@ -78,20 +78,20 @@ export default function OnboardingPage() {
     fetchInstitutions();
   }, [supabase]);
 
-  useEffect(() => {
-    if (!selectedInstitution) {
-      setMajors([]);
-      setSelectedMajor("");
-      return;
-    }
-
-    async function fetchMajors() {
+  const handleInstitutionChange = useCallback(
+    async (value: string) => {
+      setSelectedInstitution(value);
+      if (!value) {
+        setMajors([]);
+        setSelectedMajor("");
+        return;
+      }
       setLoadingMajors(true);
       setSelectedMajor("");
       const { data, error } = await supabase
         .from("majors")
         .select("id, name")
-        .eq("institution_id", Number(selectedInstitution))
+        .eq("institution_id", Number(value))
         .order("name");
 
       if (error) {
@@ -102,10 +102,9 @@ export default function OnboardingPage() {
 
       setMajors(data ?? []);
       setLoadingMajors(false);
-    }
-
-    fetchMajors();
-  }, [selectedInstitution]);
+    },
+    [supabase],
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -138,7 +137,7 @@ export default function OnboardingPage() {
 
       await user?.reload();
       router.push("/my-library");
-    } catch (error) {
+    } catch {
       setError("حدث خطأ في الاتصال");
       setSubmitting(false);
     }
@@ -160,7 +159,7 @@ export default function OnboardingPage() {
               <Label htmlFor="institution">الجامعة</Label>
               <Select
                 value={selectedInstitution}
-                onValueChange={setSelectedInstitution}
+                onValueChange={handleInstitutionChange}
                 disabled={loadingInstitutions}
               >
                 <SelectTrigger id="institution" className="w-full">

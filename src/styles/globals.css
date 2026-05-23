@@ -345,3 +345,13 @@
     transform: translateY(-30px) scale(1.05);
   }
 }
+
+@keyframes shimmer-line {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}

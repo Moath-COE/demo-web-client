@@ -1,16 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { PdfCanvas } from "@/components/study/pdfCanvas";
 import { useParams } from "next/navigation";
 import { useDatabase } from "@/context/databaseContext";
-import { Database, Json } from "@/types/database.types";
+import { Json } from "@/types/database.types";
 import { CarouselApi } from "@/components/ui/carousel";
-import { markerPayload } from "@/types/types";
+import { markerPayload, Topic } from "@/types/types";
 import { TopNav } from "@/components/study/top-nav";
-import { StudyLauncher } from "@/components/study/study-launcher";
-
-type Chapter = Database["public"]["Tables"]["chapters"]["Row"];
+import { AgentLauncher } from "@/components/study/agent-launcher";
 
 export default function Study() {
   const params = useParams<{
@@ -29,36 +27,27 @@ export default function Study() {
 
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
-  const [topicsJSON, setTopicsJSON] = useState<Json>({});
+  const [topics, setTopics] = useState<Topic[]>([]);
 
   const [activeMarker, setActiveMarker] = useState<
     Record<string, markerPayload>
   >({});
 
-  const [currentTopicName, setCurrentTopicName] = useState<string | null>(null);
-  const [totalSections, setTotalSections] = useState<number | null>(null);
-  const [currentSectionIndex, setCurrentSectionIndex] = useState<number | null>(
-    null,
-  );
-  const [showTopicsModal, setShowTopicsModal] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
-
   const supabase = useDatabase();
 
   useEffect(() => {
     async function fetchChapterPDF() {
-      const { data: chapter, error }: { data: Chapter | null; error: any } =
-        await supabase
-          .from("chapters")
-          .select(
-            `
+      const { data: chapter, error } = await supabase
+        .from("chapters")
+        .select(
+          `
           *,
           courses!inner(slug)
         `,
-          )
-          .eq("courses.slug", courseSlug)
-          .eq("order_index", chapterIndex)
-          .single();
+        )
+        .eq("courses.slug", courseSlug)
+        .eq("order_index", chapterIndex)
+        .single();
 
       if (error) {
         console.error("Error fetching courses:", error);
@@ -80,7 +69,7 @@ export default function Study() {
           throw new Error(data.error);
         }
 
-        setTopicsJSON(data);
+        setTopics(data?.topics || []);
       } catch (error) {
         console.error("Error fetching in course JSON:", error);
       }
@@ -92,57 +81,36 @@ export default function Study() {
     }
   }, [courseSlug, chapterIndex, supabase]);
 
-  const handleTopicChange = useCallback(
-    (
-      topicName: string | null,
-      sections: number | null,
-      sectionIndex: number | null,
-    ) => {
-      setCurrentTopicName(topicName);
-      setTotalSections(sections);
-      setCurrentSectionIndex(sectionIndex);
-    },
-    [],
-  );
-
   return (
-    <>
-      <div
-        className="flex flex-col relative bg-background max-h-screen h-screen overflow-hidden"
-        style={{
-          paddingTop: "env(safe-area-inset-top)",
-          paddingBottom: "env(safe-area-inset-bottom)",
-        }}
-      >
-        <TopNav
-          topicName={currentTopicName}
-          chapterTitle={chapterTitle}
-          totalSections={totalSections}
-          currentSectionIndex={currentSectionIndex}
-          isConnected={isConnected}
-          onTopicTitleClick={() => setShowTopicsModal(true)}
-        />
-        <PdfCanvas
-          pdfUrl={pdfUrl}
-          api={api}
-          setApi={setApi}
-          numPages={numPages}
-          setNumPages={setNumPages}
-          activeMarker={activeMarker}
-        />
-        <StudyLauncher
-          api={api}
-          numPages={numPages}
-          topicsJSON={topicsJSON}
-          courseSlug={courseSlug}
-          chapterIndex={chapterIndex}
-          showTopicsModal={showTopicsModal}
-          onShowTopicsModalChange={setShowTopicsModal}
-          setActiveMarker={setActiveMarker}
-          onTopicChange={handleTopicChange}
-          onConnectedChange={setIsConnected}
-        />
-      </div>
-    </>
+    <div
+      className="flex flex-col relative max-h-[130vh] min-h-svh overflow-hidden items-center bg-background"
+      style={{
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        backgroundImage: "url('/static/assets/texture-gold.png')",
+        backgroundBlendMode: "lighten",
+        backgroundRepeat: "repeat",
+        backgroundSize: "auto",
+        backgroundPosition: "top left",
+      }}
+    >
+      <TopNav chapterTitle={chapterTitle} />
+      <AgentLauncher
+        api={api}
+        numPages={numPages}
+        topics={topics}
+        courseSlug={courseSlug}
+        chapterIndex={chapterIndex}
+        setActiveMarker={setActiveMarker}
+      />
+      <PdfCanvas
+        pdfUrl={pdfUrl}
+        api={api}
+        setApi={setApi}
+        numPages={numPages}
+        setNumPages={setNumPages}
+        activeMarker={activeMarker}
+      />
+    </div>
   );
 }

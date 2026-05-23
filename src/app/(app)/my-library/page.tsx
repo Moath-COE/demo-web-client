@@ -16,11 +16,6 @@ type Course = Database["public"]["Tables"]["courses"]["Row"] & {
   chapters: { count: number }[];
 };
 
-const levelLabels: Record<string, string> = {
-  beginner: "مبتدئ",
-  intermediate: "متوسط",
-  advanced: "متقدم",
-};
 
 export default function LibraryPage() {
   const supabase = useDatabase();

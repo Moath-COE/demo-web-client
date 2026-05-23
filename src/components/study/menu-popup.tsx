@@ -8,13 +8,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Play } from "lucide-react";
-import Image from "next/image";
-import type { LauncherState } from "@/types/types";
 
 interface MenuPopupProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  launcherState: LauncherState;
   onLogoClick: () => void;
   language: "English" | "Arabic";
   onLanguageChange: (lang: "English" | "Arabic") => void;
@@ -24,40 +21,26 @@ interface MenuPopupProps {
 export function MenuPopup({
   open,
   onOpenChange,
-  launcherState,
   onLogoClick,
   language,
   onLanguageChange,
   onStart,
 }: MenuPopupProps) {
-  const isActive = launcherState === "active";
-
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
         <button
           onClick={onLogoClick}
-          className="rounded-full shadow-lg transition-all duration-300 ease-out flex items-center justify-center ring-2 ring-accent/40 hover:ring-accent/70 group"
-          style={{
-            width: isActive ? "50px" : "56px",
-            height: isActive ? "50px" : "56px",
-            background: "linear-gradient(135deg, #0e293c 0%, #045687 100%)",
-          }}
+          className="rounded-lg shadow-lg flex items-center justify-center bg-accent group py-2 px-6 font-bold mx-auto"
         >
-          <Image
-            src="/static/logo.png"
-            alt="Logo"
-            width="34"
-            height="34"
-            className="transition-all duration-300 ease-out"
-          />
+          ابدا مع سند الان!
         </button>
       </PopoverTrigger>
       <PopoverContent
         side="top"
         align="center"
         sideOffset={12}
-        className="min-w-40 bg-primary/80 backdrop-blur-md rounded-md p-4 shadow-2xl ml-4"
+        className="min-w-40 bg-primary/80 backdrop-blur-md rounded-md p-4 shadow-2xl"
       >
         <div className="space-y-2">
           <ToggleGroup

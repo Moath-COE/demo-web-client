@@ -181,6 +181,7 @@ export function TourTooltip({
               x1={targetRect.left + targetRect.width / 2}
               y1={targetRect.top - PADDING}
               x2={tooltipPos.left + 20}
+              // eslint-disable-next-line react-hooks/refs
               y2={tooltipPos.top + (tooltipRef.current?.offsetHeight || 160)}
               stroke="var(--accent)"
               strokeWidth="1.5"

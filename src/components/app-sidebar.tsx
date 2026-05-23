@@ -2,17 +2,14 @@
 
 import * as React from "react";
 import {
-  IconChartBar,
   IconDashboard,
-  IconFolder,
-  IconListDetails,
-  IconUsers,
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Sidebar,
   SidebarContent,
@@ -71,7 +68,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="/">
+              <Link href="/">
                 <Image
                   width={25}
                   height={25}
@@ -79,7 +76,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   alt="Company Logo"
                 />
                 <span className="text-base font-semibold">Chapter-14</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

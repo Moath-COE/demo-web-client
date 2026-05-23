@@ -34,11 +34,19 @@ type QuotaTier = Database["public"]["Tables"]["quota_tiers"]["Row"];
 type Institution = Database["public"]["Tables"]["institutions"]["Row"];
 type Major = Database["public"]["Tables"]["majors"]["Row"];
 
+type ProfileWithRelations = Profile & {
+  quota_tiers: QuotaTier | null;
+  institutions: Institution | null;
+  majors: Major | null;
+};
+
+type EnrollmentPick = Pick<
+  Database["public"]["Tables"]["enrollments"]["Row"],
+  "created_at" | "is_active"
+>;
+
 type EnrolledCourse = Database["public"]["Tables"]["courses"]["Row"] & {
-  enrollments: Pick<
-    Database["public"]["Tables"]["enrollments"]["Row"],
-    "created_at" | "is_active"
-  >;
+  enrollments: EnrollmentPick | EnrollmentPick[];
 };
 
 export default function Settings() {
@@ -75,10 +83,11 @@ export default function Settings() {
       ]);
 
       if (profileRes.data) {
+        const profileData = profileRes.data as unknown as ProfileWithRelations;
         setProfile(profileRes.data as unknown as Profile);
-        setTier((profileRes.data as any).quota_tiers as QuotaTier);
-        setInstitution((profileRes.data as any).institutions as Institution);
-        setMajor((profileRes.data as any).majors as Major);
+        setTier(profileData.quota_tiers);
+        setInstitution(profileData.institutions);
+        setMajor(profileData.majors);
       }
 
       if (coursesRes.data) {
@@ -351,10 +360,10 @@ function EnrolledCoursesCard({
                         ) : null}
                         <span className="flex items-center gap-1 text-[#8faabb]">
                           <CalendarDays className="h-3 w-3 opacity-50" />
-                          {formatDate((enrollment as any)?.created_at)}
+                          {formatDate(enrollment?.created_at ?? "")}
                         </span>
                       </div>
-                      {(enrollment as any)?.is_active ? (
+                      {enrollment?.is_active ? (
                         <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/20 text-xs font-medium">
                           نشط
                         </Badge>
@@ -424,11 +433,11 @@ function EnrolledCoursesCard({
                         <TableCell className="text-[#8faabb] text-sm">
                           <div className="flex items-center gap-1.5">
                             <CalendarDays className="h-3.5 w-3.5 opacity-50" />
-                            {formatDate((enrollment as any)?.created_at)}
+                            {formatDate(enrollment?.created_at ?? "")}
                           </div>
                         </TableCell>
                         <TableCell>
-                          {(enrollment as any)?.is_active ? (
+                          {enrollment?.is_active ? (
                             <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/20 text-xs font-medium">
                               نشط
                             </Badge>

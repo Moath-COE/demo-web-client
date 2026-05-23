@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BookOpen, Sparkles, Globe, Mail, Phone, MapPin } from "lucide-react";
+import { BookOpen, Sparkles, Globe, Mail, Phone } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "من نحن",

@@ -7,7 +7,6 @@ import {
   GraduationCap,
   Layers,
   Zap,
-  Image as ImageIcon,
   UserPlus,
   Search,
   Rocket,
@@ -19,17 +18,6 @@ export const metadata: Metadata = {
   title: "سند — مدرسك الخصوصي الذكي",
   description:
     "تعرّف على سند، مساعدك الصوتي الذكي في المذاكرة. يشرح لك، يجاوبك، ويرافقك خطوة بخطوة.",
-};
-
-function ImagePlaceholder({ label }: { label: string }) {
-  return (
-    <div className="aspect-[4/3] w-full rounded-2xl bg-gradient-to-br from-muted/20 via-muted/10 to-transparent border-2 border-dashed border-border/30 flex flex-col items-center justify-center gap-3">
-      <div className="w-14 h-14 rounded-xl bg-muted/15 flex items-center justify-center">
-        <ImageIcon className="w-7 h-7 text-muted/50" />
-      </div>
-      <span className="text-sm text-muted/50 font-medium">{label}</span>
-    </div>
-  );
 }
 
 const features = [
