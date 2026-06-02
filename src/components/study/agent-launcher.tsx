@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CompletionCircle } from "@/components/study/completionCircle";
 import { FeedbackDialog } from "./feedback-dialog";
-import { set } from "zod";
 
 export function AgentLauncher({
   api,
@@ -59,6 +58,10 @@ export function AgentLauncher({
     name: string;
     index: number;
   } | null>(null);
+
+  const [endSessionMessage, setEndSessionMessage] = useState<string | null>(
+    null,
+  );
 
   const tokenSource = useMemo(
     () =>
@@ -273,6 +276,7 @@ export function AgentLauncher({
                   onDisconnect={handleDisconnect}
                   onTextInputToggle={handleTextInputToggle}
                   isTextInputOpen={isTextInputOpen}
+                  setEndSessionMessage={setEndSessionMessage}
                 />
               </SessionProvider>
             </div>
@@ -295,6 +299,7 @@ export function AgentLauncher({
             onClose={() => setFeedbackDialogOpen(false)}
             open={FeedbackDialogOpen}
             roomName={roomName!}
+            endSessionMessage={endSessionMessage!}
           />
         )}
       </div>

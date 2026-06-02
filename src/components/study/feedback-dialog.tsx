@@ -10,12 +10,20 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { StarRating } from "./star-rating";
-import { MessageSquareText, Send, CheckCircle2, Loader2 } from "lucide-react";
+import {
+  MessageSquareText,
+  Send,
+  CheckCircle2,
+  Loader2,
+  AlertTriangleIcon,
+} from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface FeedbackDialogProps {
   open: boolean;
   roomName: string;
   onClose: () => void;
+  endSessionMessage: string | null;
 }
 
 interface RatingQuestion {
@@ -42,6 +50,7 @@ export function FeedbackDialog({
   open,
   roomName,
   onClose,
+  endSessionMessage,
 }: FeedbackDialogProps) {
   const [ratings, setRatings] = useState<Record<string, number | null>>({
     conceptExplanation: null,
@@ -127,6 +136,12 @@ export function FeedbackDialog({
           </div>
         ) : (
           <>
+            <Alert className="max-w-md border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50 mb-4">
+              <AlertTriangleIcon />
+              <AlertTitle>تنببه</AlertTitle>
+              <AlertDescription>{endSessionMessage}</AlertDescription>
+            </Alert>
+
             <DialogHeader className="pb-1">
               <DialogTitle className="text-[#fffdfd] text-lg flex items-center gap-2">
                 <MessageSquareText className="h-5 w-5 text-[#ffa02f]" />

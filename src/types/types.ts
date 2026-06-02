@@ -82,4 +82,5 @@ export interface ConnectedStateHandlerProps {
   onDisconnect: () => void;
   onTextInputToggle: () => void;
   isTextInputOpen: boolean;
+  setEndSessionMessage: React.Dispatch<React.SetStateAction<string | null>>;
 }

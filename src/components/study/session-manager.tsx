@@ -37,6 +37,7 @@ export function SessionManager({
   onDisconnect,
   onTextInputToggle,
   isTextInputOpen,
+  setEndSessionMessage,
 }: ConnectedStateHandlerProps) {
   const { state: agentState, audioTrack } = useVoiceAssistant();
   const room = useRoomContext();
@@ -69,8 +70,20 @@ export function SessionManager({
 
   const barConfig = {
     xs: { barCount: 8, barWidth: 4, barGap: 3, borderRadius: 3, minHeight: 20 },
-    sm: { barCount: 12, barWidth: 5, barGap: 5, borderRadius: 5, minHeight: 24 },
-    md: { barCount: 15, barWidth: 6, barGap: 6, borderRadius: 8, minHeight: 28 },
+    sm: {
+      barCount: 12,
+      barWidth: 5,
+      barGap: 5,
+      borderRadius: 5,
+      minHeight: 24,
+    },
+    md: {
+      barCount: 15,
+      barWidth: 6,
+      barGap: 6,
+      borderRadius: 8,
+      minHeight: 28,
+    },
   }[breakpoint];
 
   useEffect(() => {
@@ -156,6 +169,11 @@ export function SessionManager({
               }
             }
           }
+        } else if (data.action === "session_ending") {
+          setEndSessionMessage(
+            "وصلت للحد الاعلى للوقت المسموح به في هذه الجلسة. بامكانك بدا جلسة جديدة بعد الاجابة على بعض الاسئلة لتقييم تجربتك.",
+          );
+          onDisconnect();
         }
       }
     };
@@ -176,6 +194,8 @@ export function SessionManager({
     setSelectedTopic,
     setSelectedSection,
     onCheckpointChange,
+    onDisconnect,
+    setEndSessionMessage,
   ]);
 
   return (
