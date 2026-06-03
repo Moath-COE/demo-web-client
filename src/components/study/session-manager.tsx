@@ -137,7 +137,7 @@ export function SessionManager({
               name: data.section,
               index: data.current_section_index || 0,
             });
-            toast.info("Section Started", {
+            toast.info(`Section ${data.current_section_index || 0} Started`, {
               description: `${data.section}`,
               position: "bottom-right",
               className: "bg-background! text-foreground!",
@@ -208,54 +208,57 @@ export function SessionManager({
   return (
     <>
       <RoomAudioRenderer />
-      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 mr-auto">
+      <div className="flex items-center gap-1 sm:gap-1.5 flex-1 mr-auto">
         <button
           onClick={handleDisconnect}
-          className="rounded-lg bg-red-500 hover:bg-red-600 text-white p-1 sm:p-1.5 transition-colors"
+          className="rounded-lg bg-red-500 hover:bg-red-600 text-white px-4 py-2 flex justify-center items-center gap-2 transition-colors "
           aria-label="Disconnect"
         >
-          <SquareArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <SquareArrowRight className="h-4.5 w-4.5 " />
+          <span className="hidden md:block leading-none font-bold">
+            انهاء الجلسة
+          </span>
         </button>
 
         <button
           onClick={() => micToggle.toggle()}
           disabled={micToggle.pending}
-          className="rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white p-1 sm:p-1.5 transition-colors disabled:opacity-50"
+          className="rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white px-4 py-2 flex justify-center   transition-colors disabled:opacity-50 "
           aria-label="Toggle microphone"
         >
           {micToggle.enabled ? (
-            <Mic className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <Mic className="h-4.5 w-4.5 " />
           ) : (
-            <MicOff className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <MicOff className="h-4.5 w-4.5 " />
           )}
         </button>
 
         <button
           onClick={toggleAudioMute}
-          className="rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white p-1 sm:p-1.5 transition-colors"
+          className="rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white px-4 py-2 flex justify-center   transition-colors "
           aria-label="Toggle audio output"
         >
           {isAudioMuted ? (
-            <VolumeX className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <VolumeX className="h-4.5 w-4.5 " />
           ) : (
-            <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <Volume2 className="h-4.5 w-4.5 " />
           )}
         </button>
 
         <button
           onClick={onTextInputToggle}
-          className={`rounded-lg p-1 sm:p-1.5 transition-colors ${
+          className={`rounded-lg px-4 py-2 flex justify-center   transition-colors  ${
             isTextInputOpen
               ? "bg-[#ffa02f] text-white"
               : "bg-[#1d5479] hover:bg-[#1d5479]/80 text-white"
           }`}
           aria-label="Toggle text input"
         >
-          <Keyboard className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <Keyboard className="h-4.5 w-4.5 " />
         </button>
       </div>
       <div
-        className="w-[70px] sm:w-[130px] md:w-[200px] h-[32px] sm:h-[38px] md:h-[40px] bg-[#045687] p-1 pl-1.5 sm:pl-3 md:pl-4 ml-auto rounded-lg"
+        className="w-[200px] h-[32px] bg-[#045687] p-1 pl-1.5 sm:pl-3 md:pl-4 ml-auto rounded-lg"
         data-lk-theme="default"
       >
         <BarVisualizer

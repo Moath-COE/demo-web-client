@@ -204,18 +204,26 @@ export function AgentLauncher({
         {isActive ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-1.5 sm:items-center ">
             <DropdownMenu
-              open={dropdownOpen}
+              open={
+                dropdownOpen || (isAgentListening && selectedTopic === null)
+              }
               onOpenChange={setDropdownOpen}
               dir="ltr"
             >
               <DropdownMenuTrigger
                 asChild
-                disabled={!isActive}
-                className="w-full"
+                disabled={
+                  !(
+                    agentState === "listening" ||
+                    agentState === "thinking" ||
+                    agentState === "speaking"
+                  )
+                }
+                className=""
               >
                 <button
                   id="topics-list"
-                  className={`w-full sm:flex-1 sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-all duration-300 min-w-0 ${
+                  className={`flex-1 md:w-1/2 md:flex-none flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-all duration-300 min-w-0 ${
                     selectedTopic?.slug
                       ? "bg-[#0a2a3f] text-[#fffdfd] border border-accent/30"
                       : "bg-[#0a2a3f]/60 text-[#8faabb] border border-transparent hover:border-accent/20"
@@ -301,7 +309,6 @@ export function AgentLauncher({
             choices={currentCheckpointQuestion?.choices || []}
             onChoiceSelect={(choice) => {
               sendUserMessage(choice);
-              setCurrentCheckpointQuestion({ question: "", choices: [] });
             }}
           />
         )}
