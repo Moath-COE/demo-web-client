@@ -25,6 +25,7 @@ import {
   Keyboard,
 } from "lucide-react";
 import { ConnectedStateHandlerProps, UIControlData } from "@/types/types";
+import { toast } from "sonner";
 
 export function SessionManager({
   api,
@@ -135,6 +136,12 @@ export function SessionManager({
             setSelectedSection({
               name: data.section,
               index: data.current_section_index || 0,
+            });
+            toast.info("Section Started", {
+              description: `${data.section}`,
+              position: "bottom-center",
+              className: "bg-background! text-foreground!",
+              descriptionClassName: "text-accent/80! italic!",
             });
           }
         } else if (data.action === "set_checkpoint") {

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { PdfCanvas } from "@/components/study/pdfCanvas";
 import { useParams } from "next/navigation";
 import { useDatabase } from "@/context/databaseContext";
-import { Json } from "@/types/database.types";
 import { CarouselApi } from "@/components/ui/carousel";
 import { markerPayload, Topic } from "@/types/types";
 import { TopNav } from "@/components/study/top-nav";
