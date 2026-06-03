@@ -47,7 +47,9 @@ export function SessionManager({
     stopTracks: true,
   });
   const pendingTimeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const flashTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
+  const [clickedButton, setClickedButton] = useState<string | null>(null);
   const [breakpoint, setBreakpoint] = useState<"md" | "sm" | "xs">("md");
 
   useEffect(() => {
@@ -96,6 +98,15 @@ export function SessionManager({
     onDisconnect();
   }, [disconnectProps, onDisconnect]);
 
+  const flashLabel = useCallback((id: string) => {
+    if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+    setClickedButton(id);
+    flashTimeoutRef.current = setTimeout(() => {
+      setClickedButton(null);
+      flashTimeoutRef.current = null;
+    }, 3500);
+  }, []);
+
   const toggleAudioMute = useCallback(() => {
     const remoteParticipants = Array.from(room.remoteParticipants.values());
     remoteParticipants.forEach((participant) => {
@@ -137,7 +148,7 @@ export function SessionManager({
               name: data.section,
               index: data.current_section_index || 0,
             });
-            toast.info("Section Started", {
+            toast.info(`Section ${data.current_section_index || 0} Started`, {
               description: `${data.section}`,
               position: "bottom-right",
               className: "bg-background! text-foreground!",
@@ -208,54 +219,8 @@ export function SessionManager({
   return (
     <>
       <RoomAudioRenderer />
-      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 mr-auto">
-        <button
-          onClick={handleDisconnect}
-          className="rounded-lg bg-red-500 hover:bg-red-600 text-white p-1 sm:p-1.5 transition-colors"
-          aria-label="Disconnect"
-        >
-          <SquareArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-        </button>
-
-        <button
-          onClick={() => micToggle.toggle()}
-          disabled={micToggle.pending}
-          className="rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white p-1 sm:p-1.5 transition-colors disabled:opacity-50"
-          aria-label="Toggle microphone"
-        >
-          {micToggle.enabled ? (
-            <Mic className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          ) : (
-            <MicOff className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          )}
-        </button>
-
-        <button
-          onClick={toggleAudioMute}
-          className="rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white p-1 sm:p-1.5 transition-colors"
-          aria-label="Toggle audio output"
-        >
-          {isAudioMuted ? (
-            <VolumeX className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          ) : (
-            <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          )}
-        </button>
-
-        <button
-          onClick={onTextInputToggle}
-          className={`rounded-lg p-1 sm:p-1.5 transition-colors ${
-            isTextInputOpen
-              ? "bg-[#ffa02f] text-white"
-              : "bg-[#1d5479] hover:bg-[#1d5479]/80 text-white"
-          }`}
-          aria-label="Toggle text input"
-        >
-          <Keyboard className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-        </button>
-      </div>
       <div
-        className="w-[70px] sm:w-[130px] md:w-[200px] h-[32px] sm:h-[38px] md:h-[40px] bg-[#045687] p-1 pl-1.5 sm:pl-3 md:pl-4 ml-auto rounded-lg"
+        className="w-[200px] h-[32px] bg-[#045687] p-1 pl-1.5 sm:pl-3 md:pl-4 ml-auto rounded-lg"
         data-lk-theme="default"
       >
         <BarVisualizer
@@ -282,6 +247,101 @@ export function SessionManager({
           }
           className="w-full h-full drop-shadow-[0_0_8px_rgba(255,160,47,0.3)]"
         />
+      </div>
+      <div className="flex items-center gap-1 sm:gap-1.5 flex-1 mr-auto">
+        <button
+          onClick={() => {
+            flashLabel("disconnect");
+            handleDisconnect();
+          }}
+          className="group rounded-lg bg-red-500 hover:bg-red-600 text-white px-2 py-1 flex justify-center items-center  transition-all duration-200 overflow-hidden"
+          aria-label="Disconnect"
+        >
+          <SquareArrowRight className="h-6 w-6 shrink-0 px-1" />
+          <span
+            className={`whitespace-nowrap leading-none font-bold transition-all duration-400 text-md ${
+              clickedButton === "disconnect"
+                ? "max-w-40 opacity-100 "
+                : "max-w-0 opacity-0 group-hover:max-w-40 group-hover:opacity-100 "
+            }`}
+          >
+            {" "}
+            انهاء الجلسة
+          </span>
+        </button>
+
+        <button
+          onClick={() => {
+            flashLabel("mic");
+            micToggle.toggle();
+          }}
+          disabled={micToggle.pending}
+          className="group rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white px-2 py-1 flex justify-center items-center  transition-all duration-200 overflow-hidden disabled:opacity-50"
+          aria-label="Toggle microphone"
+        >
+          {micToggle.enabled ? (
+            <Mic className="h-6 w-6 shrink-0 px-1" />
+          ) : (
+            <MicOff className="h-6 w-6 shrink-0 px-1" />
+          )}
+          <span
+            className={`whitespace-nowrap leading-none font-bold transition-all duration-400 text-md ${
+              clickedButton === "mic"
+                ? "max-w-40 opacity-100 "
+                : "max-w-0 opacity-0 group-hover:max-w-40 group-hover:opacity-100 "
+            }`}
+          >
+            {micToggle.enabled ? "كتم الصوت" : "تشغيل الصوت"}
+          </span>
+        </button>
+
+        <button
+          onClick={() => {
+            flashLabel("audio");
+            toggleAudioMute();
+          }}
+          className="group rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white px-2 py-1 flex justify-center items-center  transition-all duration-200 overflow-hidden"
+          aria-label="Toggle audio output"
+        >
+          {isAudioMuted ? (
+            <VolumeX className="h-6 w-6 shrink-0 px-1" />
+          ) : (
+            <Volume2 className="h-6 w-6 shrink-0 px-1" />
+          )}
+          <span
+            className={`whitespace-nowrap leading-none font-bold transition-all duration-400 text-md ${
+              clickedButton === "audio"
+                ? "max-w-40 opacity-100 "
+                : "max-w-0 opacity-0 group-hover:max-w-40 group-hover:opacity-100 "
+            }`}
+          >
+            {isAudioMuted ? "تشغيل الصوت" : "كتم الصوت"}
+          </span>
+        </button>
+
+        <button
+          onClick={() => {
+            flashLabel("keyboard");
+            onTextInputToggle();
+          }}
+          className={`group rounded-lg px-2 py-1 flex justify-center items-center  transition-all duration-200 overflow-hidden ${
+            isTextInputOpen
+              ? "bg-[#ffa02f] text-white"
+              : "bg-[#1d5479] hover:bg-[#1d5479]/80 text-white"
+          }`}
+          aria-label="Toggle text input"
+        >
+          <Keyboard className="h-6 w-6 shrink-0 px-1" />
+          <span
+            className={`whitespace-nowrap leading-none font-bold transition-all duration-400 text-md ${
+              clickedButton === "keyboard"
+                ? "max-w-40 opacity-100 "
+                : "max-w-0 opacity-0 group-hover:max-w-40 group-hover:opacity-100 "
+            }`}
+          >
+            {isTextInputOpen ? "إغلاق لوحة المفاتيح" : "لوحة المفاتيح"}
+          </span>
+        </button>
       </div>
     </>
   );
