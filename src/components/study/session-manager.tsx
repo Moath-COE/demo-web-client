@@ -34,7 +34,7 @@ export function SessionManager({
   setSelectedSection,
   setActiveMarker,
   onAgentStateChange,
-  onCheckpointChange,
+  setCurrentCheckpointQuestion,
   onDisconnect,
   onTextInputToggle,
   isTextInputOpen,
@@ -144,10 +144,10 @@ export function SessionManager({
               descriptionClassName: "text-accent/80! italic!",
             });
           }
-        } else if (data.action === "set_checkpoint") {
-          if (data.checkpoint_question) {
-            onCheckpointChange(data.checkpoint_question);
-          }
+          setCurrentCheckpointQuestion({
+            question: data.question || "",
+            choices: data.choices || [],
+          });
         } else if (data.action === "section_done") {
           setSelectedSection(null);
         } else if (data.action === "remove_markers") {
@@ -200,7 +200,7 @@ export function SessionManager({
     setActiveMarker,
     setSelectedTopic,
     setSelectedSection,
-    onCheckpointChange,
+    setCurrentCheckpointQuestion,
     onDisconnect,
     setEndSessionMessage,
   ]);

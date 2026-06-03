@@ -41,9 +41,10 @@ export function AgentLauncher({
   const sendUserMessageRef = useRef<(message: string) => Promise<void>>(
     async () => {},
   );
-  const [currentCheckpointQuestion, setCurrentCheckpointQuestion] = useState<
-    string | null
-  >(null);
+  const [currentCheckpointQuestion, setCurrentCheckpointQuestion] = useState<{
+    question: string;
+    choices: string[];
+  } | null>(null);
   const [isTextInputOpen, setIsTextInputOpen] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -157,7 +158,7 @@ export function AgentLauncher({
     setActiveMarker({});
     setLauncherState("idle");
     setDropdownOpen(false);
-    setCurrentCheckpointQuestion(null);
+    setCurrentCheckpointQuestion({ question: "", choices: [] });
     setIsTextInputOpen(false);
     setAgentState("disconnected");
     setSelectedTopic(null);
@@ -193,7 +194,6 @@ export function AgentLauncher({
             setTextInput("");
           }}
           isSending={isSending}
-          checkpointQuestion={currentCheckpointQuestion}
         />
       )}
 
@@ -272,7 +272,7 @@ export function AgentLauncher({
                   setSelectedSection={setSelectedSection}
                   setActiveMarker={setActiveMarker}
                   onAgentStateChange={handleAgentStateChange}
-                  onCheckpointChange={setCurrentCheckpointQuestion}
+                  setCurrentCheckpointQuestion={setCurrentCheckpointQuestion}
                   onDisconnect={handleDisconnect}
                   onTextInputToggle={handleTextInputToggle}
                   isTextInputOpen={isTextInputOpen}
@@ -291,12 +291,13 @@ export function AgentLauncher({
             onStart={handleStart}
           />
         )}
-        {currentCheckpointQuestion && isAgentListening && (
+        {currentCheckpointQuestion?.question && isAgentListening && (
           <CheckpointPopup
-            question={currentCheckpointQuestion!}
+            question={currentCheckpointQuestion?.question || ""}
+            choices={currentCheckpointQuestion?.choices || []}
             onChoiceSelect={(choice) => {
               sendUserMessage(choice);
-              setCurrentCheckpointQuestion(null);
+              setCurrentCheckpointQuestion({ question: "", choices: [] });
             }}
           />
         )}
