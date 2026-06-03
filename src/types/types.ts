@@ -1,5 +1,4 @@
 import { CarouselApi } from "@/components/ui/carousel";
-import { Json } from "./database.types";
 export interface PageContentChunk {
   id: string;
   type: "paragraph" | "equation" | string;
