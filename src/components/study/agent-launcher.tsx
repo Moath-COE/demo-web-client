@@ -41,9 +41,10 @@ export function AgentLauncher({
   const sendUserMessageRef = useRef<(message: string) => Promise<void>>(
     async () => {},
   );
-  const [currentCheckpointQuestion, setCurrentCheckpointQuestion] = useState<
-    string | null
-  >(null);
+  const [currentCheckpointQuestion, setCurrentCheckpointQuestion] = useState<{
+    question: string;
+    choices: string[];
+  } | null>(null);
   const [isTextInputOpen, setIsTextInputOpen] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -157,7 +158,7 @@ export function AgentLauncher({
     setActiveMarker({});
     setLauncherState("idle");
     setDropdownOpen(false);
-    setCurrentCheckpointQuestion(null);
+    setCurrentCheckpointQuestion({ question: "", choices: [] });
     setIsTextInputOpen(false);
     setAgentState("disconnected");
     setSelectedTopic(null);
@@ -193,7 +194,6 @@ export function AgentLauncher({
             setTextInput("");
           }}
           isSending={isSending}
-          checkpointQuestion={currentCheckpointQuestion}
         />
       )}
 
@@ -203,7 +203,11 @@ export function AgentLauncher({
       >
         {isActive ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-1.5 sm:items-center ">
-            <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+            <DropdownMenu
+              open={dropdownOpen}
+              onOpenChange={setDropdownOpen}
+              dir="ltr"
+            >
               <DropdownMenuTrigger
                 asChild
                 disabled={!isActive}
@@ -251,7 +255,7 @@ export function AgentLauncher({
                       {topic.slug === selectedTopic?.slug ? (
                         <span className="relative flex h-3.5 w-3.5 shrink-0 items-center justify-center">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-                          <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-accent" />
+                          <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-accent " />
                         </span>
                       ) : (
                         <Circle className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
@@ -272,7 +276,7 @@ export function AgentLauncher({
                   setSelectedSection={setSelectedSection}
                   setActiveMarker={setActiveMarker}
                   onAgentStateChange={handleAgentStateChange}
-                  onCheckpointChange={setCurrentCheckpointQuestion}
+                  setCurrentCheckpointQuestion={setCurrentCheckpointQuestion}
                   onDisconnect={handleDisconnect}
                   onTextInputToggle={handleTextInputToggle}
                   isTextInputOpen={isTextInputOpen}
@@ -291,8 +295,15 @@ export function AgentLauncher({
             onStart={handleStart}
           />
         )}
-        {currentCheckpointQuestion && isAgentListening && (
-          <CheckpointPopup question={currentCheckpointQuestion!} />
+        {currentCheckpointQuestion?.question && isAgentListening && (
+          <CheckpointPopup
+            question={currentCheckpointQuestion?.question || ""}
+            choices={currentCheckpointQuestion?.choices || []}
+            onChoiceSelect={(choice) => {
+              sendUserMessage(choice);
+              setCurrentCheckpointQuestion({ question: "", choices: [] });
+            }}
+          />
         )}
         {FeedbackDialogOpen && (
           <FeedbackDialog

@@ -136,12 +136,13 @@ export function FeedbackDialog({
           </div>
         ) : (
           <>
-            <Alert className="max-w-md border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50 mb-4">
-              <AlertTriangleIcon />
-              <AlertTitle>تنببه</AlertTitle>
-              <AlertDescription>{endSessionMessage}</AlertDescription>
-            </Alert>
-
+            {endSessionMessage && (
+              <Alert className="max-w-md border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50 mb-4">
+                <AlertTriangleIcon />
+                <AlertTitle>تنببه</AlertTitle>
+                <AlertDescription>{endSessionMessage}</AlertDescription>
+              </Alert>
+            )}
             <DialogHeader className="pb-1">
               <DialogTitle className="text-[#fffdfd] text-lg flex items-center gap-2">
                 <MessageSquareText className="h-5 w-5 text-[#ffa02f]" />

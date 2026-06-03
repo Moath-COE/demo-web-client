@@ -6,7 +6,7 @@ export function CompletionCircle({
   total: number | null;
 }) {
   const hasData = total != null && total > 0;
-  const progress = hasData && current != null ? (current + 1) / total : 0;
+  const progress = hasData && current != null ? current / total : 0;
   const size = 20;
   const strokeWidth = 2.5;
   const radius = (size - strokeWidth) / 2;

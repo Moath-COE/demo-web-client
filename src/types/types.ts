@@ -45,7 +45,8 @@ export interface UIControlData {
   section?: string;
   number_of_sections?: number;
   current_section_index?: number;
-  checkpoint_question?: string;
+  question?: string;
+  choices?: string[];
   add?: { [key: string]: markerPayload };
   remove?: string[];
 }
@@ -78,7 +79,9 @@ export interface ConnectedStateHandlerProps {
     React.SetStateAction<Record<string, markerPayload>>
   >;
   onAgentStateChange: (state: string) => void;
-  onCheckpointChange: (question: string | null) => void;
+  setCurrentCheckpointQuestion: (
+    question: { question: string; choices: string[] } | null,
+  ) => void;
   onDisconnect: () => void;
   onTextInputToggle: () => void;
   isTextInputOpen: boolean;

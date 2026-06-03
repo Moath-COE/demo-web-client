@@ -1,6 +1,7 @@
 import "@livekit/components-styles";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { Toaster } from "@/components/ui/sonner";
 
 export default async function Layout({
   children,
@@ -12,5 +13,17 @@ export default async function Layout({
     redirect("/sign-in");
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <Toaster
+        dir="ltr"
+        toastOptions={{
+          classNames: {
+            icon: "text-accent/80!",
+          },
+        }}
+      />
+    </>
+  );
 }

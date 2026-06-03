@@ -25,6 +25,7 @@ import {
   Keyboard,
 } from "lucide-react";
 import { ConnectedStateHandlerProps, UIControlData } from "@/types/types";
+import { toast } from "sonner";
 
 export function SessionManager({
   api,
@@ -33,7 +34,7 @@ export function SessionManager({
   setSelectedSection,
   setActiveMarker,
   onAgentStateChange,
-  onCheckpointChange,
+  setCurrentCheckpointQuestion,
   onDisconnect,
   onTextInputToggle,
   isTextInputOpen,
@@ -136,11 +137,17 @@ export function SessionManager({
               name: data.section,
               index: data.current_section_index || 0,
             });
+            toast.info("Section Started", {
+              description: `${data.section}`,
+              position: "bottom-right",
+              className: "bg-background! text-foreground!",
+              descriptionClassName: "text-accent/80! italic!",
+            });
           }
-        } else if (data.action === "set_checkpoint") {
-          if (data.checkpoint_question) {
-            onCheckpointChange(data.checkpoint_question);
-          }
+          setCurrentCheckpointQuestion({
+            question: data.question || "",
+            choices: data.choices || [],
+          });
         } else if (data.action === "section_done") {
           setSelectedSection(null);
         } else if (data.action === "remove_markers") {
@@ -193,7 +200,7 @@ export function SessionManager({
     setActiveMarker,
     setSelectedTopic,
     setSelectedSection,
-    onCheckpointChange,
+    setCurrentCheckpointQuestion,
     onDisconnect,
     setEndSessionMessage,
   ]);
