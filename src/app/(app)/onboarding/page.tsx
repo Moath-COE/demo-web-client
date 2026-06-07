@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useUser, UserButton } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDatabase } from "@/context/databaseContext";
 import {
   Card,
@@ -40,8 +40,13 @@ const LEVELS = [
   { value: "5", label: "السنة الخامسة" },
 ];
 
-export default function OnboardingPage() {
+function OnboardingPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect_url");
+  const pendingCourseId = redirectUrl
+    ? new URL(redirectUrl, "http://localhost").searchParams.get("course")
+    : null;
 
   const [institutions, setInstitutions] = useState<Institution[]>([]);
   const [majors, setMajors] = useState<Major[]>([]);
@@ -136,7 +141,30 @@ export default function OnboardingPage() {
       }
 
       await user?.reload();
-      router.push("/my-library");
+
+      if (pendingCourseId) {
+        try {
+          const enrollRes = await fetch("/api/enroll", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ courseId: pendingCourseId }),
+          });
+          if (enrollRes.ok || enrollRes.status === 409) {
+            router.push("/my-library");
+            return;
+          }
+        } catch {
+          // auto-enroll failed, fall through
+        }
+      }
+
+      const safeRedirect =
+        redirectUrl &&
+        redirectUrl.startsWith("/") &&
+        !redirectUrl.startsWith("//")
+          ? redirectUrl
+          : "/enroll";
+      router.push(safeRedirect);
     } catch {
       setError("حدث خطأ في الاتصال");
       setSubmitting(false);
@@ -242,5 +270,13 @@ export default function OnboardingPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense>
+      <OnboardingPageContent />
+    </Suspense>
   );
 }

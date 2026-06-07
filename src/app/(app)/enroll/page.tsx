@@ -193,8 +193,13 @@ function EnrollPageContent() {
   const handleEnroll = useCallback(
     async (courseId: string) => {
       if (!isSignedIn) {
-        const currentUrl = window.location.pathname + window.location.search;
-        router.push(`/sign-in?redirect_url=${encodeURIComponent(currentUrl)}`);
+        const enrollUrl = buildEnrollUrl({
+          q: searchQuery.trim() || undefined,
+          institution: selectedInstitution || undefined,
+          major: selectedMajor || undefined,
+        });
+        const urlWithCourse = `${enrollUrl}${enrollUrl.includes("?") ? "&" : "?"}course=${courseId}`;
+        router.push(`/sign-up?redirect_url=${encodeURIComponent(urlWithCourse)}`);
         return;
       }
 
@@ -226,7 +231,7 @@ function EnrollPageContent() {
         setEnrollingCourseId(null);
       }
     },
-    [isSignedIn, router],
+    [isSignedIn, router, searchQuery, selectedInstitution, selectedMajor],
   );
 
   if (loading) {

@@ -3,9 +3,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen } from "lucide-react";
+import { BookOpen, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import { useDatabase } from "@/context/databaseContext";
 import { useEffect, useState } from "react";
 import CourseLoading from "@/components/library-dashboard/loadingCourseCards";
@@ -95,6 +96,26 @@ export default function LibraryPage() {
           </Card>
         ))}
       </div>
+
+      {courses.length === 0 && (
+        <div className="flex flex-col items-center justify-center gap-4 py-16">
+          <div className="rounded-full bg-muted/50 p-4">
+            <BookOpen className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <div className="text-center space-y-1">
+            <p className="text-lg font-medium">لا توجد دورات مسجلة</p>
+            <p className="text-sm text-muted-foreground">
+              ابدأ رحلتك التعليمية بالتسجيل في إحدى الدورات المتاحة
+            </p>
+          </div>
+          <Button asChild className="bg-gradient-to-r from-[#1d5479] to-[#ffa02f] hover:from-[#0e293c] hover:to-[#ff8c00] text-white">
+            <Link href="/enroll" className="flex items-center gap-2">
+              استكشف الدورات
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

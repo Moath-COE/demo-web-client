@@ -150,7 +150,7 @@ export function SessionManager({
             });
             toast.info(`Section ${data.current_section_index || 0} Started`, {
               description: `${data.section}`,
-              position: "bottom-right",
+              position: "bottom-left",
               className: "bg-background! text-foreground!",
               descriptionClassName: "text-accent/80! italic!",
             });
