@@ -1,7 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { LibraryTour } from "@/components/tours/library-tour";
 import { MobileWarningPopup } from "@/components/mobile-warning-popup";
 
 export default function LibraryLayout({
@@ -24,7 +23,6 @@ export default function LibraryLayout({
         <SiteHeader />
         {children}
       </SidebarInset>
-      <LibraryTour />
     </SidebarProvider>
   );
 }

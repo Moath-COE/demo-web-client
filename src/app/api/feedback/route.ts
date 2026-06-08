@@ -24,13 +24,7 @@ async function findTraceIdBySessionId(
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const {
-      sessionId,
-      conceptExplanation,
-      voiceQuality,
-      understanding,
-      notes,
-    } = body;
+    const { sessionId, sessionExperience, notes } = body;
 
     if (!sessionId) {
       return NextResponse.json(
@@ -66,26 +60,10 @@ export async function POST(req: NextRequest) {
           name: "session-feedback",
         });
 
-    if (conceptExplanation != null) {
+    if (sessionExperience != null) {
       trace.score({
-        name: "concept-explanation-rating",
-        value: conceptExplanation,
-        dataType: "NUMERIC",
-      });
-    }
-
-    if (voiceQuality != null) {
-      trace.score({
-        name: "voice-quality-rating",
-        value: voiceQuality,
-        dataType: "NUMERIC",
-      });
-    }
-
-    if (understanding != null) {
-      trace.score({
-        name: "understanding-rating",
-        value: understanding,
+        name: "session-experience-rating",
+        value: sessionExperience,
         dataType: "NUMERIC",
       });
     }

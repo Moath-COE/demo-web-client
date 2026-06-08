@@ -25,6 +25,7 @@ export async function GET(request: Request) {
       chapter_id: chapterId,
       language,
       user_name: userName,
+      user_id: userId,
     },
   });
   const now = new Date();

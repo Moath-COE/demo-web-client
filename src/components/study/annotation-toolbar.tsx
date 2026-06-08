@@ -18,7 +18,7 @@ export function AnnotationToolbar({ onAIToggle, sidebarOpen }: AnnotationToolbar
           variant="ghost"
           size="icon"
           className="h-9 w-9 rounded-full hover:bg-white/10 text-white"
-          title="Pen tool"
+          aria-label="Pen tool"
         >
           <PenTool className="h-4 w-4" />
         </Button>
@@ -28,7 +28,7 @@ export function AnnotationToolbar({ onAIToggle, sidebarOpen }: AnnotationToolbar
           variant="ghost"
           size="icon"
           className="h-9 w-9 rounded-full hover:bg-white/10 text-white"
-          title="Highlighter tool"
+          aria-label="Highlighter tool"
         >
           <Highlighter className="h-4 w-4" />
         </Button>
@@ -38,7 +38,7 @@ export function AnnotationToolbar({ onAIToggle, sidebarOpen }: AnnotationToolbar
           variant="ghost"
           size="icon"
           className="h-9 w-9 rounded-full hover:bg-white/10 text-white"
-          title="Eraser tool"
+          aria-label="Eraser tool"
         >
           <Eraser className="h-4 w-4" />
         </Button>
@@ -52,7 +52,7 @@ export function AnnotationToolbar({ onAIToggle, sidebarOpen }: AnnotationToolbar
           size="icon"
           onClick={onAIToggle}
           className="h-9 w-9 rounded-full hover:bg-blue-500/20 text-blue-400 transition-colors"
-          title="Open AI assistant"
+          aria-label="Open AI assistant"
         >
           <Zap className="h-4 w-4" />
         </Button>

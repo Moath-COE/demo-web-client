@@ -357,6 +357,7 @@ export type Database = {
           institution_id: number | null
           level: number | null
           major_id: number | null
+          phone_number: string | null
           quota_tier_id: number
           status: string | null
         }
@@ -366,6 +367,7 @@ export type Database = {
           institution_id?: number | null
           level?: number | null
           major_id?: number | null
+          phone_number?: string | null
           quota_tier_id?: number
           status?: string | null
         }
@@ -375,6 +377,7 @@ export type Database = {
           institution_id?: number | null
           level?: number | null
           major_id?: number | null
+          phone_number?: string | null
           quota_tier_id?: number
           status?: string | null
         }

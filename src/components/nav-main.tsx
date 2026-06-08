@@ -32,7 +32,6 @@ export function NavMain({
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
               data-tour-id="add-courses-btn"
-              tooltip="إضافة مزيد من المواد لمكتبتك"
               className="cursor-pointer bg-accent text-primary-foreground hover:bg-accent/90 hover:text-primary-foreground min-w-8 duration-200 ease-linear"
               onClick={() => router.push("/enroll")}
             >
@@ -46,7 +45,6 @@ export function NavMain({
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 className="bg-background text-primary-foreground cursor-pointer"
-                tooltip={item.title}
                 // isActive={index === 0}
                 // disabled={index !== 0}
               >
