@@ -33,16 +33,8 @@ interface RatingQuestion {
 
 const QUESTIONS: RatingQuestion[] = [
   {
-    id: "conceptExplanation",
-    question: "ما هو تقييمك لشرح سند للمفاهيم؟",
-  },
-  {
-    id: "voiceQuality",
-    question: "كيف كانت جودة صوت سند؟",
-  },
-  {
-    id: "understanding",
-    question: "كيف تقيم فهم سند لكلامك؟ (اسئلتك واجوبتك)",
+    id: "sessionExperience",
+    question: "ما هو تقييمك لتجربة التعلم مع سند؟",
   },
 ];
 
@@ -53,9 +45,7 @@ export function FeedbackDialog({
   endSessionMessage,
 }: FeedbackDialogProps) {
   const [ratings, setRatings] = useState<Record<string, number | null>>({
-    conceptExplanation: null,
-    voiceQuality: null,
-    understanding: null,
+    sessionExperience: null,
   });
   const [notes, setNotes] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -76,9 +66,7 @@ export function FeedbackDialog({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sessionId: roomName,
-          conceptExplanation: ratings.conceptExplanation,
-          voiceQuality: ratings.voiceQuality,
-          understanding: ratings.understanding,
+          sessionExperience: ratings.sessionExperience,
           notes,
         }),
       });

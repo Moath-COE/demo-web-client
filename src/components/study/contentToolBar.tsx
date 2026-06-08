@@ -32,7 +32,6 @@ export function ContentToolbar({
         onClick={handleZoomOut}
         className="p-1 sm:p-2 rounded hover:bg-[#ffa02f] text-[#fffdfd] transition-colors"
         aria-label="Zoom out"
-        title="Zoom out"
       >
         <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
       </button>
@@ -45,7 +44,6 @@ export function ContentToolbar({
         onClick={handleZoomIn}
         className="p-1 sm:p-2 rounded hover:bg-[#ffa02f] text-[#fffdfd] transition-colors"
         aria-label="Zoom in"
-        title="Zoom in"
       >
         <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
       </button>

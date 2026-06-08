@@ -21,9 +21,9 @@ export default clerkMiddleware(async (auth, req) => {
   if (!isAuthenticated && isProtectedRoute(req))
     return redirectToSignIn({ returnBackUrl: req.url });
 
-  // Catch users who do not have `onboardingComplete: true` in their publicMetadata
-  // Redirect them to the /onboarding route to complete onboarding
-  if (isAuthenticated && !sessionClaims?.metadata?.onboardingComplete) {
+  // Catch users who have not yet submitted their phone number
+  // Redirect them to the /onboarding route to complete the phone step
+  if (isAuthenticated && !sessionClaims?.metadata?.phoneNumberCollected) {
     const onboardingUrl = new URL("/onboarding", req.url);
     const originalPath = req.nextUrl.pathname + req.nextUrl.search;
     if (originalPath && originalPath !== "/") {
