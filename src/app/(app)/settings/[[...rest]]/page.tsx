@@ -30,12 +30,10 @@ import {
 } from "lucide-react";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
-type QuotaTier = Database["public"]["Tables"]["quota_tiers"]["Row"];
 type Institution = Database["public"]["Tables"]["institutions"]["Row"];
 type Major = Database["public"]["Tables"]["majors"]["Row"];
 
 type ProfileWithRelations = Profile & {
-  quota_tiers: QuotaTier | null;
   institutions: Institution | null;
   majors: Major | null;
 };
@@ -53,7 +51,6 @@ export default function Settings() {
   const supabase = useDatabase();
   const { user } = useUser();
 
-  const [tier, setTier] = useState<QuotaTier | null>(null);
   const [institution, setInstitution] = useState<Institution | null>(null);
   const [major, setMajor] = useState<Major | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -85,7 +82,6 @@ export default function Settings() {
       if (profileRes.data) {
         const profileData = profileRes.data as unknown as ProfileWithRelations;
         setProfile(profileRes.data as unknown as Profile);
-        setTier(profileData.quota_tiers);
         setInstitution(profileData.institutions);
         setMajor(profileData.majors);
       }
@@ -108,7 +104,7 @@ export default function Settings() {
 
       <div className="container mx-auto max-w-4xl px-4 sm:px-6 pb-16 space-y-8">
         <div className="grid gap-6 md:grid-cols-2">
-          <TierCard tier={tier} loading={loading} />
+          <TierCard loading={loading} />
           <AcademicInfoCard
             institution={institution}
             major={major}
@@ -123,13 +119,7 @@ export default function Settings() {
   );
 }
 
-function TierCard({
-  tier,
-  loading,
-}: {
-  tier: QuotaTier | null;
-  loading: boolean;
-}) {
+function TierCard({ loading }: { loading: boolean }) {
   return (
     <Card className="relative overflow-hidden border-[#1d5479]/30 bg-[#0e293c]/95 backdrop-blur-sm shadow-md hover:shadow-lg transition-shadow duration-300">
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-l from-[#ffa02f] via-[#e8942b] to-[#045687]" />
@@ -144,59 +134,10 @@ function TierCard({
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {loading ? (
-          <div className="space-y-3">
-            <Skeleton className="h-7 w-32" />
-            <div className="grid grid-cols-3 gap-3">
-              <Skeleton className="h-16 w-full rounded-xl" />
-              <Skeleton className="h-16 w-full rounded-xl" />
-              <Skeleton className="h-16 w-full rounded-xl" />
-            </div>
-          </div>
-        ) : tier ? (
-          <>
-            <div className="flex items-center gap-2">
-              <Badge className="bg-gradient-to-l from-[#ffa02f] to-[#e8942b] text-white border-0 px-3 py-1 text-sm font-semibold shadow-sm">
-                {tier.name}
-              </Badge>
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              <div className="flex flex-col items-center gap-1 rounded-xl bg-gradient-to-b from-[#1b3d54] to-[#133848] p-3 border border-[#1d5479]/20">
-                <Zap className="h-4 w-4 text-[#ffa02f] mb-1" />
-                <span className="text-xl font-bold text-[#e8f0f5]">
-                  {tier.max_daily_sessions}
-                </span>
-                <span className="text-[10px] text-[#8faabb] leading-tight text-center">
-                  جلسات/يوم
-                </span>
-              </div>
-              <div className="flex flex-col items-center gap-1 rounded-xl bg-gradient-to-b from-[#1b3d54] to-[#133848] p-3 border border-[#1d5479]/20">
-                <Clock className="h-4 w-4 text-[#5ba3cc] mb-1" />
-                <span className="text-xl font-bold text-[#e8f0f5]">
-                  {tier.max_daily_minutes}
-                </span>
-                <span className="text-[10px] text-[#8faabb] leading-tight text-center">
-                  دقيقة/يوم
-                </span>
-              </div>
-              <div className="flex flex-col items-center gap-1 rounded-xl bg-gradient-to-b from-[#1b3d54] to-[#133848] p-3 border border-[#1d5479]/20">
-                <Timer className="h-4 w-4 text-[#8faabb] mb-1" />
-                <span className="text-xl font-bold text-[#e8f0f5]">
-                  {tier.max_session_minutes}
-                </span>
-                <span className="text-[10px] text-[#8faabb] leading-tight text-center">
-                  دقيقة/جلسة
-                </span>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex items-center gap-2 text-[#8faabb] text-sm py-2">
-            <AlertCircle className="h-4 w-4" />
-            <span>لم يتم تحديد خطة بعد</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2 text-[#8faabb] text-sm py-2">
+          <AlertCircle className="h-4 w-4" />
+          <span>لم يتم تحديد خطة بعد</span>
+        </div>
       </CardContent>
     </Card>
   );
