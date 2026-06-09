@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-09T00:00:00.000Z",
+  "title": "Design System: Sanad",
+  "extensions": {
+    "colorMeta": {
+      "sanad-blue": {
+        "role": "primary",
+        "displayName": "Sanad Blue",
+        "canonical": "#0e293c",
+        "tonalRamp": ["oklch(15% 0.035 240)", "oklch(24% 0.045 240)", "oklch(32% 0.055 240)", "oklch(42% 0.060 240)", "oklch(54% 0.055 240)", "oklch(68% 0.040 240)", "oklch(82% 0.025 240)", "oklch(95% 0.010 240)"]
+      },
+      "sanad-blue-strong": {
+        "role": "primary",
+        "displayName": "Sanad Action Blue",
+        "canonical": "#045687",
+        "tonalRamp": ["oklch(18% 0.050 245)", "oklch(28% 0.070 245)", "oklch(38% 0.085 245)", "oklch(48% 0.095 245)", "oklch(60% 0.085 245)", "oklch(72% 0.060 245)", "oklch(84% 0.035 245)", "oklch(95% 0.015 245)"]
+      },
+      "chapter-gold": {
+        "role": "secondary",
+        "displayName": "Chapter Gold",
+        "canonical": "#ffa02f",
+        "tonalRamp": ["oklch(22% 0.060 65)", "oklch(34% 0.080 65)", "oklch(46% 0.100 65)", "oklch(58% 0.120 65)", "oklch(70% 0.130 65)", "oklch(80% 0.095 65)", "oklch(89% 0.055 65)", "oklch(96% 0.020 65)"]
+      },
+      "surface-card": {
+        "role": "neutral",
+        "displayName": "Course Card White",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#0e293c", "#1b3d54", "#2e5c72", "#8faabb", "#b0c4cf", "#d1d5db", "#f5f8fa", "#ffffff"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Landing hero and rare brand moments only." },
+      "headline": { "displayName": "Headline", "purpose": "Page titles and major student task screens." },
+      "title": { "displayName": "Title", "purpose": "Cards, dialogs, section titles, and study controls." },
+      "body": { "displayName": "Body", "purpose": "Arabic guidance, legal copy, empty states, and learning prose." },
+      "label": { "displayName": "Label", "purpose": "Buttons, navigation, metadata, and compact UI labels." }
+    },
+    "shadows": [
+      { "name": "course-hover-lift", "value": "0 10px 15px -3px rgb(0 0 0 / 0.10), 0 4px 6px -4px rgb(0 0 0 / 0.10)", "purpose": "Clickable course cards on hover only." },
+      { "name": "cta-lift", "value": "0 8px 8px -4px rgb(4 86 135 / 0.20)", "purpose": "Landing page CTAs only, never paired with a decorative border." },
+      { "name": "overlay-focus", "value": "0 0 0 3px rgb(255 160 47 / 0.35)", "purpose": "Focus-visible and guided attention states." }
+    ],
+    "motion": [
+      { "name": "state-fast", "value": "150ms cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Hover, focus, and compact control transitions." },
+      { "name": "state-standard", "value": "220ms cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Card hover, panel entry, and study tool state changes." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main product action with Sanad Action Blue and a clear focus ring.",
+      "html": "<button class='ds-btn-primary'>ابدأ الدراسة</button>",
+      "css": ".ds-btn-primary { background: #045687; color: #fffdfd; border: 0; border-radius: 8px; padding: 8px 16px; min-height: 36px; font-family: Cairo, Geist, sans-serif; font-size: 14px; font-weight: 600; transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-primary:hover { background: #0e293c; } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: 3px solid rgb(255 160 47 / 0.35); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Toolbar Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Low-emphasis toolbar or navigation action for study controls.",
+      "html": "<button class='ds-btn-ghost'>عرض الخيارات</button>",
+      "css": ".ds-btn-ghost { background: transparent; color: #fffdfd; border: 0; border-radius: 8px; padding: 8px 12px; min-height: 34px; font-family: Cairo, Geist, sans-serif; font-size: 14px; font-weight: 500; transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-ghost:hover { background: rgb(255 255 255 / 0.10); } .ds-btn-ghost:focus-visible { outline: 3px solid rgb(255 160 47 / 0.35); outline-offset: 2px; }"
+    },
+    {
+      "name": "Course Card",
+      "kind": "card",
+      "refersTo": "card-course",
+      "description": "Clickable course surface with white content material and restrained hover lift.",
+      "html": "<article class='ds-course-card'><div class='ds-course-media'></div><div class='ds-course-body'><h3>أساسيات الذكاء الاصطناعي</h3><p>المستوى 1</p></div></article>",
+      "css": ".ds-course-card { overflow: hidden; background: #ffffff; color: #0e293c; border: 1px solid #d1d5db; border-radius: 10px; font-family: Cairo, Geist, sans-serif; transition: box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1), transform 220ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-course-card:hover { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.10), 0 4px 6px -4px rgb(0 0 0 / 0.10); transform: translateY(-1px); } .ds-course-media { aspect-ratio: 16 / 9; background: linear-gradient(135deg, #0e293c, #045687); } .ds-course-body { padding: 16px; } .ds-course-body h3 { margin: 0 0 8px; font-size: 18px; line-height: 1.35; font-weight: 700; } .ds-course-body p { margin: 0; color: #0e293c; font-size: 14px; opacity: 0.76; }"
+    },
+    {
+      "name": "Guidance Chip",
+      "kind": "chip",
+      "refersTo": "chip-guidance",
+      "description": "Compact rounded cue for study attributes, guidance, or progress labels.",
+      "html": "<span class='ds-chip'>محتوى تفاعلي</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; background: #1b3d54; color: #fffdfd; border: 1px solid rgb(255 255 255 / 0.12); border-radius: 14px; padding: 6px 12px; font-family: Cairo, Geist, sans-serif; font-size: 13px; font-weight: 500; line-height: 1; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "description": "White form control with soft border and gold focus ring.",
+      "html": "<label class='ds-field'><span>اسم الطالب</span><input placeholder='اكتب الاسم' /></label>",
+      "css": ".ds-field { display: grid; gap: 8px; color: #0e293c; font-family: Cairo, Geist, sans-serif; font-size: 14px; font-weight: 500; } .ds-field input { min-height: 40px; background: #ffffff; color: #0e293c; border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 12px; font: inherit; font-weight: 400; } .ds-field input::placeholder { color: rgb(14 41 60 / 0.70); } .ds-field input:focus-visible { outline: 3px solid rgb(255 160 47 / 0.35); border-color: #ffa02f; }"
+    },
+    {
+      "name": "Sidebar Item",
+      "kind": "nav",
+      "description": "Compact RTL navigation item for the authenticated product shell.",
+      "html": "<a class='ds-sidebar-item' href='#'>مكتبتي</a>",
+      "css": ".ds-sidebar-item { display: inline-flex; align-items: center; justify-content: flex-start; min-height: 36px; padding: 8px 10px; border-radius: 8px; background: transparent; color: #fffdfd; font-family: Cairo, Geist, sans-serif; font-size: 14px; font-weight: 500; text-decoration: none; transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-sidebar-item:hover { background: rgb(255 160 47 / 0.16); color: #fffdfd; } .ds-sidebar-item:focus-visible { outline: 3px solid rgb(255 160 47 / 0.35); outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Tutor Beside You",
+    "overview": "Sanad's visual system should feel like a capable tutor sitting beside the student: present, calm, and precise. The interface supports study rather than performing for attention. Its strongest surfaces are dark Sanad Blue foundations, white content material when needed, and a limited Chapter Gold signal for guidance, progress, and primary moments.",
+    "keyCharacteristics": [
+      "Arabic-first RTL structure with Cairo as the defining voice.",
+      "Restrained product UI with dark blue foundations and rare gold emphasis.",
+      "Course content and study assistance are the visual center, not decoration.",
+      "Familiar shadcn/ui interaction vocabulary with careful RTL behavior.",
+      "Student comfort wins over information density unless the surface is explicitly administrative."
+    ],
+    "rules": [
+      { "name": "The Gold Means Guidance Rule", "body": "Chapter Gold is not decoration. If a gold element does not signal action, progress, focus, or instructional guidance, remove it.", "section": "colors" },
+      { "name": "The No Decorative Display Rule", "body": "Product UI labels, buttons, tabs, and study controls always use the normal Cairo product scale. Display sizing belongs to the landing page and a few brand moments, not daily workflow.", "section": "typography" },
+      { "name": "The Dense Only When Needed Rule", "body": "Compact spacing and heavier data density are permitted for admin or operational tasks. Student-facing study and library screens stay comfortable first.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep Arabic RTL behavior correct across layout, overlays, form controls, and navigation.",
+      "Do use Sanad Blue for product structure and Chapter Gold only for guidance, action, progress, or focus.",
+      "Do favor comfortable student reading space over dense dashboards on student-facing surfaces.",
+      "Do use familiar shadcn/ui affordances for buttons, dialogs, sidebars, tabs, and menus.",
+      "Do make the next action obvious in library, enrollment, and study flows."
+    ],
+    "donts": [
+      "Don't make Sanad look like a childish tutor app. Avoid cartoonish cues, toy-like controls, excessive gamification, and mascot-led UI.",
+      "Don't make student screens feel like dense admin dashboards. Avoid cramped tables, heavy metadata blocks, and cold operational layouts.",
+      "Don't use decorative gradients as the default button or heading treatment in product UI.",
+      "Don't use Chapter Gold as ambient decoration. Its rarity is the point.",
+      "Don't hide standard affordances behind custom controls, clipped dropdowns, or non-obvious gestures."
+    ]
+  }
+}

@@ -104,6 +104,11 @@ v24.12.0 (`.nvmrc`). Run `nvm use` before any command.
 - All user-facing text must be Arabic.
 - No comments in code unless explicitly asked.
 
+## Design Context
+
+- `PRODUCT.md` is the strategic design reference for Sanad: product register, users, purpose, voice, anti-references, and accessibility priorities.
+- `DESIGN.md` is the visual system reference for colors, typography, elevation, components, and design guardrails.
+
 ## Gotchas
 
 - Root layout wraps with `ClerkProvider` (`arSA`) + `DirectionProvider` (RTL) — do not duplicate in child layouts.
