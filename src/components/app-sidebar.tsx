@@ -20,7 +20,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-import { useUser } from "@clerk/nextjs";
+const DEMO_USER = {
+  name: "طالب تجريبي",
+  email: "demo@example.com",
+  avatar: "",
+};
 
 const data = {
   user: {
@@ -58,7 +62,6 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useUser();
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -88,9 +91,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter className="pt-2 border-t border-[#1d5479]">
         <NavUser
           user={{
-            name: user?.fullName || "",
-            email: user?.primaryEmailAddress?.emailAddress || "",
-            avatar: user?.imageUrl || "",
+            name: DEMO_USER.name,
+            email: DEMO_USER.email,
+            avatar: DEMO_USER.avatar,
           }}
         />
       </SidebarFooter>

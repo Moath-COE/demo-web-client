@@ -2,27 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { PdfCanvas } from "@/components/study/pdfCanvas";
-import { useParams } from "next/navigation";
-import { useDatabase } from "@/context/databaseContext";
 import { CarouselApi } from "@/components/ui/carousel";
 import { markerPayload, Topic } from "@/types/types";
 import { TopNav } from "@/components/study/top-nav";
 import { AgentLauncher } from "@/components/study/agent-launcher";
 
-export default function Study() {
-  const params = useParams<{
-    course: string | string[];
-    chapter: string | string[];
-  }>();
+const DEMO_COURSE_SLUG = "demo";
+const DEMO_CHAPTER_INDEX = 1;
+const DEMO_CHAPTER_TITLE = "الفصل التجريبي";
+const DEMO_PDF_URL =
+  "https://snd-zone.b-cdn.net/courses/demo/ch_1/Lecture%201%20%20-%20Tagged_260503_215153.pdf";
 
-  const courseSlug = Array.isArray(params.course)
-    ? params.course[0]
-    : params.course || "";
-  const chapterIndex = parseInt(
-    Array.isArray(params.chapter) ? params.chapter[0] : params.chapter || "1",
-  );
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [chapterTitle, setChapterTitle] = useState<string | null>(null);
+export default function StudyClient() {
+  const courseSlug = DEMO_COURSE_SLUG;
+  const chapterIndex = DEMO_CHAPTER_INDEX;
+  const pdfUrl = DEMO_PDF_URL || null;
+  const chapterTitle = DEMO_CHAPTER_TITLE;
 
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
@@ -32,30 +27,7 @@ export default function Study() {
     Record<string, markerPayload>
   >({});
 
-  const supabase = useDatabase();
-
   useEffect(() => {
-    async function fetchChapterPDF() {
-      const { data: chapter, error } = await supabase
-        .from("chapters")
-        .select(
-          `
-          *,
-          courses!inner(slug)
-        `,
-        )
-        .eq("courses.slug", courseSlug)
-        .eq("order_index", chapterIndex)
-        .single();
-
-      if (error) {
-        console.error("Error fetching courses:", error);
-        return { pdf_url: null };
-      }
-      setPdfUrl(chapter?.pdf_url || null);
-      setChapterTitle(chapter?.title || null);
-    }
-
     async function fetchTopicsJSON() {
       try {
         const response = await fetch(
@@ -74,11 +46,8 @@ export default function Study() {
       }
     }
 
-    if (chapterIndex) {
-      fetchChapterPDF();
-      fetchTopicsJSON();
-    }
-  }, [courseSlug, chapterIndex, supabase]);
+    fetchTopicsJSON();
+  }, [courseSlug, chapterIndex]);
 
   return (
     <div

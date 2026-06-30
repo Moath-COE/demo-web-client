@@ -5,7 +5,6 @@ import { Circle, ChevronDown } from "lucide-react";
 import { useSession, SessionProvider } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { TokenSource } from "livekit-client";
-import { useUser } from "@clerk/nextjs";
 import { LauncherState, StudyLauncherProps } from "@/types/types";
 import { TextInputPopup } from "@/components/study/text-input-popup";
 import { CheckpointPopup } from "@/components/study/checkpoint-popup";
@@ -31,8 +30,8 @@ export function AgentLauncher({
 }: StudyLauncherProps) {
   const [launcherState, setLauncherState] = useState<LauncherState>("idle");
 
+  const DEMO_USER_NAME = "طالب سند";
   const [language, setLanguage] = useState<"English" | "Arabic">("English");
-  const { user } = useUser();
   const chapterId = "ch_" + chapterIndex;
 
   const [agentState, setAgentState] = useState<string>("disconnected");
@@ -71,7 +70,7 @@ export function AgentLauncher({
           course_id: courseSlug,
           chapter_id: chapterId,
           language,
-          user_name: user?.fullName ?? "undefined",
+          user_name: DEMO_USER_NAME,
         });
 
         const response = await fetch("/api/get-lk-token?" + params.toString(), {
@@ -85,7 +84,7 @@ export function AgentLauncher({
           participantToken,
         };
       }),
-    [courseSlug, chapterId, language, user],
+    [courseSlug, chapterId, language],
   );
   const session = useSession(tokenSource);
 
@@ -312,14 +311,14 @@ export function AgentLauncher({
             }}
           />
         )}
-        {FeedbackDialogOpen && (
+        {/* {FeedbackDialogOpen && (
           <FeedbackDialog
             onClose={() => setFeedbackDialogOpen(false)}
             open={FeedbackDialogOpen}
             roomName={roomName!}
             endSessionMessage={endSessionMessage!}
           />
-        )}
+        )} */}
       </div>
     </>
   );

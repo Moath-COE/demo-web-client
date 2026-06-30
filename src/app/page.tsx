@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import {
   Sparkles,
@@ -39,28 +38,16 @@ export default function Home() {
 
         <header className="w-full px-6 sm:px-8 lg:px-12 py-5 flex items-center justify-between relative z-10 shrink-0">
           <div className="flex items-center gap-3 sm:gap-4">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <Button
-                  size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-colors duration-200 rounded-lg px-5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                >
-                  تسجيل الدخول
-                </Button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <Button
-                asChild
-                size="sm"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-colors duration-200 rounded-lg px-5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              >
-                <Link href="/my-library" className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4" />
-                  مكتبة الدورات
-                </Link>
-              </Button>
-            </SignedIn>
+            <Button
+              asChild
+              size="sm"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-colors duration-200 rounded-lg px-5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <Link href="/my-library" className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4" />
+                مكتبة الدورات
+              </Link>
+            </Button>
           </div>
 
           <div className="flex items-center gap-3">
@@ -68,7 +55,7 @@ export default function Home() {
               Chapter-14
             </span>
             <Link
-              href="/about"
+              href="/"
               className="hover:opacity-80 transition-opacity focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
             >
               <Image
@@ -112,14 +99,14 @@ export default function Home() {
             <div className="flex flex-col items-center gap-4">
               <div className="flex flex-col sm:flex-row items-center gap-3">
                 <Link
-                  href="/sanad"
+                  href="/my-library"
                   className="inline-flex items-center gap-2 text-foreground/70 hover:text-foreground hover:bg-muted/20 border border-border/30 hover:border-border/60 px-8 py-3 sm:px-10 sm:py-4 rounded-xl font-medium text-sm sm:text-base transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   <Sparkles className="w-4 h-4" />
-                  تعرّف على سند
+                  مكتبتي
                 </Link>
                 <Link
-                  href="/enroll"
+                  href="/study"
                   className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-8 py-3 sm:px-10 sm:py-4 rounded-xl font-bold text-base sm:text-lg hover:bg-accent/90 transition-colors shadow-lg shadow-accent/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   ابدأ مع سند الآن
@@ -136,12 +123,6 @@ export default function Home() {
         <footer className="w-full px-6 py-4 flex items-center justify-between relative z-10 text-xs text-muted-foreground/70 shrink-0">
           <span>التقنية والذكاء الاصطناعي في التعليم والتدريب © 2026</span>
           <div className="flex items-center gap-4">
-            <Link
-              href="/privacy-policy"
-              className="hover:text-muted-foreground transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
-            >
-              سياسة الخصوصية
-            </Link>
             <Link
               href="/terms-of-service"
               className="hover:text-muted-foreground transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"

@@ -1,10 +1,3 @@
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -14,24 +7,9 @@ export default function TopNav() {
     <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-lg dark:bg-[#0e293c]/80">
       <div className="container flex h-16 items-center justify-between px-4 sm:px-8 mx-auto">
         <div className="flex items-center gap-4 flex-1 justify-start">
-          <SignedOut>
-            <SignInButton>
-              <Button variant="ghost" className="hidden sm:flex">
-                <Link href="/sign-in">تسجيل الدخول</Link>
-              </Button>
-            </SignInButton>
-            <SignUpButton>
-              <Button className="bg-gradient-to-r from-[#1d5479] to-[#ffa02f] hover:from-[#0e293c] hover:to-[#ff8c00] text-white">
-                <Link href="/sign-up">ابدأ الآن</Link>
-              </Button>
-            </SignUpButton>
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-            <Button className="bg-gradient-to-r from-[#1d5479] to-[#ffa02f] hover:from-[#0e293c] hover:to-[#ff8c00] text-white">
-              <Link href="/my-library">مكتبتي</Link>
-            </Button>
-          </SignedIn>
+          <Button className="bg-gradient-to-r from-[#1d5479] to-[#ffa02f] hover:from-[#0e293c] hover:to-[#ff8c00] text-white">
+            <Link href="/my-library">مكتبتي</Link>
+          </Button>
         </div>
 
         <div className="flex items-center gap-2 flex-1 justify-end">

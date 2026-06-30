@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Send, Settings, BadgeInfo } from "lucide-react";
+import { Send, BadgeInfo } from "lucide-react";
 
 export function NavSecondary({
   ...props
@@ -19,14 +19,6 @@ export function NavSecondary({
     <SidebarGroup {...props}>
       <SidebarGroupContent data-tour-id="sidebar-footer">
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link className="" href="/settings">
-                <Settings className="ml-2 size-4" />
-                <span>الاعدادات</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link

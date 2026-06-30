@@ -1,9 +1,8 @@
 "use client";
 
 import { IconDotsVertical } from "@tabler/icons-react";
-import { UserButton } from "@clerk/nextjs";
 
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -25,7 +24,7 @@ export function NavUser({
         <SidebarMenuButton className="p-2 flex justify-between items-center data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
           <div className="flex item-center gap-2 flex-1 justify-end">
             <Avatar className="h-8 w-8 rounded-lg grayscale">
-              <UserButton />
+              {user.avatar ? <AvatarImage src={user.avatar} /> : null}
             </Avatar>
             <div className="grid flex-1 text-right text-sm leading-tight">
               <span className="truncate font-medium">{user.name}</span>

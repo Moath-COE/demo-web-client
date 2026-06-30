@@ -1,54 +1,29 @@
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, ArrowLeft } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { useDatabase } from "@/context/databaseContext";
-import { useEffect, useState } from "react";
-import CourseLoading from "@/components/library-dashboard/loadingCourseCards";
-import { useUser } from "@clerk/nextjs";
-import { Database } from "@/types/database.types";
 
-type Course = Database["public"]["Tables"]["courses"]["Row"] & {
-  chapters: { count: number }[];
+type DemoCourse = {
+  id: string;
+  title: string;
+  slug: string;
+  level: number;
+  image_url: string | null;
 };
 
+const DEMO_COURSES: DemoCourse[] = [
+  {
+    id: "1",
+    title: "الدورة التجريبية",
+    slug: "demo-course",
+    level: 1,
+    image_url: "/static/course-card-placeholder.png",
+  },
+];
 
 export default function LibraryPage() {
-  const supabase = useDatabase();
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const { user } = useUser();
-
-  useEffect(() => {
-    const fetchCourses = async () => {
-      if (!supabase || !user?.id) return;
-
-      setLoading(true);
-      const { data: courses, error } = await supabase
-        .from("courses")
-        .select(`*, enrollments!inner(user_id), chapters(count)`)
-        .eq("enrollments.user_id", user.id);
-
-      if (error) {
-        console.error("Error fetching courses:", error);
-        setLoading(false);
-        return;
-      }
-      setCourses(courses);
-      setLoading(false);
-    };
-    fetchCourses();
-  }, [supabase, user?.id]);
-
-  if (loading) {
-    return <CourseLoading />;
-  }
-
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <div className="space-y-2">
@@ -56,15 +31,12 @@ export default function LibraryPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {courses.map((course: Course) => (
+        {DEMO_COURSES.map((course) => (
           <Card
             key={course.id}
             className="group hover:shadow-lg transition-shadow cursor-pointer relative overflow-hidden"
           >
-            <Link
-              href={`my-library/${course.slug}/`}
-              className="absolute inset-0 z-10"
-            />
+            <Link href="/study" className="absolute inset-0 z-10" />
             <div className="relative w-full aspect-video overflow-hidden">
               <Image
                 src={course.image_url || "/static/course-card-placeholder.png"}
@@ -97,7 +69,7 @@ export default function LibraryPage() {
         ))}
       </div>
 
-      {courses.length === 0 && (
+      {DEMO_COURSES.length === 0 && (
         <div className="flex flex-col items-center justify-center gap-4 py-16">
           <div className="rounded-full bg-muted/50 p-4">
             <BookOpen className="h-10 w-10 text-muted-foreground" />
@@ -108,12 +80,6 @@ export default function LibraryPage() {
               ابدأ رحلتك التعليمية بالتسجيل في إحدى الدورات المتاحة
             </p>
           </div>
-          <Button asChild className="bg-gradient-to-r from-[#1d5479] to-[#ffa02f] hover:from-[#0e293c] hover:to-[#ff8c00] text-white">
-            <Link href="/enroll" className="flex items-center gap-2">
-              استكشف الدورات
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </Button>
         </div>
       )}
     </div>
