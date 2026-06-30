@@ -1,85 +1,78 @@
-# Project Setup Guide
+# Sanad / سند
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Arabic-first RTL education platform and AI tutor for Saudi students. Sanad uses
+Next.js 16 App Router, React 19, TypeScript 5 strict mode, Tailwind CSS 4,
+shadcn/ui new-york with RTL enabled, Clerk, Supabase, LiveKit, Bunny.net,
+Langfuse, Vercel Analytics, and Vercel Speed Insights.
 
-Follow these steps to get the project running locally:
+`AGENTS.md` and `.specify/memory/constitution.md` are authoritative for project
+workflow, architecture, and validation rules.
 
-## 1. Prerequisites: Install Required Tools
+## Local Setup
 
-- **Node.js**: Use [nvm](https://github.com/nvm-sh/nvm) (Node Version Manager) to manage Node versions.
-- **pnpm**: Install [pnpm](https://pnpm.io/installation) for package management (recommended over npm/yarn).
-
-**Install nvm:**
-
-- **For macOS/Linux:**
-
-  ```bash
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-  # Restart your terminal or run:
-  export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  ```
-
-- **For Windows:**
-
-  Use [nvm-windows](https://github.com/coreybutler/nvm-windows):
-  1.  Download the latest installer from the [releases page](https://github.com/coreybutler/nvm-windows/releases).
-  2.  Run the installer and follow the setup instructions.
-  3.  After installation, use `nvm` from a new command prompt.
-
-**Install pnpm:**
+Use Node v24.12.0 and pnpm only.
 
 ```bash
-npm install -g pnpm
-```
-
-## 2. Switch to the Correct Node Version
-
-Check the required Node version in `.nvmrc` (if present) or `package.json` (usually in the `engines` field). Then run:
-
-```bash
-nvm install # Installs the version from .nvmrc if available
-nvm use     # Switches to the correct Node version
-```
-
-## 3. Install Project Dependencies
-
-Run the following command in the project root:
-
-```bash
+nvm use
 pnpm install
-```
-
-## 4. Configure Environment Variables
-
-Copy the example environment file (if provided) and update it with your own values:
-
-```bash
-cp .env.example .env.local
-# Edit .env.local and fill in the required variables
-```
-
-> **Note:** If there is no `.env.example`, check the documentation or codebase for required environment variables and create `.env.local` manually.
-
-## 5. Start the Development Server
-
-```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+The development server runs at [http://localhost:3000](http://localhost:3000).
 
-## Getting Started
+## Environment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+There is no `.env.example` in this repository. Create `.env.local` manually with
+the required Clerk, Supabase, LiveKit, OpenAI, Langfuse, and Bunny.net values.
+Server-only secrets must not be exposed to client code.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Validation
 
-## Learn More
+Run validation in this order before completing implementation work:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+nvm use
+pnpm lint
+pnpm type-check
+pnpm build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`pnpm build` is required when practical, especially for routing, rendering,
+bundling, environment, or deployment changes.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+There is currently no testing workflow or framework configured. Future features
+must skip testing workflow, test framework setup, test directories, and test
+commands unless a separate approved feature explicitly adds testing
+infrastructure.
+
+## Git Ownership
+
+Git management is the user's responsibility. Agents may use Git only read-only to
+see latest changes or differences. Branching, staging, committing, rebasing,
+merging, resetting, restoring, stashing, pulling, and pushing are not agent-owned
+workflow steps.
+
+## Structure
+
+```text
+src/
+├── app/                 # App Router route groups and API routes
+├── components/          # Shared React components
+│   ├── ui/              # shadcn/ui new-york components
+│   └── study/           # LiveKit voice and AI chat study experience
+├── lib/                 # Supabase, service clients, utilities
+├── context/             # Shared React context
+├── types/               # Types and generated Supabase database types
+└── styles/              # Global styles and CSS variables
+```
+
+The `@/*` alias maps to `./src/*`.
+
+## Supabase Types
+
+`src/types/database.types.ts` is generated. Do not edit it manually. If the
+Supabase schema or generated types change, run:
+
+```bash
+pnpm update-db-types
+```

@@ -346,6 +346,24 @@
   }
 }
 
+.animate-orb-float {
+  animation: orb-float 8s ease-in-out infinite;
+}
+
+.animate-orb-float-slow {
+  animation: orb-float-slow 12s ease-in-out infinite;
+}
+
+.animate-orb-float-delayed {
+  animation: orb-float 10s ease-in-out infinite 2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-orb {
+    animation: none !important;
+  }
+}
+
 @keyframes shimmer-line {
   0%,
   100% {

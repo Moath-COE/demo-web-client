@@ -1,6 +1,7 @@
 # Implementation Plan: [FEATURE]
 
 **Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+
 **Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
@@ -17,21 +18,53 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
+**Language/Version**: Node v24.12.0 via `nvm use`; TypeScript 5 strict mode
+
+**Primary Dependencies**: Next.js 16 App Router, React 19, Tailwind CSS 4,
+shadcn/ui new-york with RTL enabled, Radix UI, Clerk, Supabase, LiveKit,
+Bunny.net, Langfuse, Vercel Analytics, Vercel Speed Insights
+
+**Storage**: Supabase app data and storage; Bunny.net CDN for course assets
+
+**Testing Workflow/Framework**: None. Future features MUST skip testing
+workflow, test framework setup, test directories, and test commands unless a
+separate approved feature explicitly adds testing infrastructure. Required
+validation is `pnpm lint`, `pnpm type-check`, and `pnpm build` when practical.
+
+**Target Platform**: Vercel-hosted Next.js web application for Arabic-first RTL users
+
+**Project Type**: Brownfield Next.js web application using `src/app` route groups
+
+**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]
+
+**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]
+
 **Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- Arabic-first RTL: user-facing behavior uses Arabic text, preserves `dir="rtl"`,
+  `lang="ar"`, Cairo font, dark default theme, accessibility, responsive behavior,
+  and Arabic empty/loading/error states.
+- App Router performance: Server Components are the default; `"use client"` is
+  limited to required interactivity, browser APIs, Clerk hooks, LiveKit, or local
+  state. Heavy browser-only features stay isolated.
+- Type safety and security: TypeScript strict mode remains enabled, Supabase
+  generated types are used, `src/types/database.types.ts` is not edited manually,
+  and server-only secrets are not exposed to client code.
+- Auth and routing: Clerk remains the auth source, and protected route behavior
+  belongs in `src/proxy.ts`, not `middleware.ts`.
+- Service contracts: features touching Clerk, Supabase, LiveKit, Bunny.net,
+  Langfuse, Vercel Analytics, or Speed Insights document required env vars,
+  failure modes, and local validation steps.
+- Workflow: package operations use `pnpm`; validation includes `pnpm lint`,
+  `pnpm type-check`, and `pnpm build` when practical; testing workflow and test
+  commands are skipped unless test infrastructure is explicitly added.
+- Git ownership: agents use Git only read-only to see latest changes or
+  differences. Branching, staging, committing, rebasing, merging, resetting,
+  restoring, stashing, pulling, and pushing remain the user's responsibility.
 
 ## Project Structure
 
@@ -56,43 +89,21 @@ specs/[###-feature]/
 -->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+├── app/                 # Next.js App Router route groups and API routes
+├── components/          # Shared React components
+│   ├── ui/              # shadcn/ui new-york components (RTL enabled)
+│   └── study/           # LiveKit voice and AI chat study experience
+├── lib/                 # Supabase, service clients, utilities
+├── context/             # Shared React context providers/state
+├── types/               # TypeScript types, including generated Supabase types
+└── styles/              # Tailwind/CSS variables and global styles
 ```
 
 **Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+directories captured above. Include exact file paths for this feature and do not
+introduce generic backend/frontend/test directories unless the plan explicitly
+adds them.]
 
 ## Complexity Tracking
 

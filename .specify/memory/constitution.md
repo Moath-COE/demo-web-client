@@ -1,145 +1,145 @@
 <!--
-SYNC IMPACT REPORT
-==================
-Version change: 1.2.0 → 1.3.0
-Modified principles:
-  - II. User Experience Consistency: Changed Responsive Design from mobile-first to tablet/desktop-first
+Sync Impact Report
+Version change: 1.0.0 -> 1.1.0
+Modified principles: Quality Gates and Developer Workflow strengthened for no-test workflow and Git ownership
 Added sections: None
 Removed sections: None
 Templates requiring updates:
-  - .specify/templates/plan-template.md ✅ (compatible - no changes needed)
-  - .specify/templates/spec-template.md ✅ (compatible - no changes needed)
-  - .specify/templates/tasks-template.md ✅ (compatible - no changes needed)
+- ✅ updated .specify/templates/plan-template.md
+- ✅ updated .specify/templates/spec-template.md
+- ✅ updated .specify/templates/tasks-template.md
+- ✅ reviewed .specify/templates/checklist-template.md
+- ✅ reviewed .specify/templates/commands/*.md (no command templates present)
+- ✅ updated AGENTS.md
+- ✅ updated README.md
 Follow-up TODOs: None
 -->
 
-# Sanad Web Client Constitution
+# Sanad / سند Constitution
 
 ## Core Principles
 
-### I. Code Quality
+### I. Arabic-First RTL Experience
+All user-facing text MUST be Arabic for the `ar_SA` locale. User interfaces MUST
+preserve `dir="rtl"`, `lang="ar"`, Cairo font usage, the dark default theme, and
+Saudi student expectations for terminology, ordering, dates, and error wording.
+Every user-facing feature MUST include accessible labels, keyboard-reachable
+interactions, responsive behavior across mobile and desktop, and clear Arabic
+empty, loading, and error states. Child layouts and feature components MUST NOT
+duplicate root providers already defined in `src/app/layout.tsx`, including Clerk
+localization and RTL direction providers.
 
-All code MUST adhere to consistent quality standards to ensure maintainability and reliability.
+Rationale: Sanad is an Arabic-first education product; losing RTL, localization,
+or accessibility directly breaks the primary user experience.
 
-- **TypeScript Strict Mode**: All code MUST be written in TypeScript with strict type checking enabled. No `any` types unless explicitly justified with a comment.
-- **Component Architecture**: Components MUST follow single-responsibility principle. Shared logic MUST be extracted into custom hooks or utility functions.
-- **File Organization**: Files MUST follow the established project structure. Components go in `src/components/`, pages in `src/app/`, utilities in `src/lib/`, types in `src/types/`.
-- **Naming Conventions**: Components MUST use PascalCase. Hooks MUST start with `use`. Utilities and variables MUST use camelCase. Constants MUST use SCREAMING_SNAKE_CASE.
-- **Error Handling**: All async operations MUST have proper error handling. User-facing errors MUST display meaningful messages via Sonner toasts.
-- **Form Validation**: All forms MUST use React Hook Form with Zod schemas for validation. Validation errors MUST be displayed inline.
+### II. Next.js and React Architecture
+Implementation MUST follow Next.js 16 App Router conventions in `src/app` and
+preserve the existing route-group architecture. Components MUST be Server
+Components by default; `"use client"` is permitted only when client interactivity,
+browser APIs, Clerk session hooks, LiveKit, or local state require it. Features
+MUST follow Vercel React and Next.js performance best practices, avoid duplicate
+providers, avoid unnecessary client bundles, and prevent over-fetching. Heavy
+browser-only features, including LiveKit voice sessions and PDF rendering, MUST
+remain isolated to focused client components.
 
-**Rationale**: Consistent code quality reduces cognitive load, speeds up reviews, and prevents bugs from reaching production.
+Rationale: Server-first architecture keeps Sanad fast, maintainable, and aligned
+with App Router behavior while protecting complex browser-only integrations from
+leaking into the whole app.
 
-### II. User Experience Consistency
+### III. Type Safety, Data Integrity, and Security
+TypeScript strict mode MUST remain enabled. Supabase data access MUST use the
+generated types in `src/types/database.types.ts`, and that file MUST NOT be
+edited manually. Server-only secrets, including `SUPABASE_SERVICE_ROLE_KEY`,
+`LIVEKIT_API_SECRET`, `LANGFUSE_SECRET_KEY`, and Bunny.net API keys, MUST never
+be referenced from client components or browser-exposed environment variables.
+Clerk is the source of authentication, and protected route behavior MUST live in
+`src/proxy.ts`, not `middleware.ts`. API routes MUST validate inputs, preserve
+data integrity, and return Arabic user-facing messages where applicable.
 
-All user interfaces MUST provide a consistent, accessible, and intuitive experience.
+Rationale: The platform handles student data, enrollment state, course content,
+voice sessions, and observability data; unsafe typing or secret exposure creates
+product and security failures.
 
-- **Shadcn Components First**: UI elements MUST use Shadcn/ui components built on Radix UI primitives. Custom components are permitted only when Shadcn does not provide the needed functionality.
-- **Design Token Compliance**: All styling MUST use Tailwind CSS classes and CSS variables defined in the design system. Hardcoded color values are prohibited.
-- **Theme Variable Immutability**: All designs and components MUST adhere to the theme styles specified in `src/styles/globals.css`. Adding new CSS variables or modifying existing variables is PROHIBITED unless absolutely necessary and explicitly justified with a documented rationale. The established design token palette (background, foreground, primary, secondary, accent, muted, destructive, border, ring, sidebar, chart colors, and radius values) MUST be used as-is.
-- **Responsive Design**: All pages and components MUST be responsive. **Tablet/Desktop-first approach is REQUIRED** - iPad landscape (1024px+) and desktop screens are the primary target devices. Designs MUST be optimized first for `lg` (1024px) and `xl` (1280px) breakpoints, then adapted down for smaller screens. Mobile phone support is REQUIRED but secondary in priority. Breakpoints: `sm` (640px), `md` (768px), `lg` (1024px - iPad landscape/desktop), `xl` (1280px - large desktop).
-- **Loading States**: All async operations MUST display appropriate loading indicators (skeletons, spinners, or progress bars).
-- **Feedback & Notifications**: User actions MUST provide immediate visual feedback. Success/error states MUST use Sonner toast notifications consistently.
-- **Icon Usage**: Icons MUST come from Lucide React or Tabler Icons libraries. Mixing icon libraries within the same component is prohibited.
+### IV. External Service Contracts
+Clerk handles authentication and Arabic localization. Supabase handles app data
+and storage. LiveKit handles real-time voice sessions. Bunny.net serves or
+proxies course assets. Langfuse captures feedback and observability. Vercel
+Analytics and Speed Insights capture product and performance signals. Any feature
+touching these services MUST document required environment variables, expected
+failure modes, and local validation steps in the feature plan, quickstart, or
+task notes before implementation is considered complete.
 
-**Rationale**: UX consistency builds user trust, reduces learning curves, and ensures the application feels cohesive.
+Rationale: Sanad depends on managed services whose configuration and failure
+states are part of the product contract, not incidental implementation detail.
 
-### III. Performance Requirements
+### V. Quality Gates and Developer Workflow
+Development MUST use Node v24.12.0 via `nvm use` and MUST use `pnpm` for package
+operations. Required validation before completing implementation is `pnpm lint`
+then `pnpm type-check`; `pnpm build` MUST also run when practical or when the
+change affects routing, rendering, bundling, environment configuration, or
+deployment behavior. There is currently no testing workflow or framework
+configured, so plans and tasks for all future features MUST skip testing
+workflows, test framework setup, test directories, and test commands unless a
+separate approved feature explicitly adds testing infrastructure. If Supabase
+schema or generated database types change, run `pnpm update-db-types`. Every task
+MUST include exact file paths and preserve independently deliverable user stories.
 
-All features MUST meet performance standards to ensure fast, responsive user experiences.
+Agents MUST NOT manage Git state. Git usage is read-only and limited to seeing
+latest changes or differences, such as `git status`, `git diff`, and `git log`.
+Branch creation, branch switching, staging, committing, amending, rebasing,
+merging, resetting, restoring, stashing, tagging, pulling, and pushing are the
+user's responsibility and MUST NOT be performed by agents.
 
-- **Bundle Size**: New dependencies MUST be evaluated for bundle impact. Tree-shakeable libraries are preferred. Dynamic imports MUST be used for heavy components.
-- **Image Optimization**: All images MUST use Next.js Image component with appropriate sizing and lazy loading.
-- **Data Fetching**: Server Components MUST be used for data fetching where possible. Client-side fetching MUST implement proper caching strategies.
-- **Render Optimization**: Components MUST avoid unnecessary re-renders. `useMemo`, `useCallback`, and `React.memo` MUST be used where performance profiling indicates benefit.
-- **Core Web Vitals Targets**:
-  - Largest Contentful Paint (LCP): < 2.5s
-  - First Input Delay (FID): < 100ms
-  - Cumulative Layout Shift (CLS): < 0.1
-- **Real-time Features**: LiveKit integrations MUST gracefully handle connection failures and provide fallback states.
-- **Database Queries**: Supabase queries MUST select only required fields. Pagination MUST be implemented for list views exceeding 50 items.
+Rationale: Consistent validation and precise task boundaries keep a brownfield
+Next.js application safe to change without assuming infrastructure that does not
+exist.
 
-**Rationale**: Performance directly impacts user retention, SEO rankings, and overall application success.
+## Sanad Platform Constraints
 
-## Technology Stack
+The fixed stack is Next.js 16 App Router, React 19, TypeScript 5 strict mode,
+Tailwind CSS 4, shadcn/ui new-york style with RTL enabled, Radix UI, Clerk,
+Supabase, LiveKit, Bunny.net CDN, Langfuse, Vercel Analytics, and Vercel Speed
+Insights. The source layout MUST remain rooted in `src/app`, `src/components`,
+`src/lib`, `src/context`, `src/types`, and `src/styles`, with `@/*` mapped to
+`./src/*`. UI primitives MUST follow the existing shadcn/ui and Radix patterns,
+and styling MUST preserve the existing Tailwind and CSS variable system.
 
-This project uses a modern Next.js stack with the following core technologies:
-
-| Category            | Technology                 | Version |
-| ------------------- | -------------------------- | ------- |
-| **Framework**       | Next.js                    | 16.x    |
-| **Runtime**         | React                      | 19.x    |
-| **Language**        | TypeScript                 | 5.x     |
-| **Styling**         | Tailwind CSS               | 4.x     |
-| **UI Components**   | Shadcn/ui (Radix UI)       | Latest  |
-| **Authentication**  | Clerk                      | 6.x     |
-| **Database**        | Supabase                   | 2.x     |
-| **AI Integration**  | Vercel AI SDK              | 5.x     |
-| **Real-time**       | LiveKit                    | 2.x     |
-| **Icons**           | Lucide React, Tabler Icons | Latest  |
-| **Package Manager** | pnpm                       | 10.x    |
+This is a brownfield project. New work MUST preserve existing architecture and
+avoid large rewrites unless the feature cannot be delivered safely without them.
+If `README.md` conflicts with `AGENTS.md` or this constitution, `AGENTS.md` and
+this constitution are authoritative.
 
 ## Development Workflow
 
-### Branching Strategy
+Feature specs MUST define independently deliverable user stories with exact file
+paths during planning and Arabic/RTL acceptance criteria for user-facing
+behavior. Plans MUST document the concrete Sanad technical context, expected
+service integrations, environment variables, and validation commands. Tasks MUST
+be grouped by user story, skip testing workflow assumptions, avoid assuming a
+`tests/` directory, and include cross-cutting work for accessibility, responsive
+behavior, Arabic error states, security, observability, and service failure
+handling when relevant.
 
-All development MUST follow a strict branching model to maintain code integrity.
-
-- **Protected Branch**: The `main` branch is PROTECTED. Direct commits, edits, or branching from `main` are PROHIBITED.
-- **Development Branch**: All feature branches MUST be created from the `dev` branch. The `dev` branch serves as the integration branch for all ongoing work.
-- **Feature Branches**: Every feature, bugfix, or enhancement MUST be developed on its own dedicated branch.
-- **Branch Naming Convention**: All branches MUST follow this human-readable format:
-
-  ```
-  <type>/<short-description>
-  ```
-
-  - **Types**: `feature`, `fix`, `hotfix`, `refactor`, `docs`, `chore`
-  - **Description**: Lowercase, hyphen-separated, concise (2-5 words)
-  - **Examples**:
-    - `feature/user-profile-settings`
-    - `fix/login-redirect-loop`
-    - `refactor/dashboard-components`
-    - `docs/api-documentation`
-    - `chore/update-dependencies`
-
-- **Merge Flow**: Feature branches merge into `dev` via pull request. Only `dev` merges into `main` after thorough review.
-
-**Rationale**: Strict branching protects production code, enables parallel development, and maintains a clear audit trail.
-
-### Code Review Standards
-
-- All changes MUST be reviewed before merging
-- Reviewers MUST verify compliance with all three core principles
-- Performance-impacting changes MUST include before/after metrics
-
-### Linting & Formatting
-
-- ESLint MUST pass with zero errors before commit
-- Code formatting is enforced via project configuration
-- Type errors MUST be resolved; `@ts-ignore` requires justification comment
+Implementation review MUST verify constitution compliance before work starts,
+after design, and before completion. Deviations MUST be documented with the
+reason, the simpler alternative rejected, and the mitigation plan.
 
 ## Governance
 
-This constitution supersedes all other development practices for this project.
+This constitution supersedes stale README guidance, generated template examples,
+and informal practices when they conflict with Sanad's architecture or workflow.
+Amendments require updating `.specify/memory/constitution.md`, adding or updating
+the Sync Impact Report, synchronizing affected templates under `.specify/templates`,
+and documenting any deferred uncertainty as TODOs in the report.
 
-### Amendment Process
+Versioning follows semantic versioning. MAJOR increments apply to incompatible
+governance changes or principle removals/redefinitions. MINOR increments apply
+to new principles, new sections, or materially expanded guidance. PATCH
+increments apply to clarifications, wording fixes, and non-semantic refinements.
 
-1. Propose changes via pull request to this file
-2. Changes MUST include rationale and impact assessment
-3. Breaking changes require MAJOR version bump
-4. All active contributors MUST be notified of amendments
+Every implementation plan MUST pass the Constitution Check before Phase 0
+research and again after Phase 1 design. Before completion, contributors MUST
+run the required validation commands, record skipped practical validations with a
+reason, and confirm no client code exposes server-only secrets.
 
-### Compliance
-
-- All PRs MUST verify compliance with core principles
-- Violations MUST be documented with justification if unavoidable
-- Repeated violations indicate need for constitution amendment or developer guidance
-
-### Versioning Policy
-
-- **MAJOR**: Principle removal or fundamental redefinition
-- **MINOR**: New principle added or significant expansion of existing guidance
-- **PATCH**: Clarifications, wording improvements, non-semantic refinements
-
-**Version**: 1.3.0 | **Ratified**: 2026-02-22 | **Last Amended**: 2026-02-22
+**Version**: 1.1.0 | **Ratified**: 2026-06-09 | **Last Amended**: 2026-06-09

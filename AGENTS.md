@@ -1,85 +1,123 @@
-# web-client-snd Development Guidelines
+# web-client-snd
 
-## Project Overview
-
-**سند (Sanad)** is an Arabic-first RTL education platform that acts as an AI-powered private tutor. Students browse courses, study chapters, and interact with an AI tutor through voice (LiveKit) and chat. The platform covers onboarding, course enrollment, study sessions with real-time AI interaction, a personal library, and admin tooling.
-
-The entire UI is in Arabic, uses RTL layout, and targets Saudi Arabian students (`ar_SA` locale).
+**سند (Sanad)** — Arabic-first RTL education platform / AI tutor. Next.js 16 App Router, React 19, TypeScript 5. Entire UI is Arabic (`ar_SA`), RTL layout, dark mode default.
 
 ## Skills
 
-- **Whenever writing any code**, load and follow the `vercel-react-best-practices` skill first.
-- **Whenever designing or building frontend UI** (components, pages, layouts, styling), load and follow both the `web-design-guidelines` skill and the `frontend-design` skill together.
+- **Writing any code** → load `vercel-react-best-practices` skill first.
+- **Building/styling frontend UI** → also load `web-design-guidelines` + `frontend-design` skills.
+
+## Engineering Principles
+
+### Think Before Coding
+
+- State assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them — don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
+
+### Simplicity First
+
+- Minimum code that solves the problem. Nothing speculative.
+- No features beyond what was asked. No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- If you write 200 lines and it could be 50, rewrite it.
+
+### Surgical Changes
+
+- Touch only what you must. Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken. Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it — don't delete it.
+- Remove imports/variables/functions that **your** changes made unused. Don't remove pre-existing dead code unless asked.
+- Every changed line should trace directly to the user's request.
+
+### Goal-Driven Execution
+
+- Transform tasks into verifiable goals:
+  - "Add validation" → define invalid-input scenarios, then verify them manually or with existing validation commands
+  - "Fix the bug" → reproduce the bug, then verify the fix with the narrowest available validation path
+  - "Refactor X" → run required validation before and after when practical
+- For multi-step tasks, state a brief plan with verification at each step.
+- Strong success criteria let you loop independently. Weak criteria require constant clarification.
+
+## Git Ownership
+
+Git management is the user's responsibility. Agents may use Git only read-only to
+see latest changes or differences, such as `git status`, `git diff`, and
+`git log`. Do not create or switch branches, stage files, commit, amend, rebase,
+merge, reset, restore, stash, tag, pull, or push.
 
 ## Package Manager
 
-**Always use `pnpm`.** Never use `npm`, `yarn`, or any other package manager for any operation (install, run, add, etc.).
+**Always `pnpm`.** Never use `npm` or `yarn`.
 
 ## Commands
 
-- `pnpm dev` — start dev server (port 3000)
-- `pnpm build` — production build (`next build`)
-- `pnpm lint` — lint the project. **This is the only lint command.** Never install or use any other linting tool or linter — always run `pnpm lint`.
-- `pnpm update-db-types` — regenerate Supabase TypeScript types into `src/types/database.types.ts`
+- `pnpm dev` — dev server (port 3000)
+- `pnpm build` — `next build`
+- `pnpm lint` — **only lint command.** Do not install or use other linters.
+- `pnpm type-check` — `tsc --noEmit`
+- `pnpm update-db-types` — regenerate Supabase types → `src/types/database.types.ts`
 
-There is no test runner configured. Do not attempt to run tests.
+No testing workflow or framework is configured. Do not create test tasks, test
+directories, test framework setup, or test commands for future features unless a
+separate approved feature explicitly adds testing infrastructure.
 
-## Node Version
+**Verification order after changes:** `pnpm lint` → `pnpm type-check`
 
-v24.12.0 (see `.nvmrc`). Use `nvm use` before running any command.
+## Node
+
+v24.12.0 (`.nvmrc`). Run `nvm use` before any command.
 
 ## Architecture
 
-Next.js 16 App Router with React 19 + TypeScript 5.
-
 ### Path Alias
 
-`@/*` maps to `./src/*` (configured in `tsconfig.json`).
+`@/*` → `./src/*`
 
 ### Route Groups (`src/app/`)
 
-- `(app)/` — main authenticated area: courses (`[course]/[chapter]/study/`), onboarding, settings, my-library
+- `(app)/` — authenticated area: courses, onboarding, settings, my-library
 - `(auth)/` — Clerk auth pages
-- `(legal)/` — legal/privacy pages
+- `(legal)/` — legal/privacy
 - `(feedback)/` — feedback flow
 - `admin/` — admin pages
-- `api/` — API routes: `complete-onboarding`, `enroll`, `feedback`, `fetch-bunny`, `get-lk-token`, `webhooks`
+- `api/` — API routes
 
 ### Key Directories
 
-- `src/components/ui/` — Shadcn/ui components (new-york style)
-- `src/components/study/` — study session components (LiveKit voice, AI chat)
-- `src/components/landing/` — landing page
-- `src/lib/utils.ts` — `cn()` utility (clsx + tailwind-merge)
-- `src/lib/supabaseClient.ts` — browser Supabase client
-- `src/lib/supabaseAdmin.ts` — server-side Supabase admin client
+- `src/components/ui/` — Shadcn/ui (new-york style)
+- `src/components/study/` — LiveKit voice + AI chat
+- `src/lib/supabaseClient.ts` — browser Supabase
+- `src/lib/supabaseAdmin.ts` — server-side Supabase admin
 - `src/context/databaseContext.tsx` — shared DB context
-- `src/database/db-schema.ts` / `db-config.ts` — DB schema definitions
-- `src/types/database.types.ts` — auto-generated Supabase types (do not edit manually)
-
-### External Services
-
-- **Clerk** — auth (Arabic localization, `arSA`)
-- **Supabase** — database & storage
-- **LiveKit** — real-time voice/video
-- **Bunny.net** — CDN (images served from `snd-zone.b-cdn.net`)
-- **OpenAI / ElevenLabs** — AI via Vercel `ai` SDK
-- **Langfuse** — observability
+- `src/types/database.types.ts` — **auto-generated**, do not edit manually
 
 ## Conventions
 
-- RTL layout (`dir="rtl"`, `lang="ar"`), Cairo font — maintain RTL support in all UI changes
-- Dark mode is the default (root `<html>` has `className="dark"`)
-- Shadcn/ui new-york style with `lucide-react` icons — add new UI components via `npx shadcn@latest add <component>`
-- Tailwind CSS 4.x with `@tailwindcss/postcss` plugin
-- Global styles and CSS custom properties (color palette) in `src/styles/globals.css`
-- `components.json` configured with `rtl: true`
-- All user-facing text must be in Arabic
+- RTL: `dir="rtl"`, `lang="ar"`, Cairo font. Maintain in all UI changes.
+- Dark mode default (root `<html>` has `className="dark"`).
+- Shadcn/ui new-york + `lucide-react` icons. Add components via `npx shadcn@latest add <component>`.
+- Tailwind CSS 4.x with `@tailwindcss/postcss`.
+- CSS variables/palette in `src/styles/globals.css`.
+- `components.json` has `rtl: true`.
+- All user-facing text must be Arabic.
+- No comments in code unless explicitly asked.
+
+## Design Context
+
+- `PRODUCT.md` is the strategic design reference for Sanad: product register, users, purpose, voice, anti-references, and accessibility priorities.
+- `DESIGN.md` is the visual system reference for colors, typography, elevation, components, and design guardrails.
 
 ## Gotchas
 
-- `src/types/database.types.ts` is auto-generated — regenerate with `pnpm update-db-types` after Supabase schema changes
-- There is no `middleware.ts` file
-- No `.env.example` is committed — env vars are required for Clerk, Supabase, LiveKit, OpenAI, Langfuse, and Bunny.net
-- ESLint config extends `next/core-web-vitals` and `next/typescript`
-- The root layout wraps everything with `ClerkProvider` (localization `arSA`) and `DirectionProvider` (RTL) — do not duplicate these in child layouts
+- Root layout wraps with `ClerkProvider` (`arSA`) + `DirectionProvider` (RTL) — do not duplicate in child layouts.
+- No `middleware.ts` file.
+- No `.env.example` — env vars required for Clerk, Supabase, LiveKit, OpenAI, Langfuse, Bunny.net.
+- `src/types/database.types.ts` is auto-generated — regenerate with `pnpm update-db-types` after schema changes.
+- ESLint uses flat config (`eslint.config.mjs`), extends `next/core-web-vitals` + `next/typescript`.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
