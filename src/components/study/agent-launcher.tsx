@@ -200,7 +200,7 @@ export function AgentLauncher({
         id="agent-control-bar"
         className="z-50 mt-auto w-full bg-secondary rounded-t-lg max-w-270 p-1.5 sm:p-2 relative"
       >
-        {isActive ? (
+        {!isActive ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-1.5 sm:items-center ">
             <DropdownMenu
               open={

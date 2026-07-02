@@ -242,6 +242,25 @@
     /* Add a pointing animation */
     animation: agent-point 1s ease-in-out infinite;
   }
+
+  .brief-panel {
+    border: 1px solid color-mix(in oklch, #ffffff, transparent 72%);
+    background: color-mix(in oklch, #133848, #045687 50%);
+  }
+  .brief-title { color: #fffdfd; }
+  .brief-text { color: #fffdfd; opacity: 0.82; }
+  .brief-chip {
+    background: color-mix(in oklch, #ffffff, transparent 71%);
+    color: color-mix(in oklch, #fffdfd, #ffa02f 35%);
+  }
+  .brief-badge {
+    background: color-mix(in oklch, #ffffff, transparent 84%);
+    color: #fffdfd;
+  }
+
+  .course-card-scrim {
+    background: linear-gradient(to top, oklch(22% 0.05 245 / 0.22), transparent 50%);
+  }
 }
 
 @keyframes agent-highlight-draw {

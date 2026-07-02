@@ -43,9 +43,9 @@ export default function Home() {
               size="sm"
               className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-colors duration-200 rounded-lg px-5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <Link href="/my-library" className="flex items-center gap-2">
+              <Link href="/dashboard" className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4" />
-                مكتبة الدورات
+                لوحة التحكم
               </Link>
             </Button>
           </div>
@@ -99,11 +99,11 @@ export default function Home() {
             <div className="flex flex-col items-center gap-4">
               <div className="flex flex-col sm:flex-row items-center gap-3">
                 <Link
-                  href="/my-library"
+                  href="/dashboard"
                   className="inline-flex items-center gap-2 text-foreground/70 hover:text-foreground hover:bg-muted/20 border border-border/30 hover:border-border/60 px-8 py-3 sm:px-10 sm:py-4 rounded-xl font-medium text-sm sm:text-base transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   <Sparkles className="w-4 h-4" />
-                  مكتبتي
+                  لوحة التحكم
                 </Link>
                 <Link
                   href="/study"
