@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo, useRef } from "react";
-import { Circle, ChevronDown } from "lucide-react";
+import { useState, useCallback, useMemo, useRef } from "react";
+import Link from "next/link";
+import { Loader2, ChevronDown, Circle, Phone, Info } from "lucide-react";
 import { useSession, SessionProvider } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { TokenSource } from "livekit-client";
-import { LauncherState, StudyLauncherProps } from "@/types/types";
+import { StudyLauncherProps } from "@/types/types";
 import { TextInputPopup } from "@/components/study/text-input-popup";
 import { CheckpointPopup } from "@/components/study/checkpoint-popup";
-import { MenuPopup } from "@/components/study/menu-popup";
 import { SessionManager } from "@/components/study/session-manager";
 import {
   DropdownMenu,
@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CompletionCircle } from "@/components/study/completionCircle";
 import { FeedbackDialog } from "./feedback-dialog";
+import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export function AgentLauncher({
   api,
@@ -28,18 +30,14 @@ export function AgentLauncher({
   setActiveMarker,
   onListeningChange,
 }: StudyLauncherProps) {
-  const [launcherState, setLauncherState] = useState<LauncherState>("idle");
-
   const DEMO_USER_NAME = "طالب سند";
-  const [language, setLanguage] = useState<"English" | "Arabic">("English");
+  const [language, setLanguage] = useState<"English" | "Arabic">("Arabic");
   const chapterId = "ch_" + chapterIndex;
 
   const [agentState, setAgentState] = useState<string>("disconnected");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
   const sendingRef = useRef(false);
-  const sendUserMessageRef = useRef<(message: string) => Promise<void>>(
-    async () => {},
-  );
   const [currentCheckpointQuestion, setCurrentCheckpointQuestion] = useState<{
     question: string;
     choices: string[];
@@ -47,7 +45,7 @@ export function AgentLauncher({
   const [isTextInputOpen, setIsTextInputOpen] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const [FeedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
+  const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const [roomName, setRoomName] = useState<string | null>(null);
 
   const [selectedTopic, setSelectedTopic] = useState<{
@@ -98,16 +96,8 @@ export function AgentLauncher({
     [onListeningChange],
   );
 
-  const handleLogoClick = useCallback(() => {
-    if (launcherState === "idle") {
-      setLauncherState("menu-open");
-    } else if (launcherState === "menu-open") {
-      setLauncherState("idle");
-    }
-  }, [launcherState]);
-
   const handleStart = useCallback(async () => {
-    setLauncherState("active");
+    setIsStarting(true);
     try {
       await session.start({
         tracks: {
@@ -119,7 +109,8 @@ export function AgentLauncher({
       setRoomName(session.room?.name || null);
     } catch (error) {
       console.error("Failed to start session:", error);
-      setLauncherState("idle");
+    } finally {
+      setIsStarting(false);
     }
   }, [session]);
 
@@ -142,22 +133,17 @@ export function AgentLauncher({
     [isConnected, session.room],
   );
 
-  useEffect(() => {
-    sendUserMessageRef.current = sendUserMessage;
-  }, [sendUserMessage]);
-
   const sendTextMessage = useCallback(async () => {
     if (!textInput.trim() || sendingRef.current) return;
-    await sendUserMessageRef.current(textInput.trim());
+    await sendUserMessage(textInput.trim());
     setTextInput("");
     setIsTextInputOpen(false);
-  }, [textInput]);
+  }, [textInput, sendUserMessage]);
 
   const handleDisconnect = useCallback(() => {
     setActiveMarker({});
-    setLauncherState("idle");
     setDropdownOpen(false);
-    setCurrentCheckpointQuestion({ question: "", choices: [] });
+    setCurrentCheckpointQuestion(null);
     setIsTextInputOpen(false);
     setAgentState("disconnected");
     setSelectedTopic(null);
@@ -169,17 +155,11 @@ export function AgentLauncher({
     setLanguage(val);
   }, []);
 
-  const handleMenuPopupOpenChange = useCallback((open: boolean) => {
-    if (!open) setLauncherState("idle");
-  }, []);
-
-  const handleTextInputToggle = useCallback(() => {
-    setIsTextInputOpen((prev) => !prev);
-  }, []);
-
   const isAgentListening = agentState === "listening";
-  const isActive = launcherState === "active";
-  const isMenuOpen = launcherState === "menu-open";
+  const agentInteractive =
+    agentState === "listening" ||
+    agentState === "thinking" ||
+    agentState === "speaking";
 
   return (
     <>
@@ -196,85 +176,134 @@ export function AgentLauncher({
         />
       )}
 
-      <div
-        id="agent-control-bar"
-        className="z-50 mt-auto w-full bg-secondary rounded-t-lg max-w-270 p-1.5 sm:p-2 relative"
+      <footer
+        className="relative z-50 shrink-0 border-t border-border/40 bg-secondary"
+        style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
       >
-        {!isActive ? (
-          <div className="flex flex-col gap-2 sm:flex-row sm:gap-1.5 sm:items-center ">
-            <DropdownMenu
-              open={
-                dropdownOpen || (isAgentListening && selectedTopic === null)
-              }
-              onOpenChange={setDropdownOpen}
-              dir="ltr"
-            >
-              <DropdownMenuTrigger
-                asChild
-                disabled={
-                  !(
-                    agentState === "listening" ||
-                    agentState === "thinking" ||
-                    agentState === "speaking"
-                  )
-                }
-                className=""
-              >
-                <button
-                  id="topics-list"
-                  className={`flex-1 md:w-1/2 md:flex-none flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-all duration-300 min-w-0 ${
-                    selectedTopic?.slug
-                      ? "bg-[#0a2a3f] text-[#fffdfd] border border-accent/30"
-                      : "bg-[#0a2a3f]/60 text-[#8faabb] border border-transparent hover:border-accent/20"
-                  }`}
-                >
-                  {selectedTopic && (
-                    <CompletionCircle
-                      current={selectedSection?.index || 0}
-                      total={selectedTopic?.totalSections}
-                    />
-                  )}
-                  <span className="truncate">
-                    {topics.filter((t) => t.slug === selectedTopic?.slug).pop()
-                      ?.name ?? "اختر موضوع"}
-                  </span>
-                  <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 opacity-50" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="center"
-                side="top"
-                className="w-(--radix-dropdown-menu-trigger-width) bg-[#0a1e2e] border-border/30 text-[#fffdfd] max-h-[50vh]"
-              >
-                {topics.map((topic) => {
-                  return (
-                    <DropdownMenuItem
-                      key={topic.slug}
-                      onSelect={() =>
-                        sendUserMessage(`please explain ${topic.slug}`)
-                      }
-                      className={`flex items-center gap-2 text-xs sm:text-sm ${
-                        topic.slug === selectedTopic?.slug
-                          ? "bg-accent/10 text-accent focus:bg-accent/15 focus:text-accent"
-                          : "focus:bg-white/5"
-                      }`}
-                    >
-                      {topic.slug === selectedTopic?.slug ? (
-                        <span className="relative flex h-3.5 w-3.5 shrink-0 items-center justify-center">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-                          <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-accent " />
-                        </span>
-                      ) : (
-                        <Circle className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                      )}
-                      <span className="truncate">{topic.name}</span>
-                    </DropdownMenuItem>
-                  );
-                })}
-              </DropdownMenuContent>
-            </DropdownMenu>
+        {currentCheckpointQuestion?.question && isAgentListening && (
+          <CheckpointPopup
+            question={currentCheckpointQuestion?.question || ""}
+            choices={currentCheckpointQuestion?.choices || []}
+            onChoiceSelect={(choice) => {
+              sendUserMessage(choice);
+            }}
+          />
+        )}
 
-            <div className="flex items-center gap-1 sm:contents">
+        <div className="mx-auto flex w-full max-w-270 flex-wrap items-center gap-2 px-2 py-2 sm:flex-nowrap sm:gap-3 sm:px-4 sm:py-2.5">
+          {!isConnected ? (
+            <div className="flex w-full flex-col items-center justify-center gap-2.5 sm:justify-between sm:flex-row sm:gap-4">
+              <div className="flex items-center justify-start gap-2 flex-1">
+                <ToggleGroup
+                  type="single"
+                  value={language}
+                  onValueChange={(val) =>
+                    val && handleLanguageChange(val as "English" | "Arabic")
+                  }
+                  variant="outline"
+                  className="rounded-lg border border-border/40 bg-secondary-foreground/5 p-0.5"
+                >
+                  <ToggleGroupItem
+                    value="Arabic"
+                    className="h-8 rounded-md px-3 text-xs font-medium text-secondary-foreground/70 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+                  >
+                    عربي
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="English"
+                    className="h-8 rounded-md px-3 text-xs font-medium text-secondary-foreground/70 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+                  >
+                    English
+                  </ToggleGroupItem>
+                </ToggleGroup>
+                <span className="order-1 text-center text-xs text-secondary-foreground/60 sm:order-none sm:text-sm">
+                  اختر لغة الجلسة{" "}
+                </span>
+              </div>
+              <Button
+                onClick={handleStart}
+                disabled={isStarting}
+                className="h-9 gap-2 rounded-lg bg-accent px-5 text-sm font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90 flex-1"
+              >
+                ابدأ الجلسة
+                {isStarting ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Phone className="size-4" />
+                )}
+              </Button>
+              <Link
+                href="/dashboard/my-library"
+                className="flex-1 flex justify-end items-center gap-2"
+              >
+                <Info className="size-4" />
+                <span>مساعدة</span>
+              </Link>
+            </div>
+          ) : (
+            <>
+              <DropdownMenu
+                open={
+                  dropdownOpen || (isAgentListening && selectedTopic === null)
+                }
+                onOpenChange={setDropdownOpen}
+                dir="rtl"
+              >
+                <DropdownMenuTrigger asChild disabled={!agentInteractive}>
+                  <button
+                    className={`flex min-w-0 items-center justify-center gap-2 rounded-full px-3.5 py-2 text-xs font-medium transition-colors sm:text-sm ${
+                      selectedTopic?.slug
+                        ? "border border-accent/30 bg-primary/40 text-secondary-foreground"
+                        : "border border-secondary-foreground/10 bg-secondary-foreground/5 text-secondary-foreground/70 hover:bg-secondary-foreground/10 disabled:opacity-50"
+                    }`}
+                  >
+                    {selectedTopic && (
+                      <CompletionCircle
+                        current={selectedSection?.index || 0}
+                        total={selectedTopic?.totalSections}
+                      />
+                    )}
+                    <span className="truncate">
+                      {topics
+                        .filter((t) => t.slug === selectedTopic?.slug)
+                        .pop()?.name ?? "اختر موضوع"}
+                    </span>
+                    <ChevronDown className="size-3.5 shrink-0 opacity-50" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  side="top"
+                  className="max-h-[50vh] max-w-[70vw] border-border/40 bg-popover text-popover-foreground"
+                >
+                  {topics.map((topic) => {
+                    return (
+                      <DropdownMenuItem
+                        key={topic.slug}
+                        onSelect={() =>
+                          sendUserMessage(`please explain ${topic.slug}`)
+                        }
+                        className={`gap-2 text-sm ${
+                          topic.slug === selectedTopic?.slug
+                            ? "bg-accent/10 text-accent focus:bg-accent/15 focus:text-accent"
+                            : "focus:bg-secondary-foreground/10"
+                        }`}
+                      >
+                        {topic.slug === selectedTopic?.slug ? (
+                          <span className="relative flex size-3.5 shrink-0 items-center justify-center">
+                            <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" />
+                            <span className="relative inline-flex size-3.5 rounded-full bg-accent" />
+                          </span>
+                        ) : (
+                          <Circle className="size-3.5 shrink-0 text-muted-foreground" />
+                        )}
+                        <span className="truncate">{topic.name}</span>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <SessionProvider session={session}>
                 <SessionManager
                   api={api}
@@ -285,41 +314,22 @@ export function AgentLauncher({
                   onAgentStateChange={handleAgentStateChange}
                   setCurrentCheckpointQuestion={setCurrentCheckpointQuestion}
                   onDisconnect={handleDisconnect}
-                  onTextInputToggle={handleTextInputToggle}
+                  onTextInputToggle={() => setIsTextInputOpen((prev) => !prev)}
                   isTextInputOpen={isTextInputOpen}
                   setEndSessionMessage={setEndSessionMessage}
                 />
               </SessionProvider>
-            </div>
-          </div>
-        ) : (
-          <MenuPopup
-            open={isMenuOpen && !isConnected}
-            onOpenChange={handleMenuPopupOpenChange}
-            onLogoClick={handleLogoClick}
-            language={language}
-            onLanguageChange={handleLanguageChange}
-            onStart={handleStart}
-          />
-        )}
-        {currentCheckpointQuestion?.question && isAgentListening && (
-          <CheckpointPopup
-            question={currentCheckpointQuestion?.question || ""}
-            choices={currentCheckpointQuestion?.choices || []}
-            onChoiceSelect={(choice) => {
-              sendUserMessage(choice);
-            }}
-          />
-        )}
-        {/* {FeedbackDialogOpen && (
-          <FeedbackDialog
-            onClose={() => setFeedbackDialogOpen(false)}
-            open={FeedbackDialogOpen}
-            roomName={roomName!}
-            endSessionMessage={endSessionMessage!}
-          />
-        )} */}
-      </div>
+            </>
+          )}
+        </div>
+      </footer>
+
+      {/* <FeedbackDialog
+        open={feedbackDialogOpen}
+        onClose={() => setFeedbackDialogOpen(false)}
+        roomName={roomName || ""}
+        endSessionMessage={endSessionMessage}
+      /> */}
     </>
   );
 }

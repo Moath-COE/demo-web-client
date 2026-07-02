@@ -1,15 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PdfCanvas } from "@/components/study/pdfCanvas";
+import dynamic from "next/dynamic";
 import { CarouselApi } from "@/components/ui/carousel";
 import { markerPayload, Topic } from "@/types/types";
 import { TopNav } from "@/components/study/top-nav";
 import { AgentLauncher } from "@/components/study/agent-launcher";
+import { PdfDocumentLoading } from "@/components/study/loadings/pdfCanvasLoading";
+
+const PdfCanvas = dynamic(
+  () => import("@/components/study/pdfCanvas").then((m) => m.PdfCanvas),
+  { ssr: false, loading: () => <PdfDocumentLoading /> },
+);
 
 const DEMO_COURSE_SLUG = "demo";
 const DEMO_CHAPTER_INDEX = 1;
-const DEMO_CHAPTER_TITLE = "الفصل التجريبي";
 const DEMO_PDF_URL =
   "https://snd-zone.b-cdn.net/courses/demo/ch_1/Lecture%201%20%20-%20Tagged_260503_215153.pdf";
 
@@ -17,7 +22,6 @@ export default function StudyClient() {
   const courseSlug = DEMO_COURSE_SLUG;
   const chapterIndex = DEMO_CHAPTER_INDEX;
   const pdfUrl = DEMO_PDF_URL || null;
-  const chapterTitle = DEMO_CHAPTER_TITLE;
 
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
@@ -50,19 +54,18 @@ export default function StudyClient() {
   }, [courseSlug, chapterIndex]);
 
   return (
-    <div
-      className="flex flex-col relative max-h-[130vh] min-h-svh overflow-hidden items-center bg-background"
-      style={{
-        paddingTop: "env(safe-area-inset-top)",
-        paddingBottom: "env(safe-area-inset-bottom)",
-        backgroundImage: "url('/static/assets/texture-gold.png')",
-        backgroundBlendMode: "lighten",
-        backgroundRepeat: "repeat",
-        backgroundSize: "auto",
-        backgroundPosition: "top left",
-      }}
-    >
-      <TopNav chapterTitle={chapterTitle} />
+    <div className="flex h-svh flex-col overflow-hidden bg-background">
+      <TopNav />
+      <main className="relative flex min-h-0 flex-1 flex-col">
+        <PdfCanvas
+          pdfUrl={pdfUrl}
+          api={api}
+          setApi={setApi}
+          numPages={numPages}
+          setNumPages={setNumPages}
+          activeMarker={activeMarker}
+        />
+      </main>
       <AgentLauncher
         api={api}
         numPages={numPages}
@@ -70,14 +73,6 @@ export default function StudyClient() {
         courseSlug={courseSlug}
         chapterIndex={chapterIndex}
         setActiveMarker={setActiveMarker}
-      />
-      <PdfCanvas
-        pdfUrl={pdfUrl}
-        api={api}
-        setApi={setApi}
-        numPages={numPages}
-        setNumPages={setNumPages}
-        activeMarker={activeMarker}
       />
     </div>
   );

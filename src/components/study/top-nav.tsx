@@ -2,30 +2,141 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  CheckCircle2,
+  ChevronDown,
+  ChevronLeft,
+  Circle,
+  ListTodo,
+} from "lucide-react";
 import Image from "next/image";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CompletionCircle } from "@/components/study/completionCircle";
+import { cn } from "@/lib/utils";
 
-export function TopNav({ chapterTitle }: { chapterTitle: string | null }) {
-  const displayText = chapterTitle || "عنوان الفصل";
+type TaskStatus = "done" | "current" | "upcoming";
+
+interface Task {
+  id: string;
+  title: string;
+  status: TaskStatus;
+}
+
+const TASKS: Task[] = [
+  { id: "1", title: "قراءة شرائح الدرس الأول", status: "done" },
+  { id: "2", title: "تدوين أهم النقاط", status: "done" },
+  { id: "3", title: "جلسة مراجعة مع سند", status: "current" },
+  { id: "4", title: "حل التمارين الختامية", status: "upcoming" },
+  { id: "5", title: "مراجعة سريعة قبل الاختبار", status: "upcoming" },
+];
+
+export function TopNav() {
+  const doneCount = TASKS.filter((t) => t.status === "done").length;
+  const currentTask = TASKS.find((t) => t.status === "current");
 
   return (
-    <nav className="mb-2 flex items-center justify-between w-full h-12 sm:h-16 px-3 sm:px-6 border-b border-border/60 bg-secondary backdrop-blur">
-      <div className="md:flex justify-start items-center gap-2 hidden">
-        <Image src="/static/logo.png" alt="Logo" width={32} height={32} />
-        <h2 className="text-sm sm:text-xl font-bold ">سند</h2>
+    <nav
+      className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border/40 bg-secondary px-3 sm:h-16 sm:px-5"
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
+    >
+      <div className="flex shrink-0 items-center gap-2">
+        <Image
+          src="/static/logo.png"
+          alt="سند"
+          width={30}
+          height={30}
+          className="size-7 object-contain sm:size-8"
+        />
+        <span className="text-sm font-bold sm:text-base">سند</span>
       </div>
-      <div className="outline-1 outline-primary/60 rounded-sm flex items-center gap-1.5 sm:gap-2 min-w-0 py-1 px-4">
-        <span className="border-b border-transparent group-hover:border-accent transition-all duration-200 truncate">
-          {displayText}
-        </span>
+
+      <div className="flex min-w-0 flex-1 justify-center">
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="group flex h-9 min-w-0 max-w-full items-center gap-2 rounded-full border border-secondary-foreground/10 bg-secondary-foreground/5 px-3 text-xs font-medium text-secondary-foreground outline-none transition-colors hover:bg-secondary-foreground/10 focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-secondary data-[state=open]:bg-secondary-foreground/10 sm:text-sm"
+            >
+              <CompletionCircle current={doneCount} total={TASKS.length} />
+              <span className="truncate">
+                {currentTask?.title ?? "تقدّم الدرس"}
+              </span>
+              <ChevronDown
+                className="size-3.5 shrink-0 opacity-50 transition-transform duration-200 group-data-[state=open]:rotate-180"
+                aria-hidden
+              />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            align="center"
+            sideOffset={6}
+            className="w-72 max-w-[calc(100vw-1.5rem)] p-3 motion-reduce:animate-none"
+          >
+            <div className="flex items-center justify-between px-1 pb-2">
+              <div className="flex items-center gap-2">
+                <ListTodo className="size-4 text-muted-foreground" />
+                <span className="text-sm font-medium">تقدّم الدرس</span>
+              </div>
+              <span className="text-xs tabular-nums text-muted-foreground">
+                {doneCount}/{TASKS.length}
+              </span>
+            </div>
+            <ul className="flex flex-col">
+              {TASKS.map((task, i) => (
+                <li
+                  key={task.id}
+                  className={cn(
+                    "flex items-center gap-2.5 rounded-md px-1 py-1.5 text-sm",
+                    "animate-in fade-in-0 slide-in-from-top-1 duration-200 motion-reduce:animate-none",
+                    task.status === "current" && "bg-accent/10",
+                  )}
+                  style={{
+                    animationDelay: `${i * 40}ms`,
+                    animationFillMode: "backwards",
+                  }}
+                >
+                  {task.status === "done" ? (
+                    <CheckCircle2 className="size-4 shrink-0 text-accent" />
+                  ) : task.status === "current" ? (
+                    <span className="relative flex size-4 shrink-0 items-center justify-center">
+                      <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75 motion-reduce:hidden" />
+                      <span className="relative inline-flex size-3.5 rounded-full bg-accent" />
+                    </span>
+                  ) : (
+                    <Circle className="size-4 shrink-0 text-muted-foreground/50" />
+                  )}
+                  <span
+                    className={cn(
+                      "truncate",
+                      task.status === "done" &&
+                        "text-muted-foreground line-through",
+                      task.status === "current" && "font-medium text-accent",
+                    )}
+                  >
+                    {task.title}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </PopoverContent>
+        </Popover>
       </div>
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        <Button asChild size="sm" variant={"default"}>
-          <Link href="/my-library">
-            <span className="hidden sm:inline">المكتبة</span>
-            <span className="sm:hidden">المكتبة</span>
-          </Link>
-        </Button>
-      </div>
+
+      <Button
+        asChild
+        size="sm"
+        variant="ghost"
+        className="shrink-0 gap-1 text-secondary-foreground/80 hover:bg-secondary-foreground/10 hover:text-secondary-foreground"
+      >
+        <Link href="/dashboard/my-library">
+          <span>المكتبة</span>
+          <ChevronLeft className="size-4" />
+        </Link>
+      </Button>
     </nav>
   );
 }

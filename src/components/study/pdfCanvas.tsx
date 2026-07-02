@@ -15,12 +15,9 @@ import {
   PdfPageLoading,
 } from "@/components/study/loadings/pdfCanvasLoading";
 
-// 1. Configure the worker to use a CDN (easiest setup)
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-// 2. Import the necessary styles for text selection and annotations
 import "react-pdf/dist/Page/TextLayer.css";
-// import "@/styles/AnnotationLayer.css";
 
 export const PdfCanvas = memo(function PdfCanvas({
   pdfUrl,
@@ -61,7 +58,6 @@ export const PdfCanvas = memo(function PdfCanvas({
     }
   }, [api]);
 
-  // Agent page control logic
   useEffect(() => {
     if (!api) {
       return;
@@ -106,25 +102,24 @@ export const PdfCanvas = memo(function PdfCanvas({
       file={pdfUrl || undefined}
       onLoadSuccess={onDocumentLoadSuccess}
       loading={<PdfDocumentLoading />}
-      className="w-full bg-clip-border max-w-270 mx-auto mb-auto"
+      className="mx-auto flex h-full w-full max-w-240 flex-col"
     >
       <Carousel
-        className="overflow-y-scroll pb-2 px-2 sm:px-4 sm:pb-4 bg-secondary rounded-b-lg "
+        className="flex h-full flex-col overflow-hidden justify-center"
         setApi={setApi}
         dir="ltr"
       >
-        <CarouselContent className=" ">
+        <CarouselContent className="h-full">
           {Array.from({ length: numPages }).map((_, index) => {
             const currentItemPage = index + 1;
 
-            // Render the active page, plus one on the left and one on the right
             const isVisible = Math.abs(pageNumber - currentItemPage) <= 1;
 
             return (
               <CarouselItem key={index} data-page-index={currentItemPage}>
                 <AspectRatio
                   ratio={16 / 9}
-                  className="bg-gray-300 mx-auto overflow-y-auto flex justify-center scrollbar-show-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400/60 scrollbar-track-gray-200/10"
+                  className="mx-auto flex max-h-full justify-center overflow-y-auto bg-card"
                 >
                   {isVisible && containerWidth > 0 ? (
                     <Page
@@ -132,7 +127,6 @@ export const PdfCanvas = memo(function PdfCanvas({
                       width={containerWidth}
                       scale={scale}
                       renderTextLayer={true}
-                      // Execute the factory function with the current page
                       customTextRenderer={
                         getTextRenderer(currentItemPage) as (
                           props: Record<string, unknown>,
@@ -142,9 +136,9 @@ export const PdfCanvas = memo(function PdfCanvas({
                       loading={<PdfPageLoading />}
                     />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-[#132f45]">
-                      <Loader2 className="size-7 text-slate-400 animate-spin" />
-                      <span className="text-xs text-slate-500">
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-secondary">
+                      <Loader2 className="size-7 animate-spin text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground">
                         شريحة {currentItemPage}
                       </span>
                     </div>
@@ -154,7 +148,7 @@ export const PdfCanvas = memo(function PdfCanvas({
             );
           })}
         </CarouselContent>
-        <div className=" mt-2 z-20 flex items-center justify-center relative mx-auto">
+        <div className="relative z-20 mx-auto mt-2 flex items-center justify-center pb-2">
           <ContentToolbar
             pageNumber={pageNumber}
             numPages={numPages}
