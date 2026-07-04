@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Zap, Coffee } from "lucide-react";
+import { ArrowLeft, Zap, Coffee, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,6 +28,7 @@ const ICONS: Record<ExperienceMode, React.ComponentType<{ className?: string }>>
 export function LandingCta() {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const handleStart = () => {
     if (getExperience()) {
@@ -39,7 +41,8 @@ export function LandingCta() {
   const handleChoose = (value: ExperienceMode) => {
     setExperience(value);
     setOpen(false);
-    router.push("/dashboard");
+    setLoading(true);
+    window.setTimeout(() => router.push("/dashboard"), 2000);
   };
 
   return (
@@ -103,6 +106,21 @@ export function LandingCta() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {loading &&
+        createPortal(
+          <div
+            role="status"
+            aria-live="polite"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-6 bg-background px-6 text-center"
+          >
+            <Loader2 className="size-12 animate-spin text-accent" />
+            <p className="max-w-sm text-lg font-medium leading-relaxed text-foreground">
+              لحظات، سند قاعد يجهز الخطة المناسبة لك
+            </p>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }
