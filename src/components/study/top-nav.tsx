@@ -9,7 +9,7 @@ import {
   Circle,
   ListTodo,
 } from "lucide-react";
-import Image from "next/image";
+import { Logo } from "@/components/logo";
 import {
   Popover,
   PopoverContent,
@@ -44,13 +44,7 @@ export function TopNav() {
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="flex shrink-0 items-center gap-2">
-        <Image
-          src="/static/logo.png"
-          alt="سند"
-          width={30}
-          height={30}
-          className="size-7 object-contain sm:size-8"
-        />
+        <Logo className="h-7 w-auto sm:h-8" />
         <span className="text-sm font-bold sm:text-base">سند</span>
       </div>
 
@@ -130,7 +124,7 @@ export function TopNav() {
         asChild
         size="sm"
         variant="ghost"
-        className="shrink-0 gap-1 text-secondary-foreground/80 hover:bg-secondary-foreground/10 hover:text-secondary-foreground"
+        className="study-lib-link shrink-0 gap-1 text-secondary-foreground/80"
       >
         <Link href="/dashboard/my-library">
           <span>المكتبة</span>

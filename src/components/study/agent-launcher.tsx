@@ -20,6 +20,7 @@ import { CompletionCircle } from "@/components/study/completionCircle";
 import { FeedbackDialog } from "./feedback-dialog";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { DEFAULT_EXPERIENCE, getExperience } from "@/lib/experience";
 
 export function AgentLauncher({
   api,
@@ -69,6 +70,7 @@ export function AgentLauncher({
           chapter_id: chapterId,
           language,
           user_name: DEMO_USER_NAME,
+          experience: getExperience() ?? DEFAULT_EXPERIENCE,
         });
 
         const response = await fetch("/api/get-lk-token?" + params.toString(), {
@@ -190,7 +192,7 @@ export function AgentLauncher({
           />
         )}
 
-        <div className="mx-auto flex w-full max-w-270 flex-wrap items-center gap-2 px-2 py-2 sm:flex-nowrap sm:gap-3 sm:px-4 sm:py-2.5">
+        <div className="mx-auto flex w-full max-w-270 flex-wrap items-center gap-2 px-2 py-2 sm:flex-nowrap sm:gap-3 sm:px-4 sm:py-2">
           {!isConnected ? (
             <div className="flex w-full flex-col items-center justify-center gap-2.5 sm:justify-between sm:flex-row sm:gap-4">
               <div className="flex items-center justify-start gap-2 flex-1">
@@ -251,7 +253,7 @@ export function AgentLauncher({
               >
                 <DropdownMenuTrigger asChild disabled={!agentInteractive}>
                   <button
-                    className={`flex min-w-0 items-center justify-center gap-2 rounded-full px-3.5 py-2 text-xs font-medium transition-colors sm:text-sm ${
+                    className={`flex min-w-0 items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 sm:text-sm ${
                       selectedTopic?.slug
                         ? "border border-accent/30 bg-primary/40 text-secondary-foreground"
                         : "border border-secondary-foreground/10 bg-secondary-foreground/5 text-secondary-foreground/70 hover:bg-secondary-foreground/10 disabled:opacity-50"

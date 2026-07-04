@@ -99,25 +99,25 @@ export function FeedbackDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         showCloseButton={submitted}
-        className="sm:max-w-md bg-gradient-to-b from-[#0e293c] to-[#0a1f2e] border-[#1d5479]/40 text-[#fffdfd] [&>button]:text-[#fffdfd]/70 [&>button]:hover:text-[#fffdfd]"
+        className="sm:max-w-md bg-gradient-to-b from-primary to-primary/80 border-accent/40 text-primary-foreground [&>button]:text-primary-foreground/70 [&>button]:hover:text-primary-foreground"
       >
         {submitted ? (
           <div className="flex flex-col items-center gap-5 py-6">
             <div className="relative">
-              <div className="absolute inset-0 animate-ping rounded-full bg-[#ffa02f]/20" />
-              <CheckCircle2 className="h-16 w-16 text-[#ffa02f] relative" />
+              <div className="absolute inset-0 animate-ping rounded-full bg-accent/20" />
+              <CheckCircle2 className="h-16 w-16 text-accent relative" />
             </div>
             <div className="text-center space-y-2">
-              <h3 className="text-xl font-semibold text-[#fffdfd]">
+              <h3 className="text-xl font-semibold text-primary-foreground">
                 شكراً لك!
               </h3>
-              <p className="text-sm text-[#fffdfd]/70 leading-relaxed">
+              <p className="text-sm text-primary-foreground/70 leading-relaxed">
                 تقييمك يساعدنا في تحسين تجربة التعلم مع سند
               </p>
             </div>
             <Button
               onClick={handleClose}
-              className="mt-2 bg-[#1d5479] hover:bg-[#1d5479]/80 text-[#fffdfd] px-8 rounded-lg"
+              className="mt-2 bg-accent hover:bg-accent/90 text-accent-foreground px-8 rounded-lg"
             >
               العودة للمكتبة
             </Button>
@@ -132,11 +132,11 @@ export function FeedbackDialog({
               </Alert>
             )}
             <DialogHeader className="pb-1">
-              <DialogTitle className="text-[#fffdfd] text-lg flex items-center gap-2">
-                <MessageSquareText className="h-5 w-5 text-[#ffa02f]" />
+              <DialogTitle className="text-primary-foreground text-lg flex items-center gap-2">
+                <MessageSquareText className="h-5 w-5 text-accent" />
                 كيف كانت تجربتك مع سند؟
               </DialogTitle>
-              <DialogDescription className="text-[#fffdfd]/60">
+              <DialogDescription className="text-primary-foreground/60">
                 شاركنا رأيك لتحسين تجربة سند في المستقبل. تقييمك سيبقى سرياً ولن
                 يستخدم إلا لتحسين الخدمة.
               </DialogDescription>
@@ -145,7 +145,7 @@ export function FeedbackDialog({
             <div className="space-y-5 py-2">
               {QUESTIONS.map((q) => (
                 <div key={q.id} className="space-y-2.5">
-                  <label className="text-sm text-[#fffdfd]/90 leading-relaxed block">
+                  <label className="text-sm text-primary-foreground/90 leading-relaxed block">
                     {q.question}
                   </label>
                   <StarRating
@@ -158,7 +158,7 @@ export function FeedbackDialog({
               ))}
 
               <div className="space-y-2.5">
-                <label className="text-sm text-[#fffdfd]/90 block">
+                <label className="text-sm text-primary-foreground/90 block">
                   ملاحظات عامة
                 </label>
                 <textarea
@@ -166,12 +166,12 @@ export function FeedbackDialog({
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="أضف ملاحظاتك هنا..."
                   rows={3}
-                  className="w-full bg-[#0a1f2e] border border-[#1d5479]/40 text-[#fffdfd] placeholder:text-[#fffdfd]/40 rounded-lg px-3.5 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#ffa02f]/40 focus:border-[#ffa02f]/40 transition-all"
+                  className="w-full bg-background/50 border border-accent/40 text-foreground placeholder:text-muted-foreground rounded-lg px-3.5 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40 transition-all"
                 />
               </div>
 
               {error && (
-                <p className="text-sm text-red-400 text-center">{error}</p>
+                <p className="text-sm text-destructive text-center">{error}</p>
               )}
             </div>
 
@@ -179,7 +179,7 @@ export function FeedbackDialog({
               <Button
                 onClick={handleSubmit}
                 disabled={!allRatingsSet || isSubmitting}
-                className="bg-[#ffa02f] hover:bg-[#ff8c1a] text-white px-6 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+                className="bg-accent hover:bg-accent/90 text-accent-foreground px-6 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed gap-2"
               >
                 {isSubmitting ? (
                   <>

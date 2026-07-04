@@ -1,22 +1,14 @@
-import Image from "next/image";
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-[#f5f7fa] dark:bg-[#0e293c] w-full">
+    <footer className="border-t border-border bg-secondary w-full">
       <div className="container px-4 sm:px-8 py-12 mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/static/logo.png"
-                  alt="Logo"
-                  width={32}
-                  height={32}
-                />
-              </div>
-              <span className="text-xl font-bold">Chapter-14</span>
+              <Logo className="h-8 w-auto" />
             </div>
             <p className="text-sm text-muted-foreground">
               وجهتك في رحلتك التعليمية في عصر الذكاء الاصطناعي
@@ -29,7 +21,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/terms-of-service"
-                  className="hover:text-[#ffa02f]"
+                  className="hover:text-accent transition-colors"
                 >
                   الشروط الاستخدام
                 </Link>
@@ -38,7 +30,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t mt-12 pt-8 text-center text-sm text-muted-foreground">
+        <div className="border-t border-border mt-12 pt-8 text-center text-sm text-muted-foreground">
           <p>التقنية والذكاء الاصطناعي في التعليم والتدريب © 2026</p>
         </div>
       </div>

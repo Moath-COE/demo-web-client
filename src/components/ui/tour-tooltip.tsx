@@ -197,7 +197,7 @@ export function TourTooltip({
         ref={tooltipRef}
         className={cn(
           "absolute z-10 w-[300px] rounded-xl overflow-hidden",
-          "bg-[#0e293c] border border-[#045687]/60 shadow-2xl shadow-black/30",
+          "bg-navy border border-white/10 shadow-2xl shadow-black/30",
           "transition-all duration-300 ease-out"
         )}
         style={{
@@ -208,7 +208,7 @@ export function TourTooltip({
         }}
       >
         {/* Accent top bar */}
-        <div className="h-1 bg-gradient-to-l from-[#ffa02f] to-[#ff8c1a]" />
+        <div className="h-1 bg-gradient-to-l from-coral to-coral-deep" />
 
         <div className="p-4 space-y-3">
           {/* Step indicator */}
@@ -220,25 +220,25 @@ export function TourTooltip({
                   className={cn(
                     "h-1.5 rounded-full transition-all duration-300",
                     i === stepIndex
-                      ? "w-6 bg-[#ffa02f]"
+                      ? "w-6 bg-coral"
                       : i < stepIndex
-                        ? "w-1.5 bg-[#ffa02f]/50"
-                        : "w-1.5 bg-[#1d5479]/40"
+                        ? "w-1.5 bg-coral/50"
+                        : "w-1.5 bg-white/15"
                   )}
                 />
               ))}
             </div>
-            <span className="text-[10px] font-medium text-[#fffdfd]/40 tracking-wide">
+            <span className="text-[10px] font-medium text-white/40 tracking-wide">
               {toArabicNum(stepIndex + 1)} من {toArabicNum(totalSteps)}
             </span>
           </div>
 
           {/* Content */}
           <div className="space-y-1">
-            <h4 className="text-sm font-bold text-[#fffdfd] leading-relaxed">
+            <h4 className="text-sm font-bold text-white leading-relaxed">
               {step.title}
             </h4>
-            <p className="text-xs text-[#fffdfd]/60 leading-relaxed">
+            <p className="text-xs text-white/60 leading-relaxed">
               {step.description}
             </p>
           </div>
@@ -247,7 +247,7 @@ export function TourTooltip({
           <div className="flex items-center justify-between pt-1">
             <button
               onClick={onSkip}
-              className="text-[11px] text-[#fffdfd]/40 hover:text-[#fffdfd]/70 transition-colors px-2 py-1"
+              className="text-[11px] text-white/40 hover:text-white/70 transition-colors px-2 py-1"
             >
               تخطي الكل
             </button>
@@ -255,8 +255,8 @@ export function TourTooltip({
               onClick={onNext}
               className={cn(
                 "px-4 py-1.5 rounded-lg text-xs font-medium transition-all duration-200",
-                "bg-[#ffa02f] hover:bg-[#ff8c1a] text-[#0e293c]",
-                "shadow-md shadow-[#ffa02f]/20 hover:shadow-[#ffa02f]/30",
+                "bg-coral hover:bg-coral-deep text-white",
+                "shadow-md shadow-coral/20 hover:shadow-coral/30",
                 "hover:scale-[1.02] active:scale-[0.98]"
               )}
             >

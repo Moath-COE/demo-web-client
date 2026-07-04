@@ -63,68 +63,68 @@ export default function DashboardPage() {
   const dailyPct = Math.round((DAILY.completed / DAILY.total) * 100);
 
   return (
-    <div className="mx-auto flex w-full max-w-[1256px] flex-col gap-6 p-5 sm:p-6">
-              <header className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <SidebarTrigger />
-                  <div>
-                    <p className="text-sm text-muted-foreground">صباح الخير </p>
-                    <h3 className="text-xl font-semibold leading-tight sm:text-2xl">
-                      فلان الفلاني wave
-                    </h3>
-                  </div>
-                </div>
-                <Avatar className="size-11 border border-border/60 bg-secondary">
-                  <AvatarFallback className="bg-secondary text-sm font-medium text-foreground">
-                    ط
-                  </AvatarFallback>
-                </Avatar>
-              </header>
+    <div className="mx-auto flex w-full max-w-314 flex-col gap-6 p-5 sm:p-6">
+      <header className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <SidebarTrigger />
+          <div>
+            <p className="text-sm text-muted-foreground">صباح الخير </p>
+            <h3 className="text-xl font-semibold leading-tight sm:text-2xl">
+              فلان الفلاني wave
+            </h3>
+          </div>
+        </div>
+        <Avatar className="size-11 border border-border/60 bg-secondary">
+          <AvatarFallback className="bg-secondary text-sm font-medium text-foreground">
+            ط
+          </AvatarFallback>
+        </Avatar>
+      </header>
 
-              <div className="grid gap-4 lg:grid-cols-3">
-                <Card className="gap-0 overflow-hidden border border-accent/35 bg-primary py-0 text-primary-foreground lg:col-span-2">
-                  <CardContent className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-                    <div className="flex flex-col gap-4">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/12 px-2.5 py-1 text-xs font-medium text-primary-foreground">
-                          <PlayCircle className="size-3.5" />
-                          المهمة التالية
-                        </span>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs text-primary-foreground/80">
-                          {NEXT_TASK.course}
-                        </span>
-                        <h2 className="text-lg font-semibold leading-tight sm:text-xl">
-                          {NEXT_TASK.title}
-                        </h2>
-                      </div>
-                      <div className="flex w-full max-w-xs flex-col gap-1.5">
-                        <div className="flex items-center justify-between text-xs text-primary-foreground/80">
-                          <span>تقدّم مهام اليوم</span>
-                          <span className="tabular-nums">
-                            {DAILY.completed} من {DAILY.total}
-                          </span>
-                        </div>
-                        <div className="h-2 w-full overflow-hidden rounded-full bg-primary-foreground/20">
-                          <div
-                            className="h-full rounded-full bg-accent transition-all duration-300"
-                            style={{ width: `${dailyPct}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                <Button
-                  asChild
-                  size="lg"
-                  className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90"
-                >
-                  <Link href="/study">
-                    ابدأ المهمة
-                    <ArrowLeft className="size-4" />
-                  </Link>
-                </Button>
-              </CardContent>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="gap-0 overflow-hidden border border-accent/35 bg-primary py-0 text-primary-foreground lg:col-span-2">
+          <CardContent className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/12 px-2.5 py-1 text-xs font-medium text-primary-foreground">
+                  <PlayCircle className="size-3.5" />
+                  المهمة التالية
+                </span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-xs text-primary-foreground/80">
+                  {NEXT_TASK.course}
+                </span>
+                <h2 className="text-lg font-semibold leading-tight sm:text-xl">
+                  {NEXT_TASK.title}
+                </h2>
+              </div>
+              <div className="flex w-full max-w-xs flex-col gap-1.5">
+                <div className="flex items-center justify-between text-xs text-primary-foreground/80">
+                  <span>تقدّم مهام اليوم</span>
+                  <span className="tabular-nums">
+                    {DAILY.completed} من {DAILY.total}
+                  </span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-primary-foreground/20">
+                  <div
+                    className="h-full rounded-full bg-accent transition-all duration-300"
+                    style={{ width: `${dailyPct}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+            <Button
+              asChild
+              size="lg"
+              className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90"
+            >
+              <Link href="/study">
+                ابدأ المهمة
+                <ArrowLeft className="size-4" />
+              </Link>
+            </Button>
+          </CardContent>
         </Card>
 
         <Card className="overflow-hidden border-accent/35 shadow-none">

@@ -18,6 +18,7 @@ export async function GET(request: Request) {
   const chapterId = url.searchParams.get("chapter_id") ?? "";
   const language = url.searchParams.get("language") ?? "Arabic";
   const userName = url.searchParams.get("user_name") ?? "undefined";
+  const experience = url.searchParams.get("experience") ?? "relaxed";
   const at = new AccessToken(apiKey, apiSecret, {
     identity: userId,
     name: userName,
@@ -27,6 +28,7 @@ export async function GET(request: Request) {
       language,
       user_name: userName,
       user_id: userId,
+      experience,
     },
   });
   const now = new Date();

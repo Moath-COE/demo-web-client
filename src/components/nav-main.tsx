@@ -40,7 +40,7 @@ export function NavMain({
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <SidebarMenu className="pt-4 border-t border-[#1d5479]">
+        <SidebarMenu className="pt-4 border-t border-sidebar-border">
           {items.map((item, index) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton

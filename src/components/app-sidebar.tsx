@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
-import { LayoutDashboard, Library } from "lucide-react";
+import { LayoutDashboard, Library, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -15,10 +14,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV_ITEMS = [
   { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard },
   { title: "مكتبتي", url: "/dashboard/my-library", icon: Library },
+  { title: "الإعدادات", url: "/dashboard/settings", icon: Settings },
 ];
 
 export function AppSidebar() {
@@ -32,13 +34,7 @@ export function AppSidebar() {
             <SidebarMenuButton size="lg" asChild tooltip="لوحة التحكم">
               <Link href="/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-foreground/10">
-                  <Image
-                    src="/static/logo.png"
-                    alt="Chapter-14"
-                    width={26}
-                    height={26}
-                    className="size-[26px] object-contain"
-                  />
+                  <Logo className="h-6 w-auto" />
                 </div>
                 <div className="grid flex-1 text-right text-sm leading-tight">
                   <span className="truncate font-semibold">سند</span>
@@ -75,7 +71,11 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter />
+      <SidebarFooter>
+        <div className="flex items-center justify-end">
+          <ThemeToggle />
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }

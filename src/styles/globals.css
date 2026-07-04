@@ -4,80 +4,97 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Company brand color palette applied throughout */
-  --background: #f5f8fa; /* Light background */
-  --foreground: #0e293c; /* Dark text */
-  --card: #ffffff; /* White cards */
-  --card-foreground: #0e293c;
+  /* Sanad brand palette — core */
+  --coral-700: #e8503f;
+  --coral: #ff6b5c;
+  --coral-400: #ff8e82;
+  --coral-tint: #ffd9d3;
+  --coral-wash: #fff1ef;
+  --navy-deep: #161d44;
+  --navy: #1e2553;
+  --navy-raise: #27326b;
+  --indigo: #4c57c7;
+  --indigo-400: #7077d6;
+  --peri: #a8aee0;
+  --peri-300: #c9cdf2;
+  --peri-200: #d7daf2;
+  --cream: #fbf7f1;
+  --sand: #f4efe6;
+
+  /* Semantic tokens mapped to shadcn variables (light / balanced) */
+  --background: #fbf7f1;
+  --foreground: #1e2553;
+  --card: #ffffff;
+  --card-foreground: #1e2553;
   --popover: #ffffff;
-  --popover-foreground: #0e293c;
-  --primary: #0e293c; /* Primary blue */
-  --primary-foreground: #fffdfd;
-  --secondary: #e1e7eb; /* Light secondary */
-  --secondary-foreground: #0e293c;
-  --muted: #b0c4cf;
-  --muted-foreground: #0e293c; /* Dark gray text */
-  --accent: #045687; /* Orange accent */
-  --accent-foreground: #fffdfd;
-  --destructive: #cc3333;
-  --destructive-foreground: #fffdfd;
-  --border: #d1d5db;
+  --popover-foreground: #1e2553;
+  --primary: #1e2553;
+  --primary-foreground: #ffffff;
+  --secondary: #f4efe6;
+  --secondary-foreground: #1e2553;
+  --muted: #f4efe6;
+  --muted-foreground: #8b8fa8;
+  --accent: #ff6b5c;
+  --accent-foreground: #ffffff;
+  --destructive: #c0556a;
+  --destructive-foreground: #ffffff;
+  --border: #e7e1d6;
   --input: #ffffff;
-  --ring: #ffa02f;
-  --chart-1: #ffa02f;
-  --chart-2: #1d5479;
-  --chart-3: #0e293c;
-  --chart-4: #4a5568;
-  --chart-5: #0e293c;
+  --ring: #ff6b5c;
+  --chart-1: #ff6b5c;
+  --chart-2: #4c57c7;
+  --chart-3: #1e2553;
+  --chart-4: #7077d6;
+  --chart-5: #a8aee0;
   --radius: 0.625rem;
-  --sidebar: #2e5c72; /* Dark sidebar */
-  --sidebar-foreground: #fffdfd;
-  --sidebar-primary: #045687;
-  --sidebar-primary-foreground: #fffdfd;
-  --sidebar-accent: #ffa02f;
-  --sidebar-accent-foreground: #0e293c;
-  --sidebar-border: #045687;
-  --sidebar-ring: #ffa02f;
+  --sidebar: #1e2553;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ff6b5c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ff6b5c;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #2e3766;
+  --sidebar-ring: #ff6b5c;
 }
 
 .dark {
-  /* Dark mode with inverted colors */
-  --background: #0e293c;
+  /* Dark theme — deep navy surfaces */
+  --background: #141a3c;
   --foreground: #ffffff;
-  --card: #ffffff;
-  --card-foreground: #0e293c;
-  --popover: #ffffff;
-  --popover-foreground: #0e293c;
-  --primary: #045687;
-  --primary-foreground: #fffdfd;
-  --secondary: #1b3d54;
-  --secondary-foreground: #fffdfd;
-  --muted: #162d3d;
-  --muted-foreground: #8faabb;
-  --accent: #ffa02f;
-  --accent-foreground: #0e293c;
-  --destructive: #c0392b;
-  --destructive-foreground: #fffdfd;
-  --border: #0e293c;
-  --input: #ffffff;
-  --ring: #ffa02f;
-  --chart-1: #ffa02f;
-  --chart-2: #1d5479;
-  --chart-3: #0e293c;
-  --chart-4: #4a5568;
-  --chart-5: #0e293c;
-  --sidebar: #133848;
-  --sidebar-foreground: #fffdfd;
-  --sidebar-primary: #ffa02f;
-  --sidebar-primary-foreground: #fffdfd;
-  --sidebar-accent: #ffa02f;
-  --sidebar-accent-foreground: #0e293c;
-  --sidebar-border: #ffa02f;
-  --sidebar-ring: #ffa02f;
+  --card: #1e2553;
+  --card-foreground: #ffffff;
+  --popover: #1e2553;
+  --popover-foreground: #ffffff;
+  --primary: #27326b;
+  --primary-foreground: #ffffff;
+  --secondary: #27326b;
+  --secondary-foreground: #d7daf2;
+  --muted: #27326b;
+  --muted-foreground: #a8aee0;
+  --accent: #ff6b5c;
+  --accent-foreground: #ffffff;
+  --destructive: #c0556a;
+  --destructive-foreground: #ffffff;
+  --border: #2e3766;
+  --input: #1e2553;
+  --ring: #ff6b5c;
+  --chart-1: #ff6b5c;
+  --chart-2: #4c57c7;
+  --chart-3: #1e2553;
+  --chart-4: #7077d6;
+  --chart-5: #a8aee0;
+  --sidebar: #1e2553;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ff6b5c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ff6b5c;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #2e3766;
+  --sidebar-ring: #ff6b5c;
 }
 
 @theme inline {
-  --font-sans: "Geist", "Geist Fallback";
+  --font-sans: var(--font-cairo), "Cairo", sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback";
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -115,6 +132,21 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  /* Sanad brand palette exposed as Tailwind utilities (bg-coral, text-navy, bg-cream …) */
+  --color-coral: var(--coral);
+  --color-coral-deep: var(--coral-700);
+  --color-coral-tint: var(--coral-tint);
+  --color-coral-wash: var(--coral-wash);
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-navy-raise: var(--navy-raise);
+  --color-indigo: var(--indigo);
+  --color-indigo-soft: var(--indigo-400);
+  --color-peri: var(--peri);
+  --color-cream: var(--cream);
+  --color-sand: var(--sand);
+  --color-success: #1e9e6a;
+  --color-error: #c0556a;
 }
 
 @layer base {
@@ -150,8 +182,8 @@
     color: transparent;
     background: linear-gradient(
       to right,
-      rgba(250, 204, 21, 0.4),
-      rgba(250, 204, 21, 0.4)
+      color-mix(in srgb, var(--coral) 45%, transparent),
+      color-mix(in srgb, var(--coral) 45%, transparent)
     );
     background-size: 0% 100%;
     background-repeat: no-repeat;
@@ -170,13 +202,13 @@
     top: -18px;
     left: 0%;
     transform: translateX(-50%);
-    filter: drop-shadow(0 0 4px rgba(250, 204, 21, 0.8));
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--coral) 80%, transparent));
     animation: agent-cursor-move 2s ease-out forwards;
   }
 
   .react-pdf__Page__textContent mark.agent-circle {
     @apply bg-transparent text-transparent relative rounded-sm p-1 z-10;
-    outline: 2px solid rgba(239, 68, 68, 0);
+    outline: 2px solid color-mix(in srgb, var(--coral) 0%);
     outline-offset: 1px;
     animation: agent-circle-draw 2s ease-out forwards;
   }
@@ -193,7 +225,7 @@
     top: -18px;
     left: 0%;
     transform: translateX(-50%);
-    filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.6));
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--coral) 60%, transparent));
     animation: agent-indicator-pulse 2s ease-out forwards;
   }
 
@@ -201,8 +233,8 @@
     @apply bg-transparent text-transparent relative;
     background-image: linear-gradient(
       to right,
-      rgba(239, 68, 68, 1),
-      rgba(239, 68, 68, 1)
+      var(--coral),
+      var(--coral)
     );
     background-size: 0% 2px;
     background-position: bottom left;
@@ -222,7 +254,7 @@
     top: -18px;
     left: 0%;
     transform: translateX(-50%);
-    filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.6));
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--coral) 60%, transparent));
     animation: agent-cursor-move 2s ease-out forwards;
   }
 
@@ -234,32 +266,32 @@
     content: "⬅"; /* You can use any Unicode arrow or Emoji like 👈 */
 
     /* Position it to the right of the span, vertically centered */
-    @apply absolute -right-8 top-1/2 text-red-500 text-xl drop-shadow-md;
+    @apply absolute -right-8 top-1/2 text-xl drop-shadow-md;
 
     /* Make the text visible (since the parent mark is text-transparent) */
-    color: rgba(239, 68, 68, 1);
+    color: var(--coral);
 
     /* Add a pointing animation */
     animation: agent-point 1s ease-in-out infinite;
   }
 
   .brief-panel {
-    border: 1px solid color-mix(in oklch, #ffffff, transparent 72%);
-    background: color-mix(in oklch, #133848, #045687 50%);
+    border: 1px solid color-mix(in oklch, var(--sidebar-foreground), transparent 72%);
+    background: color-mix(in oklch, var(--sidebar), var(--sidebar-primary) 50%);
   }
-  .brief-title { color: #fffdfd; }
-  .brief-text { color: #fffdfd; opacity: 0.82; }
+  .brief-title { color: var(--sidebar-foreground); }
+  .brief-text { color: var(--sidebar-foreground); opacity: 0.82; }
   .brief-chip {
-    background: color-mix(in oklch, #ffffff, transparent 71%);
-    color: color-mix(in oklch, #fffdfd, #ffa02f 35%);
+    background: color-mix(in oklch, var(--sidebar-foreground), transparent 71%);
+    color: color-mix(in oklch, var(--sidebar-foreground), var(--sidebar-accent) 35%);
   }
   .brief-badge {
-    background: color-mix(in oklch, #ffffff, transparent 84%);
-    color: #fffdfd;
+    background: color-mix(in oklch, var(--sidebar-foreground), transparent 84%);
+    color: var(--sidebar-foreground);
   }
 
   .course-card-scrim {
-    background: linear-gradient(to top, oklch(22% 0.05 245 / 0.22), transparent 50%);
+    background: linear-gradient(to top, color-mix(in oklch, var(--primary) 22%, transparent), transparent 50%);
   }
 }
 
@@ -274,10 +306,10 @@
 
 @keyframes agent-circle-draw {
   0% {
-    outline-color: rgba(239, 68, 68, 0);
+    outline-color: color-mix(in srgb, var(--coral) 0%);
   }
   100% {
-    outline-color: rgba(239, 68, 68, 1);
+    outline-color: var(--coral);
   }
 }
 
@@ -325,10 +357,10 @@
 @keyframes pulse-border {
   0%,
   100% {
-    outline-color: rgba(239, 68, 68, 1); /* Tailwind red-500 */
+    outline-color: var(--coral); /* brand accent */
   }
   50% {
-    outline-color: rgba(239, 68, 68, 0.3); /* Faded red */
+    outline-color: color-mix(in srgb, var(--coral) 30%, transparent); /* Faded */
   }
 }
 
@@ -381,6 +413,12 @@
   .landing-orb {
     animation: none !important;
   }
+
+  .animate-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 @keyframes shimmer-line {
@@ -390,5 +428,71 @@
   }
   50% {
     opacity: 1;
+  }
+}
+
+.study-lib-link {
+  position: relative;
+  isolation: isolate;
+  transition: color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.study-lib-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--foreground) 12%, transparent);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: -1;
+}
+
+.study-lib-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 9px;
+  bottom: 4px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.study-lib-link:hover {
+  color: var(--foreground);
+  background-color: transparent;
+}
+
+.study-lib-link:hover::before,
+.study-lib-link:hover::after {
+  transform: scaleX(1);
+}
+
+.study-lib-link svg {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.study-lib-link:hover svg {
+  transform: translateX(-2px);
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .study-lib-link,
+  .study-lib-link::before,
+  .study-lib-link::after,
+  .study-lib-link svg {
+    transition-duration: 0.01ms !important;
+  }
+
+  .study-lib-link:hover::before,
+  .study-lib-link:hover::after,
+  .study-lib-link:hover svg {
+    transform: none;
   }
 }

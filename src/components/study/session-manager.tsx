@@ -30,9 +30,9 @@ import { toast } from "sonner";
 const STATE_META: Record<string, { label: string; color: string }> = {
   listening: { label: "يستمع", color: "#4ade80" },
   thinking: { label: "يفكّر", color: "#fbbf24" },
-  speaking: { label: "يتحدّث", color: "#ffa02f" },
+  speaking: { label: "يتحدّث", color: "var(--accent)" },
   connecting: { label: "يتصل…", color: "#60a5fa" },
-  disconnected: { label: "غير متصل", color: "#8faabb" },
+  disconnected: { label: "غير متصل", color: "var(--muted-foreground)" },
 };
 
 const BAR_CONFIG = {
@@ -190,7 +190,7 @@ export function SessionManager({
       <RoomAudioRenderer />
       <div className="flex min-w-0 flex-1 items-center justify-center gap-2 max-sm:basis-full max-sm:order-first">
         <div
-          className="flex h-9 items-center rounded-full bg-secondary-foreground/5 px-2 ring-1 ring-inset ring-secondary-foreground/10"
+          className="flex h-9 items-center rounded-lg bg-secondary-foreground/5 px-2 ring-1 ring-inset ring-secondary-foreground/10"
           data-lk-theme="default"
         >
           <BarVisualizer
@@ -198,16 +198,16 @@ export function SessionManager({
             trackRef={audioTrack}
             barCount={BAR_CONFIG.barCount}
             options={{ minHeight: BAR_CONFIG.minHeight }}
-            style={
-              {
-                "--lk-fg": meta.color,
-                "--lk-bg": "rgba(20, 56, 72, 0.15)",
-                "--lk-va-bar-height": "32px",
-                "--lk-va-bar-width": `${BAR_CONFIG.barWidth}px`,
-                "--lk-va-bar-gap": `${BAR_CONFIG.barGap}px`,
-                "--lk-va-border-radius": `${BAR_CONFIG.borderRadius}px`,
-              } as React.CSSProperties
-            }
+              style={
+                {
+                  "--lk-fg": meta.color,
+                  "--lk-bg": "color-mix(in srgb, var(--foreground) 12%, transparent)",
+                  "--lk-va-bar-height": "32px",
+                  "--lk-va-bar-width": `${BAR_CONFIG.barWidth}px`,
+                  "--lk-va-bar-gap": `${BAR_CONFIG.barGap}px`,
+                  "--lk-va-border-radius": `${BAR_CONFIG.borderRadius}px`,
+                } as React.CSSProperties
+              }
             className="h-full w-full"
           />
         </div>
@@ -219,13 +219,13 @@ export function SessionManager({
         </span>
       </div>
 
-      <div className="flex items-center gap-1 rounded-xl border border-secondary-foreground/10 bg-secondary-foreground/5 p-1">
+      <div className="flex items-center gap-1 rounded-lg border border-secondary-foreground/10 bg-secondary-foreground/5 p-1">
         <button
           onClick={() => micToggle.toggle()}
           disabled={micToggle.pending}
           aria-label={micToggle.enabled ? "كتم الميكروفون" : "تشغيل الميكروفون"}
           title={micToggle.enabled ? "كتم الميكروفون" : "تشغيل الميكروفون"}
-          className={`flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-colors disabled:opacity-50 ${
+          className={`flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 disabled:opacity-50 ${
             micToggle.enabled
               ? "bg-secondary-foreground/10 text-secondary-foreground hover:bg-secondary-foreground/15"
               : "bg-accent text-accent-foreground hover:bg-accent/90"
@@ -245,7 +245,7 @@ export function SessionManager({
           onClick={onTextInputToggle}
           aria-label={isTextInputOpen ? "إغلاق لوحة المفاتيح" : "لوحة المفاتيح"}
           title={isTextInputOpen ? "إغلاق لوحة المفاتيح" : "لوحة المفاتيح"}
-          className={`flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-colors ${
+          className={`flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 ${
             isTextInputOpen
               ? "bg-accent text-accent-foreground hover:bg-accent/90"
               : "bg-secondary-foreground/10 text-secondary-foreground hover:bg-secondary-foreground/15"
@@ -261,7 +261,7 @@ export function SessionManager({
           onClick={toggleAudioMute}
           aria-label={isAudioMuted ? "تشغيل الصوت" : "كتم الصوت"}
           title={isAudioMuted ? "تشغيل الصوت" : "كتم الصوت"}
-          className={`flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-colors ${
+          className={`flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 ${
             isAudioMuted
               ? "bg-secondary-foreground/5 text-muted-foreground hover:bg-secondary-foreground/10"
               : "bg-secondary-foreground/10 text-secondary-foreground hover:bg-secondary-foreground/15"
@@ -284,7 +284,7 @@ export function SessionManager({
         onClick={handleDisconnect}
         aria-label="إنهاء الجلسة"
         title="إنهاء الجلسة"
-        className="flex h-9 items-center gap-1.5 rounded-lg bg-destructive/15 px-2.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground"
+        className="flex h-9 items-center gap-1.5 rounded-lg border border-destructive/40 bg-destructive/15 px-2.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
       >
         <PhoneOff className="size-4" />
         <span className="hidden md:inline">إنهاء</span>

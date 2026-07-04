@@ -1,0 +1,99 @@
+/* ============================================================
+   SANAD · THEME TOKENS  (v1 · 2026)
+   Fonts: Bricolage Grotesque (display) · Inter (text)
+   Drop this file in and use var(--...) anywhere.
+   ============================================================ */
+
+:root {
+  /* ---- CORE PALETTE ---------------------------------------- */
+  /* Coral — primary action / accent */
+  --coral-700: #e8503f;
+  --coral: #ff6b5c; /* base */
+  --coral-400: #ff8e82;
+  --coral-tint: #ffd9d3;
+  --coral-wash: #fff1ef;
+
+  /* Navy / Indigo — structure & dark surfaces */
+  --navy-deep: #161d44;
+  --navy: #1e2553; /* base */
+  --navy-raise: #27326b;
+  --indigo: #4c57c7;
+  --indigo-400: #7077d6;
+
+  /* Periwinkle — data / muted fills */
+  --peri: #a8aee0;
+  --peri-300: #c9cdf2;
+  --peri-200: #d7daf2;
+
+  /* Neutrals */
+  --cream: #fbf7f1; /* app bg (light) */
+  --sand: #f4efe6;
+  --border: #e7e1d6;
+  --border-2: #e2ddd3;
+  --hairline: #f0ebe1;
+  --text-muted: #8b8fa8;
+  --text-body: #5a5f7a;
+  --text-strong: #1e2553;
+
+  /* Semantic */
+  --success: #1e9e6a;
+  --success-wash: #cde8da;
+  --error: #c0556a;
+  --error-wash: #f3d3d9;
+  --warn-tag: #ede7dc;
+  --warn-text: #7a7f96;
+
+  /* ---- TYPE ------------------------------------------------- */
+  --font-display: "Bricolage Grotesque", sans-serif;
+  --font-text: "Inter", sans-serif;
+}
+
+/* ============================================================
+   THEME · BALANCED  (default — warm, daytime)
+   Apply on <html> or a wrapper: class="theme-balanced"
+   ============================================================ */
+.theme-balanced,
+:root {
+  --bg: #fbf7f1;
+  --surface: #ffffff;
+  --surface-2: #f4efe6;
+  --line: #e7e1d6;
+  --track: #f0ebe1;
+  --fg-strong: #1e2553;
+  --fg: #5a5f7a;
+  --fg-muted: #8b8fa8;
+  --accent: #ff6b5c;
+  --on-accent: #ffffff;
+}
+
+/* ============================================================
+   THEME · DARK  (deep navy — late-night sessions)
+   Apply: class="theme-dark"  (or @media prefers-color-scheme)
+   ============================================================ */
+.theme-dark {
+  --bg: #141a3c;
+  --surface: #1e2553;
+  --surface-2: #27326b;
+  --line: #2e3766;
+  --track: #2e3766;
+  --fg-strong: #ffffff;
+  --fg: #d7daf2;
+  --fg-muted: #a8aee0;
+  --accent: #ff6b5c;
+  --on-accent: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.theme-balanced) {
+    --bg: #141a3c;
+    --surface: #1e2553;
+    --surface-2: #27326b;
+    --line: #2e3766;
+    --track: #2e3766;
+    --fg-strong: #ffffff;
+    --fg: #d7daf2;
+    --fg-muted: #a8aee0;
+    --accent: #ff6b5c;
+    --on-accent: #ffffff;
+  }
+}

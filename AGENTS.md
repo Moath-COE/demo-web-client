@@ -1,6 +1,6 @@
 # web-client-snd
 
-**سند (Sanad)** — Arabic-first RTL education platform / AI tutor. Next.js 16 App Router, React 19, TypeScript 5. Entire UI is Arabic (`ar_SA`), RTL layout, dark mode default.
+**سند (Sanad)** — this web client is an interactive demo whose primary goal is showing new visitors what Sanad is all about. From the landing CTA, visitors choose how they want to experience Sanad (concise and fast, or calm with examples), and the demo adapts its tone and pace to that choice. Built on Next.js 16 App Router, React 19, TypeScript 5. Entire UI is Arabic (`ar_SA`), RTL layout, system color-scheme (warm cream light / navy dark) via next-themes.
 
 ## Skills
 
@@ -96,7 +96,7 @@ v24.12.0 (`.nvmrc`). Run `nvm use` before any command.
 ## Conventions
 
 - RTL: `dir="rtl"`, `lang="ar"`, Cairo font. Maintain in all UI changes.
-- Dark mode default (root `<html>` has `className="dark"`).
+- System color-scheme via next-themes (`ThemeProvider`, `defaultTheme="system"`): warm cream light surface and navy dark surface. A `<ThemeToggle>` is available; the old hardcoded `className="dark"` on `<html>` was removed.
 - Shadcn/ui new-york + `lucide-react` icons. Add components via `npx shadcn@latest add <component>`.
 - Tailwind CSS 4.x with `@tailwindcss/postcss`.
 - CSS variables/palette in `src/styles/globals.css`.
