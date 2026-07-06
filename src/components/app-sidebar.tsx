@@ -31,7 +31,11 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild tooltip="لوحة التحكم">
+            <SidebarMenuButton
+              size="lg"
+              asChild
+              tooltip={{ children: "لوحة التحكم", side: "left" }}
+            >
               <Link href="/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-foreground/10">
                   <Logo className="h-6 w-auto" />
@@ -51,13 +55,13 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu data-tour-id="sidebar-nav">
               {NAV_ITEMS.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton
                     asChild
                     isActive={pathname === item.url}
-                    tooltip={item.title}
+                    tooltip={{ children: item.title, side: "left" }}
                   >
                     <Link href={item.url}>
                       <item.icon />

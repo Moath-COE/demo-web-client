@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { DashboardTour } from "@/components/tours/dashboard-tour";
 
 const NEXT_TASK = {
   course: "الدورة التجريبية",
@@ -70,7 +71,7 @@ export default function DashboardPage() {
     <div className="mx-auto flex w-full max-w-314 flex-col gap-6 p-5 sm:p-6">
       <header className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <SidebarTrigger />
+          <SidebarTrigger data-tour-id="sidebar-trigger" />
           <div>
             <p className="text-sm text-muted-foreground">صباح الخير </p>
             <h3 className="text-xl font-semibold leading-tight sm:text-2xl">
@@ -88,7 +89,7 @@ export default function DashboardPage() {
       <div className="columns-1 gap-4 md:columns-2 [&>*]:mb-4 [&>*]:break-inside-avoid">
         {/* {Dashboard widgets header} */}
         <div className="flex flex-col gap-4 sm:flex-row  [column-span:all]">
-          <Card className="gap-0 overflow-hidden border border-accent/35 bg-primary py-0 text-primary-foreground flex-2">
+          <Card data-tour-id="next-task-card" className="gap-0 overflow-hidden border border-accent/35 bg-primary py-0 text-primary-foreground flex-2">
             <CardContent className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2">
@@ -164,7 +165,7 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        <Card className="shadow-none">
+        <Card data-tour-id="today-tasks" className="shadow-none">
           <CardContent className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -234,7 +235,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-none">
+        <Card data-tour-id="upcoming-milestones" className="shadow-none">
           <CardContent className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-muted-foreground">
               <CalendarClock className="size-4" />
@@ -279,6 +280,8 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <DashboardTour />
     </div>
   );
 }

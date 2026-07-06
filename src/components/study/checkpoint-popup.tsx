@@ -16,7 +16,7 @@ export function CheckpointPopup({
   return (
     <div
       dir="ltr"
-      className="absolute z-60 top-full left-1/2 -translate-x-1/2 mb-4 w-64 sm:w-80 max-w-[calc(100vw-2rem)] animate-in fade-in-0 slide-in-from-bottom-2 zoom-in-95 duration-300 pointer-events-auto"
+      className="absolute z-60 bottom-full left-1/2 -translate-x-1/2 mb-4 w-64 sm:w-80 max-w-[calc(100vw-2rem)] animate-in fade-in-0 slide-in-from-bottom-2 zoom-in-95 duration-300 pointer-events-auto"
     >
       <div className="relative bg-primary/95 backdrop-blur-md rounded-2xl border border-accent/30 shadow-2xl shadow-accent/10 p-4 sm:p-5">
         <div className="flex items-center gap-2 mb-3">

@@ -15,8 +15,7 @@ const PdfCanvas = dynamic(
 
 const DEMO_COURSE_SLUG = "demo";
 const DEMO_CHAPTER_INDEX = 1;
-const DEMO_PDF_URL =
-  "https://snd-zone.b-cdn.net/courses/demo/ch_1/Lecture%201%20%20-%20Tagged_260503_215153.pdf";
+const DEMO_PDF_URL = "https://snd-zone.b-cdn.net/courses/demo/ch_1/v5.pdf";
 
 export default function StudyClient() {
   const courseSlug = DEMO_COURSE_SLUG;

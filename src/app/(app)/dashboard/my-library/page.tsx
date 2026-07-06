@@ -3,6 +3,7 @@ import { ArrowLeft, BookOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { LibraryTour } from "@/components/tours/library-tour";
 
 type DemoCourse = {
   id: string;
@@ -26,7 +27,7 @@ export default function LibraryPage() {
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-5 sm:p-6">
       <header className="flex items-center gap-2">
-        <SidebarTrigger />
+        <SidebarTrigger data-tour-id="sidebar-trigger" />
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold leading-tight sm:text-2xl">
             مكتبتي
@@ -40,6 +41,7 @@ export default function LibraryPage() {
           {DEMO_COURSES.map((course) => (
             <Card
               key={course.id}
+              data-tour-id="course-card"
               className="group relative cursor-pointer gap-0 overflow-hidden border-border/70 py-0 shadow-none transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-lg"
             >
               <Link
@@ -94,6 +96,8 @@ export default function LibraryPage() {
           </div>
         </div>
       )}
+
+      <LibraryTour />
     </div>
   );
 }

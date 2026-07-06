@@ -27,11 +27,12 @@ interface Task {
 }
 
 const TASKS: Task[] = [
-  { id: "1", title: "قراءة شرائح الدرس الأول", status: "done" },
-  { id: "2", title: "تدوين أهم النقاط", status: "done" },
-  { id: "3", title: "جلسة مراجعة مع سند", status: "current" },
-  { id: "4", title: "حل التمارين الختامية", status: "upcoming" },
-  { id: "5", title: "مراجعة سريعة قبل الاختبار", status: "upcoming" },
+  { id: "1", title: "نظرة عامة على سند", status: "current" },
+  { id: "2", title: "شاهد كيف يشرح سند المحتوى", status: "upcoming" },
+  { id: "3", title: "جرّب سؤال سند صوتياً أو كتابياً", status: "upcoming" },
+  { id: "4", title: "أجب على سؤال فهم قصير", status: "upcoming" },
+  { id: "5", title: "شاهد كيف يحدّث سند خطتك تلقائياً", status: "upcoming" },
+  { id: "6", title: "اكتشف الفرق بين سند و ChatGPT", status: "upcoming" },
 ];
 
 export function TopNav() {

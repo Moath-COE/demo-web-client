@@ -12,6 +12,7 @@ import {
   setExperience,
   type ExperienceMode,
 } from "@/lib/experience";
+import { SettingsTour } from "@/components/tours/settings-tour";
 
 const EXPERIENCE_EVENT = "sanad-experience-change";
 
@@ -42,7 +43,7 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-5 sm:p-6">
       <header className="flex items-center gap-2">
-        <SidebarTrigger />
+        <SidebarTrigger data-tour-id="sidebar-trigger" />
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold leading-tight sm:text-2xl">
             الإعدادات
@@ -62,7 +63,7 @@ export default function SettingsPage() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div data-tour-id="experience-options" className="flex flex-col gap-3 sm:flex-row">
             {EXPERIENCE_OPTIONS.map((opt) => {
               const active = value === opt.value;
               return (
@@ -113,6 +114,8 @@ export default function SettingsPage() {
           </p>
         </CardContent>
       </Card>
+
+      <SettingsTour />
     </div>
   );
 }
