@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, memo } from "react";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ContentToolbar } from "@/components/study/contentToolBar";
 import {
   Carousel,
@@ -25,11 +24,28 @@ const SLIDES: string[] = [
 const DESIGN_WIDTH = 1920;
 const DESIGN_HEIGHT = 1080;
 
-function applyMarker(root: HTMLElement, payload: markerPayload): boolean {
+function applyMarker(
+  root: HTMLElement,
+  id: string,
+  payload: markerPayload,
+): boolean {
+  if (root.querySelector("mark#" + CSS.escape(id))) return true;
   const slide = root.children[payload.page - 1] as Element | undefined;
   if (!slide) return false;
-  const walker = document.createTreeWalker(slide, NodeFilter.SHOW_TEXT);
-  let node = walker.nextNode();
+  const walker = document.createTreeWalker(slide, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const parent = (node as Text).parentElement;
+      if (
+        parent?.closest(
+          "mark.agent-highlight, mark.agent-circle, mark.agent-underline, mark.agent-point",
+        )
+      ) {
+        return NodeFilter.FILTER_REJECT;
+      }
+      return NodeFilter.FILTER_ACCEPT;
+    },
+  });
+  let node = walker.nextNode() as Text | null;
   while (node) {
     const value = node.nodeValue ?? "";
     const idx = value.indexOf(payload.text);
@@ -38,6 +54,7 @@ function applyMarker(root: HTMLElement, payload: markerPayload): boolean {
       range.setStart(node, idx);
       range.setEnd(node, idx + payload.text.length);
       const mark = document.createElement("mark");
+      mark.id = id;
       mark.className = `agent-${payload.type}`;
       try {
         range.surroundContents(mark);
@@ -46,24 +63,19 @@ function applyMarker(root: HTMLElement, payload: markerPayload): boolean {
       }
       return true;
     }
-    node = walker.nextNode();
+    node = walker.nextNode() as Text | null;
   }
   return false;
 }
 
-function clearMarker(root: HTMLElement, payload: markerPayload): void {
-  const slide = root.children[payload.page - 1] as Element | undefined;
-  if (!slide) return;
-  const marks = slide.querySelectorAll(`mark.agent-${payload.type}`);
-  for (const mark of marks) {
-    if (mark.textContent !== payload.text) continue;
-    const parent = mark.parentNode;
-    if (!parent) continue;
-    while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
-    parent.removeChild(mark);
-    parent.normalize();
-    return;
-  }
+function clearMarker(root: HTMLElement, id: string): void {
+  const mark = root.querySelector("mark#" + CSS.escape(id));
+  if (!mark) return;
+  const parent = mark.parentNode;
+  if (!parent) return;
+  while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+  parent.removeChild(mark);
+  parent.normalize();
 }
 
 export const PdfCanvas = memo(function PdfCanvas({
@@ -82,31 +94,26 @@ export const PdfCanvas = memo(function PdfCanvas({
 }) {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
+  const [containerSize, setContainerSize] = useState<{
+    width: number;
+    height: number;
+  }>({ width: 0, height: 0 });
+  const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setNumPages(SLIDES.length);
   }, [setNumPages]);
 
   useEffect(() => {
-    if (!api) return;
-    const measure = () => {
-      const slides = api.slideNodes();
-      if (slides.length > 0) {
-        const style = getComputedStyle(slides[0]);
-        const paddingH =
-          parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
-        setContainerWidth(slides[0].clientWidth - paddingH);
-      }
-    };
+    const el = stageRef.current;
+    if (!el) return;
+    const measure = () =>
+      setContainerSize({ width: el.clientWidth, height: el.clientHeight });
     measure();
-    const container = api.containerNode();
-    if (container) {
-      const observer = new ResizeObserver(measure);
-      observer.observe(container);
-      return () => observer.disconnect();
-    }
-  }, [api]);
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!api) {
@@ -127,45 +134,73 @@ export const PdfCanvas = memo(function PdfCanvas({
     const prev = appliedRef.current;
     for (const key of Object.keys(prev)) {
       if (!(key in activeMarker)) {
-        clearMarker(root, prev[key]);
+        clearMarker(root, key);
         delete prev[key];
       }
     }
     for (const key of Object.keys(activeMarker)) {
-      if (key in prev) continue;
-      if (applyMarker(root, activeMarker[key])) {
-        prev[key] = activeMarker[key];
+      const payload = activeMarker[key];
+      const stored = prev[key];
+      const markerChanged =
+        !!stored &&
+        (stored.type !== payload.type ||
+          stored.page !== payload.page ||
+          stored.text !== payload.text);
+      if (markerChanged) clearMarker(root, key);
+      if (applyMarker(root, key, payload)) {
+        prev[key] = payload;
       }
     }
-  }, [activeMarker, api, containerWidth]);
+  }, [activeMarker, api, containerSize]);
+
+  const fitScale =
+    containerSize.width > 0 && containerSize.height > 0
+      ? Math.min(
+          containerSize.width / DESIGN_WIDTH,
+          containerSize.height / DESIGN_HEIGHT,
+        )
+      : 0;
+  const renderScale = fitScale * scale;
 
   return (
     <Carousel
-      className="mx-auto flex h-full w-full max-w-240 flex-col overflow-hidden justify-center"
+      className="mx-auto flex h-full w-full max-w-240 flex-col overflow-hidden"
       setApi={setApi}
       dir="ltr"
     >
-      <CarouselContent className="h-full">
-        {SLIDES.map((html, index) => (
-          <CarouselItem key={index}>
-            <AspectRatio ratio={16 / 9} className="overflow-hidden bg-card">
-              <div className="h-full w-full overflow-auto">
-                {containerWidth > 0 && (
+      <div
+        ref={stageRef}
+        className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden [&>[data-slot=carousel-content]]:absolute [&>[data-slot=carousel-content]]:inset-0"
+      >
+        <CarouselContent className="h-full">
+          {SLIDES.map((html, index) => (
+            <CarouselItem key={index} className="h-full">
+              <div className="flex h-full w-full items-center justify-center overflow-auto">
+                {renderScale > 0 && (
                   <div
                     style={{
-                      width: DESIGN_WIDTH,
-                      height: DESIGN_HEIGHT,
-                      zoom: (containerWidth / DESIGN_WIDTH) * scale,
+                      width: DESIGN_WIDTH * renderScale,
+                      height: DESIGN_HEIGHT * renderScale,
+                      flexShrink: 0,
                     }}
-                    dangerouslySetInnerHTML={{ __html: html }}
-                  />
+                  >
+                    <div
+                      style={{
+                        width: DESIGN_WIDTH,
+                        height: DESIGN_HEIGHT,
+                        transform: `scale(${renderScale})`,
+                        transformOrigin: "top left",
+                      }}
+                      dangerouslySetInnerHTML={{ __html: html }}
+                    />
+                  </div>
                 )}
               </div>
-            </AspectRatio>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <div className="relative z-20 mx-auto mt-2 flex items-center justify-center pb-2">
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </div>
+      <div className="relative z-20 flex shrink-0 items-center justify-center py-2">
         <ContentToolbar
           pageNumber={pageNumber}
           numPages={numPages}

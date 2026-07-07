@@ -20,7 +20,7 @@ const NEXT_TASK = {
   title: "الدرس الأول: مقدمة في المقرر",
 };
 
-const DAILY = { completed: 2, total: 5 };
+const DAILY = { completed: 3, total: 6 };
 
 type Milestone = {
   id: string;
@@ -56,9 +56,9 @@ const COURSE_PROGRESS = [
 ];
 
 const TODAY_TASKS = [
-  { id: "1", title: "نظرة عامة على سند", done: false },
-  { id: "2", title: "شاهد كيف يشرح سند المحتوى", done: false },
-  { id: "3", title: "جرّب سؤال سند صوتياً أو كتابياً", done: false },
+  { id: "1", title: "نظرة عامة على سند", done: true },
+  { id: "2", title: "شاهد كيف يشرح سند المحتوى", done: true },
+  { id: "3", title: "جرّب سؤال سند صوتياً أو كتابياً", done: true },
   { id: "4", title: "أجب على سؤال فهم قصير", done: false },
   { id: "5", title: "شاهد كيف يحدّث سند خطتك تلقائياً", done: false },
   { id: "6", title: "اكتشف الفرق بين سند و ChatGPT", done: false },
@@ -89,7 +89,10 @@ export default function DashboardPage() {
       <div className="columns-1 gap-4 md:columns-2 [&>*]:mb-4 [&>*]:break-inside-avoid">
         {/* {Dashboard widgets header} */}
         <div className="flex flex-col gap-4 sm:flex-row  [column-span:all]">
-          <Card data-tour-id="next-task-card" className="gap-0 overflow-hidden border border-accent/35 bg-primary py-0 text-primary-foreground flex-2">
+          <Card
+            data-tour-id="next-task-card"
+            className="gap-0 overflow-hidden border border-accent/35 bg-primary py-0 text-primary-foreground flex-2"
+          >
             <CardContent className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2">

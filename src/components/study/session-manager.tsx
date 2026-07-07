@@ -198,28 +198,29 @@ export function SessionManager({
             trackRef={audioTrack}
             barCount={BAR_CONFIG.barCount}
             options={{ minHeight: BAR_CONFIG.minHeight }}
-              style={
-                {
-                  "--lk-fg": meta.color,
-                  "--lk-bg": "color-mix(in srgb, var(--foreground) 12%, transparent)",
-                  "--lk-va-bar-height": "32px",
-                  "--lk-va-bar-width": `${BAR_CONFIG.barWidth}px`,
-                  "--lk-va-bar-gap": `${BAR_CONFIG.barGap}px`,
-                  "--lk-va-border-radius": `${BAR_CONFIG.borderRadius}px`,
-                } as React.CSSProperties
-              }
+            style={
+              {
+                "--lk-fg": meta.color,
+                "--lk-bg":
+                  "color-mix(in srgb, var(--foreground) 12%, transparent)",
+                "--lk-va-bar-height": "32px",
+                "--lk-va-bar-width": `${BAR_CONFIG.barWidth}px`,
+                "--lk-va-bar-gap": `${BAR_CONFIG.barGap}px`,
+                "--lk-va-border-radius": `${BAR_CONFIG.borderRadius}px`,
+              } as React.CSSProperties
+            }
             className="h-full w-full"
           />
         </div>
         <span
-          className="text-xs font-medium tabular-nums"
+          className="text-xs font-medium tabular-nums hidden sm:inline"
           style={{ color: meta.color }}
         >
           {meta.label}
         </span>
       </div>
 
-      <div className="flex items-center gap-1 rounded-lg border border-secondary-foreground/10 bg-secondary-foreground/5 p-1">
+      <div className="flex flex-0 sm:flex-1 items-center gap-1 rounded-lg border border-secondary-foreground/10 bg-secondary-foreground/5 p-1">
         <button
           onClick={() => micToggle.toggle()}
           disabled={micToggle.pending}

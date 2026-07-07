@@ -27,10 +27,10 @@ interface Task {
 }
 
 const TASKS: Task[] = [
-  { id: "1", title: "نظرة عامة على سند", status: "current" },
-  { id: "2", title: "شاهد كيف يشرح سند المحتوى", status: "upcoming" },
-  { id: "3", title: "جرّب سؤال سند صوتياً أو كتابياً", status: "upcoming" },
-  { id: "4", title: "أجب على سؤال فهم قصير", status: "upcoming" },
+  { id: "1", title: "نظرة عامة على سند", status: "done" },
+  { id: "2", title: "شاهد كيف يشرح سند المحتوى", status: "done" },
+  { id: "3", title: "جرّب سؤال سند صوتياً أو كتابياً", status: "done" },
+  { id: "4", title: "أجب على سؤال فهم قصير", status: "current" },
   { id: "5", title: "شاهد كيف يحدّث سند خطتك تلقائياً", status: "upcoming" },
   { id: "6", title: "اكتشف الفرق بين سند و ChatGPT", status: "upcoming" },
 ];
@@ -127,7 +127,7 @@ export function TopNav() {
         variant="ghost"
         className="study-lib-link shrink-0 gap-1 text-secondary-foreground/80"
       >
-        <Link href="/dashboard/my-library">
+        <Link href="/dashboard">
           <span>المكتبة</span>
           <ChevronLeft className="size-4" />
         </Link>
