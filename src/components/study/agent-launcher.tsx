@@ -193,7 +193,7 @@ export function AgentLauncher({
         )}
 
         <div className="mx-auto flex flex-col sm:flex-row w-full max-w-270 items-center gap-2 px-2 py-2 sm:flex-nowrap sm:gap-3 sm:px-4 sm:py-2">
-          {isConnected ? (
+          {!isConnected ? (
             <div className="flex w-full flex-reverse items-center justify-center gap-2.5 sm:justify-between sm:flex-row sm:gap-4">
               <div className="flex flex-col-reverse md:flex-row items-center justify-start gap-2 flex-1">
                 <ToggleGroup
