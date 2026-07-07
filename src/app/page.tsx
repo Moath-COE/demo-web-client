@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AudioLines, FileText, Compass } from "lucide-react";
+import { BookOpen, UserRound, ClipboardCheck, Compass } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LandingCta } from "@/components/landing/landing-cta";
@@ -13,19 +13,24 @@ export const metadata: Metadata = {
 
 const features = [
   {
-    icon: AudioLines,
-    title: "مدرّس صوتي ذكي",
-    desc: "تحدّث معه طبيعي، يشرح لك بصوته ويفهم أسئلتك لحظة بلحظة.",
+    icon: BookOpen,
+    title: "يعرف مقرّك",
+    desc: "يتقن مادتك الفعليّة، لا الإنترنت المفتوح.",
   },
   {
-    icon: FileText,
-    title: "ادرس ملفاتك مباشرة",
-    desc: "افتح ملفات مقرّرك ومحتواك، وادرسها داخل مساحة العمل فورًا.",
+    icon: UserRound,
+    title: "يعرفك أنت",
+    desc: "يتكيّف مع مستواك وسرعتك وأسلوب دراستك.",
+  },
+  {
+    icon: ClipboardCheck,
+    title: "يعرف الاختبار",
+    desc: "يدرك كيف تُصاغ الأسئلة فعليًا.",
   },
   {
     icon: Compass,
-    title: "إرشاد خطوة بخطوة",
-    desc: "يعرف خطوتك التالية ويرشدك إليها، عشان ما تضيع وسط المحتوى.",
+    title: "يعرف كيف يدرس",
+    desc: "يخطّط، ويشرح، ويقيّم، ويبقيك متحفّزًا.",
   },
 ];
 
@@ -70,9 +75,9 @@ export default function Home() {
       <section className="border-t border-border bg-muted/30">
         <div className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
           <h2 className="text-center text-2xl font-bold tracking-normal text-foreground sm:text-3xl">
-            وش يقدر يسوّيه لك سند؟
+            اداة دراسة متكاملة، لا مجرد روبوت محادثة.
           </h2>
-          <div className="mt-10 grid gap-10 sm:mt-14 sm:grid-cols-3 sm:gap-12">
+          <div className="mt-10 grid gap-10 sm:mt-14 sm:grid-cols-2 sm:gap-12 lg:grid-cols-4">
             {features.map((f) => (
               <div
                 key={f.title}
