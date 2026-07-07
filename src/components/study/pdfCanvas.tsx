@@ -25,11 +25,28 @@ const SLIDES: string[] = [
 const DESIGN_WIDTH = 1920;
 const DESIGN_HEIGHT = 1080;
 
-function applyMarker(root: HTMLElement, payload: markerPayload): boolean {
+function applyMarker(
+  root: HTMLElement,
+  id: string,
+  payload: markerPayload,
+): boolean {
+  if (root.querySelector("mark#" + CSS.escape(id))) return true;
   const slide = root.children[payload.page - 1] as Element | undefined;
   if (!slide) return false;
-  const walker = document.createTreeWalker(slide, NodeFilter.SHOW_TEXT);
-  let node = walker.nextNode();
+  const walker = document.createTreeWalker(slide, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const parent = (node as Text).parentElement;
+      if (
+        parent?.closest(
+          "mark.agent-highlight, mark.agent-circle, mark.agent-underline, mark.agent-point",
+        )
+      ) {
+        return NodeFilter.FILTER_REJECT;
+      }
+      return NodeFilter.FILTER_ACCEPT;
+    },
+  });
+  let node = walker.nextNode() as Text | null;
   while (node) {
     const value = node.nodeValue ?? "";
     const idx = value.indexOf(payload.text);
@@ -38,6 +55,7 @@ function applyMarker(root: HTMLElement, payload: markerPayload): boolean {
       range.setStart(node, idx);
       range.setEnd(node, idx + payload.text.length);
       const mark = document.createElement("mark");
+      mark.id = id;
       mark.className = `agent-${payload.type}`;
       try {
         range.surroundContents(mark);
@@ -46,24 +64,19 @@ function applyMarker(root: HTMLElement, payload: markerPayload): boolean {
       }
       return true;
     }
-    node = walker.nextNode();
+    node = walker.nextNode() as Text | null;
   }
   return false;
 }
 
-function clearMarker(root: HTMLElement, payload: markerPayload): void {
-  const slide = root.children[payload.page - 1] as Element | undefined;
-  if (!slide) return;
-  const marks = slide.querySelectorAll(`mark.agent-${payload.type}`);
-  for (const mark of marks) {
-    if (mark.textContent !== payload.text) continue;
-    const parent = mark.parentNode;
-    if (!parent) continue;
-    while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
-    parent.removeChild(mark);
-    parent.normalize();
-    return;
-  }
+function clearMarker(root: HTMLElement, id: string): void {
+  const mark = root.querySelector("mark#" + CSS.escape(id));
+  if (!mark) return;
+  const parent = mark.parentNode;
+  if (!parent) return;
+  while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+  parent.removeChild(mark);
+  parent.normalize();
 }
 
 export const PdfCanvas = memo(function PdfCanvas({
@@ -127,14 +140,21 @@ export const PdfCanvas = memo(function PdfCanvas({
     const prev = appliedRef.current;
     for (const key of Object.keys(prev)) {
       if (!(key in activeMarker)) {
-        clearMarker(root, prev[key]);
+        clearMarker(root, key);
         delete prev[key];
       }
     }
     for (const key of Object.keys(activeMarker)) {
-      if (key in prev) continue;
-      if (applyMarker(root, activeMarker[key])) {
-        prev[key] = activeMarker[key];
+      const payload = activeMarker[key];
+      const stored = prev[key];
+      const markerChanged =
+        !!stored &&
+        (stored.type !== payload.type ||
+          stored.page !== payload.page ||
+          stored.text !== payload.text);
+      if (markerChanged) clearMarker(root, key);
+      if (applyMarker(root, key, payload)) {
+        prev[key] = payload;
       }
     }
   }, [activeMarker, api, containerWidth]);
