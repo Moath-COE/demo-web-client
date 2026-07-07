@@ -5,18 +5,18 @@ import { TourTooltip, type TourStep } from "@/components/ui/tour-tooltip";
 
 const LIBRARY_STEPS: TourStep[] = [
   {
-    targetId: "add-courses-btn",
-    title: "إضافة مواد جديدة",
+    targetId: "course-card",
+    title: "دوراتك المسجّلة",
     description:
-      "من هنا يمكنك إضافة مواد جديدة لمكتبتك. اضغط على الزر لتصفح المواد المتاحة والتسجيل فيها.",
-    position: "bottom",
+      "كل مادة تسجّلها تظهر هنا كبطاقة. اضغط على البطاقة للدخول إلى الفصول وبدء الدراسة مع سند.",
+    position: "right",
   },
   {
-    targetId: "sidebar-footer",
-    title: "الإعدادات والمساعدة",
+    targetId: "sidebar-trigger",
+    title: "التنقّل وإضافة المواد",
     description:
-      "هنا تجد الإعدادات، صفحة المساعدة، وملفك الشخصي. يمكنك تخصيص تجربتك والوصول للدعم في أي وقت.",
-    position: "top",
+      "استخدم هذا الزر لفتح القائمة الجانبية، حيث تنتقل بين الأقسام وتضيف مواد جديدة لاحقاً.",
+    position: "bottom",
   },
 ];
 

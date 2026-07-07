@@ -29,8 +29,8 @@ export function StarRating({ value, onChange }: StarRatingProps) {
             <Star
               className={`h-7 w-7 transition-colors duration-150 ${
                 isFilled
-                  ? "fill-[#ffa02f] text-[#ffa02f] drop-shadow-[0_0_6px_rgba(255,160,47,0.4)]"
-                  : "fill-transparent text-[#1d5479]/60 hover:text-[#ffa02f]/50"
+                  ? "fill-accent text-accent drop-shadow-[0_0_6px_color-mix(in_srgb,var(--accent)_40%,transparent)]"
+                  : "fill-transparent text-primary/60 hover:text-accent/50"
               }`}
             />
           </button>

@@ -5,7 +5,7 @@ export default function RootAuth({ children }: { children: React.ReactNode }) {
   return (
     <>
       <TopNav />
-      <main className="bg-background text-card">{children}</main>
+      <main className="bg-background text-foreground">{children}</main>
       <Footer />
     </>
   );

@@ -1,9 +1,8 @@
 import type React from "react";
 import type { Metadata } from "next";
 import "@/styles/globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
-import { arSA } from "@clerk/localizations";
 import { DirectionProvider } from "@/components/ui/direction";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Cairo } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -11,6 +10,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 const cairo = Cairo({
   subsets: ["arabic"], // IMPORTANT
   weight: ["300", "400", "500", "600", "700", "800", "900"], // choose what you need
+  variable: "--font-cairo",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -23,11 +24,15 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/logo.ico",
-        type: "image/x-icon",
+        url: "/static/sanad-logo-primary.png",
+        type: "image/png",
       },
     ],
-    apple: "/apple-logo.png",
+    apple: [
+      {
+        url: "/static/sanad-logo-primary.png",
+      },
+    ],
   },
   openGraph: {
     title: "سند | مدرس خصوصي بالذكاء الاصطناعي",
@@ -52,14 +57,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider localization={arSA}>
-      <html lang="ar" className="dark" dir="rtl">
-        <body className={`${cairo.className} font-sans antialiased`}>
+    <html lang="ar" suppressHydrationWarning dir="rtl">
+      <body className={`${cairo.variable} ${cairo.className} font-sans antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          enableColorScheme
+          disableTransitionOnChange
+        >
           <DirectionProvider dir="rtl">{children}</DirectionProvider>
-          <Analytics />
-          <SpeedInsights />
-        </body>
-      </html>
-    </ClerkProvider>
+        </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
+      </body>
+    </html>
   );
 }

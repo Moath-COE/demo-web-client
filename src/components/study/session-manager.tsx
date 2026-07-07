@@ -9,7 +9,7 @@ import {
   BarVisualizer,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import {
   RoomEvent,
   RemoteParticipant,
@@ -19,13 +19,29 @@ import {
 import {
   Mic,
   MicOff,
-  SquareArrowRight,
+  PhoneOff,
   Volume2,
   VolumeX,
   Keyboard,
 } from "lucide-react";
 import { ConnectedStateHandlerProps, UIControlData } from "@/types/types";
 import { toast } from "sonner";
+
+const STATE_META: Record<string, { label: string; color: string }> = {
+  listening: { label: "يستمع", color: "#4ade80" },
+  thinking: { label: "يفكّر", color: "#fbbf24" },
+  speaking: { label: "يتحدّث", color: "var(--accent)" },
+  connecting: { label: "يتصل…", color: "#60a5fa" },
+  disconnected: { label: "غير متصل", color: "var(--muted-foreground)" },
+};
+
+const BAR_CONFIG = {
+  barCount: 12,
+  barWidth: 4,
+  barGap: 4,
+  borderRadius: 4,
+  minHeight: 16,
+};
 
 export function SessionManager({
   api,
@@ -47,47 +63,7 @@ export function SessionManager({
     stopTracks: true,
   });
   const pendingTimeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const flashTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
-  const [clickedButton, setClickedButton] = useState<string | null>(null);
-  const [breakpoint, setBreakpoint] = useState<"md" | "sm" | "xs">("md");
-
-  useEffect(() => {
-    const mdQuery = window.matchMedia("(min-width: 768px)");
-    const smQuery = window.matchMedia("(min-width: 640px)");
-
-    const update = () => {
-      if (mdQuery.matches) setBreakpoint("md");
-      else if (smQuery.matches) setBreakpoint("sm");
-      else setBreakpoint("xs");
-    };
-
-    update();
-    mdQuery.addEventListener("change", update);
-    smQuery.addEventListener("change", update);
-    return () => {
-      mdQuery.removeEventListener("change", update);
-      smQuery.removeEventListener("change", update);
-    };
-  }, []);
-
-  const barConfig = {
-    xs: { barCount: 8, barWidth: 4, barGap: 3, borderRadius: 3, minHeight: 20 },
-    sm: {
-      barCount: 12,
-      barWidth: 5,
-      barGap: 5,
-      borderRadius: 5,
-      minHeight: 24,
-    },
-    md: {
-      barCount: 15,
-      barWidth: 6,
-      barGap: 6,
-      borderRadius: 8,
-      minHeight: 28,
-    },
-  }[breakpoint];
 
   useEffect(() => {
     onAgentStateChange(agentState);
@@ -97,15 +73,6 @@ export function SessionManager({
     disconnectProps.onClick();
     onDisconnect();
   }, [disconnectProps, onDisconnect]);
-
-  const flashLabel = useCallback((id: string) => {
-    if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
-    setClickedButton(id);
-    flashTimeoutRef.current = setTimeout(() => {
-      setClickedButton(null);
-      flashTimeoutRef.current = null;
-    }, 3500);
-  }, []);
 
   const toggleAudioMute = useCallback(() => {
     const remoteParticipants = Array.from(room.remoteParticipants.values());
@@ -148,7 +115,7 @@ export function SessionManager({
               name: data.section,
               index: data.current_section_index || 0,
             });
-            toast.info(`Section ${data.current_section_index || 0} Started`, {
+            toast.info(`القسم ${data.current_section_index || 0} بدأ`, {
               description: `${data.section}`,
               position: "bottom-left",
               className: "bg-background! text-foreground!",
@@ -216,133 +183,112 @@ export function SessionManager({
     setEndSessionMessage,
   ]);
 
+  const meta = STATE_META[agentState] ?? STATE_META.disconnected;
+
   return (
     <>
       <RoomAudioRenderer />
-      <div
-        className="w-[200px] h-[32px] bg-[#045687] p-1 pl-1.5 sm:pl-3 md:pl-4 ml-auto rounded-lg"
-        data-lk-theme="default"
-      >
-        <BarVisualizer
-          state={agentState}
-          trackRef={audioTrack}
-          barCount={barConfig.barCount}
-          options={{ minHeight: barConfig.minHeight }}
-          style={
-            {
-              "--lk-fg":
-                agentState === "listening"
-                  ? "#4ade80"
-                  : agentState === "thinking"
-                    ? "#fbbf24"
-                    : agentState === "speaking"
-                      ? "#ffa02f"
-                      : "#60a5fa",
-              "--lk-bg": "rgba(29, 84, 121, 0.15)",
-              "--lk-va-bar-height": "60px",
-              "--lk-va-bar-width": `${barConfig.barWidth}px`,
-              "--lk-va-bar-gap": `${barConfig.barGap}px`,
-              "--lk-va-border-radius": `${barConfig.borderRadius}px`,
-            } as React.CSSProperties
-          }
-          className="w-full h-full drop-shadow-[0_0_8px_rgba(255,160,47,0.3)]"
-        />
-      </div>
-      <div className="flex items-center gap-1 sm:gap-1.5 flex-1 mr-auto">
-        <button
-          onClick={() => {
-            flashLabel("disconnect");
-            handleDisconnect();
-          }}
-          className="group rounded-lg bg-red-500 hover:bg-red-600 text-white px-2 py-1 flex justify-center items-center  transition-all duration-200 overflow-hidden"
-          aria-label="Disconnect"
+      <div className="flex min-w-0 flex-1 items-center justify-center gap-2 max-sm:basis-full max-sm:order-first">
+        <div
+          className="flex h-9 items-center rounded-lg bg-secondary-foreground/5 px-2 ring-1 ring-inset ring-secondary-foreground/10"
+          data-lk-theme="default"
         >
-          <SquareArrowRight className="h-6 w-6 shrink-0 px-1" />
-          <span
-            className={`whitespace-nowrap leading-none font-bold transition-all duration-400 text-md ${
-              clickedButton === "disconnect"
-                ? "max-w-40 opacity-100 "
-                : "max-w-0 opacity-0 group-hover:max-w-40 group-hover:opacity-100 "
-            }`}
-          >
-            {" "}
-            انهاء الجلسة
-          </span>
-        </button>
+          <BarVisualizer
+            state={agentState}
+            trackRef={audioTrack}
+            barCount={BAR_CONFIG.barCount}
+            options={{ minHeight: BAR_CONFIG.minHeight }}
+              style={
+                {
+                  "--lk-fg": meta.color,
+                  "--lk-bg": "color-mix(in srgb, var(--foreground) 12%, transparent)",
+                  "--lk-va-bar-height": "32px",
+                  "--lk-va-bar-width": `${BAR_CONFIG.barWidth}px`,
+                  "--lk-va-bar-gap": `${BAR_CONFIG.barGap}px`,
+                  "--lk-va-border-radius": `${BAR_CONFIG.borderRadius}px`,
+                } as React.CSSProperties
+              }
+            className="h-full w-full"
+          />
+        </div>
+        <span
+          className="text-xs font-medium tabular-nums"
+          style={{ color: meta.color }}
+        >
+          {meta.label}
+        </span>
+      </div>
 
+      <div className="flex items-center gap-1 rounded-lg border border-secondary-foreground/10 bg-secondary-foreground/5 p-1">
         <button
-          onClick={() => {
-            flashLabel("mic");
-            micToggle.toggle();
-          }}
+          onClick={() => micToggle.toggle()}
           disabled={micToggle.pending}
-          className="group rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white px-2 py-1 flex justify-center items-center  transition-all duration-200 overflow-hidden disabled:opacity-50"
-          aria-label="Toggle microphone"
+          aria-label={micToggle.enabled ? "كتم الميكروفون" : "تشغيل الميكروفون"}
+          title={micToggle.enabled ? "كتم الميكروفون" : "تشغيل الميكروفون"}
+          className={`flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 disabled:opacity-50 ${
+            micToggle.enabled
+              ? "bg-secondary-foreground/10 text-secondary-foreground hover:bg-secondary-foreground/15"
+              : "bg-accent text-accent-foreground hover:bg-accent/90"
+          }`}
         >
           {micToggle.enabled ? (
-            <Mic className="h-6 w-6 shrink-0 px-1" />
+            <Mic className="size-4" />
           ) : (
-            <MicOff className="h-6 w-6 shrink-0 px-1" />
+            <MicOff className="size-4" />
           )}
-          <span
-            className={`whitespace-nowrap leading-none font-bold transition-all duration-400 text-md ${
-              clickedButton === "mic"
-                ? "max-w-40 opacity-100 "
-                : "max-w-0 opacity-0 group-hover:max-w-40 group-hover:opacity-100 "
-            }`}
-          >
-            {micToggle.enabled ? "كتم الصوت" : "تشغيل الصوت"}
+          <span className="hidden md:inline">
+            {micToggle.enabled ? "مكتوم" : "الميكروفون"}
           </span>
         </button>
 
         <button
-          onClick={() => {
-            flashLabel("audio");
-            toggleAudioMute();
-          }}
-          className="group rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white px-2 py-1 flex justify-center items-center  transition-all duration-200 overflow-hidden"
-          aria-label="Toggle audio output"
+          onClick={onTextInputToggle}
+          aria-label={isTextInputOpen ? "إغلاق لوحة المفاتيح" : "لوحة المفاتيح"}
+          title={isTextInputOpen ? "إغلاق لوحة المفاتيح" : "لوحة المفاتيح"}
+          className={`flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 ${
+            isTextInputOpen
+              ? "bg-accent text-accent-foreground hover:bg-accent/90"
+              : "bg-secondary-foreground/10 text-secondary-foreground hover:bg-secondary-foreground/15"
+          }`}
+        >
+          <Keyboard className="size-4" />
+          <span className="hidden md:inline">
+            {isTextInputOpen ? "إغلاق" : "نص"}
+          </span>
+        </button>
+
+        <button
+          onClick={toggleAudioMute}
+          aria-label={isAudioMuted ? "تشغيل الصوت" : "كتم الصوت"}
+          title={isAudioMuted ? "تشغيل الصوت" : "كتم الصوت"}
+          className={`flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 ${
+            isAudioMuted
+              ? "bg-secondary-foreground/5 text-muted-foreground hover:bg-secondary-foreground/10"
+              : "bg-secondary-foreground/10 text-secondary-foreground hover:bg-secondary-foreground/15"
+          }`}
         >
           {isAudioMuted ? (
-            <VolumeX className="h-6 w-6 shrink-0 px-1" />
+            <VolumeX className="size-4" />
           ) : (
-            <Volume2 className="h-6 w-6 shrink-0 px-1" />
+            <Volume2 className="size-4" />
           )}
-          <span
-            className={`whitespace-nowrap leading-none font-bold transition-all duration-400 text-md ${
-              clickedButton === "audio"
-                ? "max-w-40 opacity-100 "
-                : "max-w-0 opacity-0 group-hover:max-w-40 group-hover:opacity-100 "
-            }`}
-          >
-            {isAudioMuted ? "تشغيل الصوت" : "كتم الصوت"}
-          </span>
-        </button>
-
-        <button
-          onClick={() => {
-            flashLabel("keyboard");
-            onTextInputToggle();
-          }}
-          className={`group rounded-lg px-2 py-1 flex justify-center items-center  transition-all duration-200 overflow-hidden ${
-            isTextInputOpen
-              ? "bg-[#ffa02f] text-white"
-              : "bg-[#1d5479] hover:bg-[#1d5479]/80 text-white"
-          }`}
-          aria-label="Toggle text input"
-        >
-          <Keyboard className="h-6 w-6 shrink-0 px-1" />
-          <span
-            className={`whitespace-nowrap leading-none font-bold transition-all duration-400 text-md ${
-              clickedButton === "keyboard"
-                ? "max-w-40 opacity-100 "
-                : "max-w-0 opacity-0 group-hover:max-w-40 group-hover:opacity-100 "
-            }`}
-          >
-            {isTextInputOpen ? "إغلاق لوحة المفاتيح" : "لوحة المفاتيح"}
+          <span className="hidden md:inline">
+            {isAudioMuted ? "مكتوم" : "السماعة"}
           </span>
         </button>
       </div>
+
+      <div className="mx-1 hidden h-7 w-px bg-border/40 sm:block" />
+
+      <button
+        onClick={handleDisconnect}
+        aria-label="إنهاء الجلسة"
+        title="إنهاء الجلسة"
+        className="flex h-9 items-center gap-1.5 rounded-lg border border-destructive/40 bg-destructive/15 px-2.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+      >
+        <PhoneOff className="size-4" />
+        <span className="hidden md:inline">إنهاء</span>
+      </button>
     </>
   );
 }

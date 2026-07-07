@@ -1,52 +1,22 @@
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function TopNav() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-lg dark:bg-[#0e293c]/80">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between px-4 sm:px-8 mx-auto">
         <div className="flex items-center gap-4 flex-1 justify-start">
-          <SignedOut>
-            <SignInButton>
-              <Button variant="ghost" className="hidden sm:flex">
-                <Link href="/sign-in">تسجيل الدخول</Link>
-              </Button>
-            </SignInButton>
-            <SignUpButton>
-              <Button className="bg-gradient-to-r from-[#1d5479] to-[#ffa02f] hover:from-[#0e293c] hover:to-[#ff8c00] text-white">
-                <Link href="/sign-up">ابدأ الآن</Link>
-              </Button>
-            </SignUpButton>
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-            <Button className="bg-gradient-to-r from-[#1d5479] to-[#ffa02f] hover:from-[#0e293c] hover:to-[#ff8c00] text-white">
-              <Link href="/my-library">مكتبتي</Link>
-            </Button>
-          </SignedIn>
+          <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Link href="/dashboard/my-library">مكتبتي</Link>
+          </Button>
         </div>
 
         <div className="flex items-center gap-2 flex-1 justify-end">
+          <ThemeToggle />
           <Link href={"/"} className="flex items-center gap-2">
-            <span className="text-xl font-bold bg-linear-to-r from-white to-[#ffa02f] bg-clip-text text-transparent">
-              Chapter-14
-            </span>
-            <div className="h-8 w-8 rounded-lg bg-linear-to-br from-[#1d5479] to-[#0e293c] flex items-center justify-center">
-              <Image
-                width={32}
-                height={32}
-                src="/static/logo.png"
-                alt="Company Logo"
-              />
-            </div>
+            <Logo className="h-8 w-auto" />
           </Link>
         </div>
       </div>

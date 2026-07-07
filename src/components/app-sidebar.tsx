@@ -1,98 +1,84 @@
 "use client";
 
-import * as React from "react";
-import {
-  IconDashboard,
-} from "@tabler/icons-react";
-
-import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
-import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { LayoutDashboard, Library, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 
-import { useUser } from "@clerk/nextjs";
+const NAV_ITEMS = [
+  { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard },
+  { title: "مكتبتي", url: "/dashboard/my-library", icon: Library },
+  { title: "الإعدادات", url: "/dashboard/settings", icon: Settings },
+];
 
-const data = {
-  user: {
-    name: "معاذ",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "مكتبتي",
-      url: "/my-library",
-      icon: IconDashboard,
-    },
-    // {
-    //   title: "المهام اليومية",
-    //   url: "#",
-    //   icon: IconListDetails,
-    // },
-    // {
-    //   title: "تحليلات الاداء",
-    //   url: "#",
-    //   icon: IconChartBar,
-    // },
-    // {
-    //   title: "المشاريع",
-    //   url: "#",
-    //   icon: IconFolder,
-    // },
-    // {
-    //   title: "الفريق",
-    //   url: "#",
-    //   icon: IconUsers,
-    // },
-  ],
-};
+export function AppSidebar() {
+  const pathname = usePathname();
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useUser();
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
+              size="lg"
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              tooltip={{ children: "لوحة التحكم", side: "left" }}
             >
-              <Link href="/">
-                <Image
-                  width={25}
-                  height={25}
-                  src="/static/logo.png"
-                  alt="Company Logo"
-                />
-                <span className="text-base font-semibold">Chapter-14</span>
+              <Link href="/dashboard">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-foreground/10">
+                  <Logo className="h-6 w-auto" />
+                </div>
+                <div className="grid flex-1 text-right text-sm leading-tight">
+                  <span className="truncate font-semibold">سند</span>
+                  <span className="truncate text-xs text-sidebar-foreground/70">
+                    Chapter-14
+                  </span>
+                </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavSecondary className="mt-auto" />
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu data-tour-id="sidebar-nav">
+              {NAV_ITEMS.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url}
+                    tooltip={{ children: item.title, side: "left" }}
+                  >
+                    <Link href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="pt-2 border-t border-[#1d5479]">
-        <NavUser
-          user={{
-            name: user?.fullName || "",
-            email: user?.primaryEmailAddress?.emailAddress || "",
-            avatar: user?.imageUrl || "",
-          }}
-        />
+
+      <SidebarFooter>
+        <div className="flex items-center justify-end">
+          <ThemeToggle />
+        </div>
       </SidebarFooter>
     </Sidebar>
   );

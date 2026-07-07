@@ -25,35 +25,42 @@ export function ContentToolbar({
   };
 
   return (
-    <div className="flex items-center justify-center gap-0.5 sm:gap-1 bg-[#1d5479]/90 backdrop-blur-sm px-2 sm:px-4 py-1 sm:py-2 rounded-lg border border-[#0e293c] shadow-lg">
-      <CarouselPrevious className="p-1 sm:p-2 rounded-md bg-[#1d5479] text-[#fffdff] hover:bg-[#ffa02f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1d5479]" />
+    <div className="flex items-center justify-center gap-0.5 rounded-lg border border-border/30 bg-secondary/95 px-1.5 py-1 shadow-lg backdrop-blur-sm sm:gap-1 sm:px-2">
+      <CarouselPrevious
+        size="sm"
+        className="border-0 bg-transparent text-secondary-foreground/70 shadow-none hover:bg-secondary-foreground/10 hover:text-secondary-foreground disabled:opacity-40"
+      />
 
       <button
         onClick={handleZoomOut}
-        className="p-1 sm:p-2 rounded hover:bg-[#ffa02f] text-[#fffdfd] transition-colors"
-        aria-label="Zoom out"
+        className="rounded-md p-1 text-secondary-foreground/70 transition-colors hover:bg-secondary-foreground/10 hover:text-secondary-foreground sm:p-1.5"
+        aria-label="تصغير"
       >
-        <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        <ZoomOut className="size-4" />
       </button>
 
-      <span className="px-1 sm:px-3 text-xs sm:text-sm font-medium text-[#fffdfd] min-w-[40px] sm:min-w-[60px] text-center tabular-nums">
+      <span className="min-w-[44px] text-center text-xs font-medium tabular-nums text-secondary-foreground/80 sm:min-w-[56px] sm:text-sm">
         {(zoom * 100).toFixed(0)}%
       </span>
 
       <button
         onClick={handleZoomIn}
-        className="p-1 sm:p-2 rounded hover:bg-[#ffa02f] text-[#fffdfd] transition-colors"
-        aria-label="Zoom in"
+        className="rounded-md p-1 text-secondary-foreground/70 transition-colors hover:bg-secondary-foreground/10 hover:text-secondary-foreground sm:p-1.5"
+        aria-label="تكبير"
       >
-        <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        <ZoomIn className="size-4" />
       </button>
 
-      <div className="w-px h-4 sm:h-6 bg-[#0e293c] mx-1 sm:mx-2" />
+      <div className="mx-1 h-5 w-px bg-border/50" />
 
-      <div className="bg-foreground px-1 rounded-sm text-background font-bold text-xs sm:text-sm tabular-nums">
+      <div className="rounded-md bg-accent px-2 py-0.5 text-xs font-bold tabular-nums text-accent-foreground sm:text-sm">
         {pageNumber} / {numPages}
       </div>
-      <CarouselNext className="p-1 sm:p-2 rounded-md bg-[#1d5479] text-[#fffdff] hover:bg-[#ffa02f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1d5479]" />
+
+      <CarouselNext
+        size="sm"
+        className="border-0 bg-transparent text-secondary-foreground/70 shadow-none hover:bg-secondary-foreground/10 hover:text-secondary-foreground disabled:opacity-40"
+      />
     </div>
   );
 }

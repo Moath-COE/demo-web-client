@@ -601,12 +601,9 @@ export default function TermsOfServicePage() {
                   الشخصية الصادر بالمرسوم الملكي رقم م/١٩ وتاريخ ٩/٢/١٤٤٣هـ
                   وتنظيماته التنفيذية. تفاصيل كاملة حول سياسات جمع البيانات
                   ومعالجتها وتخزينها ومشاركتها متاحة في{" "}
-                  <a
-                    href="/privacy-policy"
-                    className="text-primary underline underline-offset-4 hover:text-primary/80"
-                  >
+                  <span className="text-primary underline underline-offset-4">
                     سياسة الخصوصية
-                  </a>
+                  </span>
                   .
                 </p>
                 <p className="leading-relaxed">

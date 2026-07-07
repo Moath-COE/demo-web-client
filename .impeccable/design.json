@@ -1,32 +1,50 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-06-09T00:00:00.000Z",
+  "generatedAt": "2026-07-03T00:00:00.000Z",
   "title": "Design System: Sanad",
   "extensions": {
     "colorMeta": {
-      "sanad-blue": {
+      "coral": {
         "role": "primary",
-        "displayName": "Sanad Blue",
-        "canonical": "#0e293c",
-        "tonalRamp": ["oklch(15% 0.035 240)", "oklch(24% 0.045 240)", "oklch(32% 0.055 240)", "oklch(42% 0.060 240)", "oklch(54% 0.055 240)", "oklch(68% 0.040 240)", "oklch(82% 0.025 240)", "oklch(95% 0.010 240)"]
+        "displayName": "Coral",
+        "canonical": "#ff6b5c",
+        "tonalRamp": ["oklch(30% 0.15 28)", "oklch(42% 0.17 30)", "oklch(54% 0.18 32)", "oklch(64% 0.18 33)", "oklch(72% 0.17 35)", "oklch(82% 0.11 35)", "oklch(90% 0.06 35)", "oklch(96% 0.02 35)"]
       },
-      "sanad-blue-strong": {
+      "coral-deep": {
         "role": "primary",
-        "displayName": "Sanad Action Blue",
-        "canonical": "#045687",
-        "tonalRamp": ["oklch(18% 0.050 245)", "oklch(28% 0.070 245)", "oklch(38% 0.085 245)", "oklch(48% 0.095 245)", "oklch(60% 0.085 245)", "oklch(72% 0.060 245)", "oklch(84% 0.035 245)", "oklch(95% 0.015 245)"]
+        "displayName": "Coral Deep",
+        "canonical": "#e8503f",
+        "tonalRamp": ["oklch(26% 0.15 28)", "oklch(38% 0.17 30)", "oklch(50% 0.18 32)", "oklch(60% 0.18 33)", "oklch(68% 0.16 34)", "oklch(78% 0.10 34)", "oklch(88% 0.05 34)", "oklch(95% 0.02 34)"]
       },
-      "chapter-gold": {
+      "navy": {
+        "role": "primary",
+        "displayName": "Navy",
+        "canonical": "#1e2553",
+        "tonalRamp": ["oklch(15% 0.04 270)", "oklch(22% 0.07 270)", "oklch(30% 0.09 270)", "oklch(40% 0.10 270)", "oklch(52% 0.10 270)", "oklch(66% 0.08 270)", "oklch(82% 0.04 270)", "oklch(96% 0.01 270)"]
+      },
+      "indigo": {
         "role": "secondary",
-        "displayName": "Chapter Gold",
-        "canonical": "#ffa02f",
-        "tonalRamp": ["oklch(22% 0.060 65)", "oklch(34% 0.080 65)", "oklch(46% 0.100 65)", "oklch(58% 0.120 65)", "oklch(70% 0.130 65)", "oklch(80% 0.095 65)", "oklch(89% 0.055 65)", "oklch(96% 0.020 65)"]
+        "displayName": "Indigo",
+        "canonical": "#4c57c7",
+        "tonalRamp": ["oklch(20% 0.06 265)", "oklch(30% 0.10 265)", "oklch(40% 0.14 265)", "oklch(48% 0.16 265)", "oklch(60% 0.15 265)", "oklch(72% 0.11 265)", "oklch(84% 0.06 265)", "oklch(95% 0.02 265)"]
       },
-      "surface-card": {
+      "peri": {
+        "role": "tertiary",
+        "displayName": "Periwinkle",
+        "canonical": "#a8aee0",
+        "tonalRamp": ["oklch(28% 0.05 265)", "oklch(40% 0.07 265)", "oklch(52% 0.08 265)", "oklch(62% 0.08 265)", "oklch(72% 0.07 265)", "oklch(82% 0.05 265)", "oklch(90% 0.03 265)", "oklch(96% 0.01 265)"]
+      },
+      "cream": {
         "role": "neutral",
-        "displayName": "Course Card White",
-        "canonical": "#ffffff",
-        "tonalRamp": ["#0e293c", "#1b3d54", "#2e5c72", "#8faabb", "#b0c4cf", "#d1d5db", "#f5f8fa", "#ffffff"]
+        "displayName": "Cream",
+        "canonical": "#fbf7f1",
+        "tonalRamp": ["oklch(20% 0.01 70)", "oklch(35% 0.01 70)", "oklch(52% 0.01 70)", "oklch(68% 0.01 70)", "oklch(82% 0.008 70)", "oklch(90% 0.006 70)", "oklch(95% 0.005 70)", "oklch(97% 0.004 70)"]
+      },
+      "sand": {
+        "role": "neutral",
+        "displayName": "Sand",
+        "canonical": "#f4efe6",
+        "tonalRamp": ["oklch(20% 0.01 75)", "oklch(34% 0.01 75)", "oklch(50% 0.01 75)", "oklch(66% 0.01 75)", "oklch(80% 0.008 75)", "oklch(88% 0.006 75)", "oklch(94% 0.005 75)", "oklch(96% 0.004 75)"]
       }
     },
     "typographyMeta": {
@@ -38,8 +56,8 @@
     },
     "shadows": [
       { "name": "course-hover-lift", "value": "0 10px 15px -3px rgb(0 0 0 / 0.10), 0 4px 6px -4px rgb(0 0 0 / 0.10)", "purpose": "Clickable course cards on hover only." },
-      { "name": "cta-lift", "value": "0 8px 8px -4px rgb(4 86 135 / 0.20)", "purpose": "Landing page CTAs only, never paired with a decorative border." },
-      { "name": "overlay-focus", "value": "0 0 0 3px rgb(255 160 47 / 0.35)", "purpose": "Focus-visible and guided attention states." }
+      { "name": "cta-lift", "value": "0 8px 8px -4px rgb(255 107 92 / 0.20)", "purpose": "Landing page CTAs only, never paired with a decorative border." },
+      { "name": "overlay-focus", "value": "0 0 0 3px rgb(255 107 92 / 0.35)", "purpose": "Focus-visible and guided attention states, tied to coral." }
     ],
     "motion": [
       { "name": "state-fast", "value": "150ms cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Hover, focus, and compact control transitions." },
@@ -56,76 +74,83 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Main product action with Sanad Action Blue and a clear focus ring.",
+      "description": "Main product action in coral — the tutor's voice on actions and guidance.",
       "html": "<button class='ds-btn-primary'>ابدأ الدراسة</button>",
-      "css": ".ds-btn-primary { background: #045687; color: #fffdfd; border: 0; border-radius: 8px; padding: 8px 16px; min-height: 36px; font-family: Cairo, Geist, sans-serif; font-size: 14px; font-weight: 600; transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-primary:hover { background: #0e293c; } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: 3px solid rgb(255 160 47 / 0.35); outline-offset: 2px; }"
+      "css": ".ds-btn-primary { background: var(--coral, #ff6b5c); color: #ffffff; border: 0; border-radius: 8px; padding: 8px 16px; min-height: 36px; font-family: var(--font-cairo, Cairo), sans-serif; font-size: 14px; font-weight: 600; transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-primary:hover { background: var(--coral-700, #e8503f); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: 3px solid rgb(255 107 92 / 0.35); outline-offset: 2px; }"
     },
     {
-      "name": "Ghost Toolbar Button",
+      "name": "Secondary Button",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Low-emphasis toolbar or navigation action for study controls.",
-      "html": "<button class='ds-btn-ghost'>عرض الخيارات</button>",
-      "css": ".ds-btn-ghost { background: transparent; color: #fffdfd; border: 0; border-radius: 8px; padding: 8px 12px; min-height: 34px; font-family: Cairo, Geist, sans-serif; font-size: 14px; font-weight: 500; transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-ghost:hover { background: rgb(255 255 255 / 0.10); } .ds-btn-ghost:focus-visible { outline: 3px solid rgb(255 160 47 / 0.35); outline-offset: 2px; }"
+      "description": "Tonal navy-raise secondary action for study controls.",
+      "html": "<button class='ds-btn-secondary'>عرض الخيارات</button>",
+      "css": ".ds-btn-secondary { background: var(--navy-raise, #27326b); color: #ffffff; border: 0; border-radius: 8px; padding: 8px 16px; min-height: 36px; font-family: var(--font-cairo, Cairo), sans-serif; font-size: 14px; font-weight: 500; transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-secondary:hover { background: var(--navy, #1e2553); } .ds-btn-secondary:focus-visible { outline: 3px solid rgb(255 107 92 / 0.35); outline-offset: 2px; }"
     },
     {
       "name": "Course Card",
       "kind": "card",
       "refersTo": "card-course",
-      "description": "Clickable course surface with white content material and restrained hover lift.",
+      "description": "Clickable course surface with white content material and restrained hover lift over cream.",
       "html": "<article class='ds-course-card'><div class='ds-course-media'></div><div class='ds-course-body'><h3>أساسيات الذكاء الاصطناعي</h3><p>المستوى 1</p></div></article>",
-      "css": ".ds-course-card { overflow: hidden; background: #ffffff; color: #0e293c; border: 1px solid #d1d5db; border-radius: 10px; font-family: Cairo, Geist, sans-serif; transition: box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1), transform 220ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-course-card:hover { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.10), 0 4px 6px -4px rgb(0 0 0 / 0.10); transform: translateY(-1px); } .ds-course-media { aspect-ratio: 16 / 9; background: linear-gradient(135deg, #0e293c, #045687); } .ds-course-body { padding: 16px; } .ds-course-body h3 { margin: 0 0 8px; font-size: 18px; line-height: 1.35; font-weight: 700; } .ds-course-body p { margin: 0; color: #0e293c; font-size: 14px; opacity: 0.76; }"
+      "css": ".ds-course-card { overflow: hidden; background: #ffffff; color: var(--navy, #1e2553); border: 1px solid var(--border-soft, #e7e1d6); border-radius: 10px; font-family: var(--font-cairo, Cairo), sans-serif; transition: box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1), transform 220ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-course-card:hover { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.10), 0 4px 6px -4px rgb(0 0 0 / 0.10); transform: translateY(-1px); } .ds-course-media { aspect-ratio: 16 / 9; background: linear-gradient(135deg, var(--navy, #1e2553), var(--indigo, #4c57c7)); } .ds-course-body { padding: 16px; } .ds-course-body h3 { margin: 0 0 8px; font-size: 18px; line-height: 1.35; font-weight: 700; } .ds-course-body p { margin: 0; color: #5a5f7a; font-size: 14px; }"
     },
     {
       "name": "Guidance Chip",
       "kind": "chip",
       "refersTo": "chip-guidance",
-      "description": "Compact rounded cue for study attributes, guidance, or progress labels.",
+      "description": "Warm rounded cue for study attributes, guidance, or progress labels.",
       "html": "<span class='ds-chip'>محتوى تفاعلي</span>",
-      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; background: #1b3d54; color: #fffdfd; border: 1px solid rgb(255 255 255 / 0.12); border-radius: 14px; padding: 6px 12px; font-family: Cairo, Geist, sans-serif; font-size: 13px; font-weight: 500; line-height: 1; }"
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--coral-tint, #ffd9d3); color: var(--coral-700, #e8503f); border: 1px solid rgb(255 107 92 / 0.12); border-radius: 14px; padding: 6px 12px; font-family: var(--font-cairo, Cairo), sans-serif; font-size: 13px; font-weight: 600; line-height: 1; }"
     },
     {
       "name": "Text Field",
       "kind": "input",
-      "description": "White form control with soft border and gold focus ring.",
+      "description": "White form control with warm soft border and coral focus ring.",
       "html": "<label class='ds-field'><span>اسم الطالب</span><input placeholder='اكتب الاسم' /></label>",
-      "css": ".ds-field { display: grid; gap: 8px; color: #0e293c; font-family: Cairo, Geist, sans-serif; font-size: 14px; font-weight: 500; } .ds-field input { min-height: 40px; background: #ffffff; color: #0e293c; border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 12px; font: inherit; font-weight: 400; } .ds-field input::placeholder { color: rgb(14 41 60 / 0.70); } .ds-field input:focus-visible { outline: 3px solid rgb(255 160 47 / 0.35); border-color: #ffa02f; }"
+      "css": ".ds-field { display: grid; gap: 8px; color: var(--navy, #1e2553); font-family: var(--font-cairo, Cairo), sans-serif; font-size: 14px; font-weight: 500; } .ds-field input { min-height: 40px; background: #ffffff; color: var(--navy, #1e2553); border: 1px solid var(--border-soft, #e7e1d6); border-radius: 8px; padding: 8px 12px; font: inherit; font-weight: 400; } .ds-field input::placeholder { color: rgb(90 95 122 / 0.70); } .ds-field input:focus-visible { outline: 3px solid rgb(255 107 92 / 0.35); border-color: var(--coral, #ff6b5c); }"
     },
     {
       "name": "Sidebar Item",
       "kind": "nav",
-      "description": "Compact RTL navigation item for the authenticated product shell.",
+      "description": "Compact RTL navigation item for the navy authenticated product shell.",
       "html": "<a class='ds-sidebar-item' href='#'>مكتبتي</a>",
-      "css": ".ds-sidebar-item { display: inline-flex; align-items: center; justify-content: flex-start; min-height: 36px; padding: 8px 10px; border-radius: 8px; background: transparent; color: #fffdfd; font-family: Cairo, Geist, sans-serif; font-size: 14px; font-weight: 500; text-decoration: none; transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-sidebar-item:hover { background: rgb(255 160 47 / 0.16); color: #fffdfd; } .ds-sidebar-item:focus-visible { outline: 3px solid rgb(255 160 47 / 0.35); outline-offset: 2px; }"
+      "css": ".ds-sidebar-item { display: inline-flex; align-items: center; justify-content: flex-start; min-height: 36px; padding: 8px 10px; border-radius: 8px; background: transparent; color: #ffffff; font-family: var(--font-cairo, Cairo), sans-serif; font-size: 14px; font-weight: 500; text-decoration: none; transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-sidebar-item:hover { background: rgb(255 107 92 / 0.16); color: #ffffff; } .ds-sidebar-item:focus-visible { outline: 3px solid rgb(255 107 92 / 0.35); outline-offset: 2px; }"
     }
   ],
   "narrative": {
-    "northStar": "Tutor Beside You",
-    "overview": "Sanad's visual system should feel like a capable tutor sitting beside the student: present, calm, and precise. The interface supports study rather than performing for attention. Its strongest surfaces are dark Sanad Blue foundations, white content material when needed, and a limited Chapter Gold signal for guidance, progress, and primary moments.",
+    "northStar": "Daylight Tutor",
+    "overview": "Sanad should feel like studying beside a warm, present tutor in good daylight. Coral carries the encouragement of a teacher leaning in to help; navy holds the focus and trust of a quiet study room; cream is the page the lesson is written on. The interface is warm and inviting, not clinical or austere.\n\nThe product leans expressive within discipline. Coral is used confidently for primary actions, progress, and guidance moments — it is the tutor's voice, not a rare sprinkle. Navy grounds structure, navigation, and the dark study surface. Cream and white preserve generous reading space so course material stays the visual center. The system explicitly rejects childish tutor styling, dense admin-dashboard treatment, and the cold, clinical edtech look.",
     "keyCharacteristics": [
-      "Arabic-first RTL structure with Cairo as the defining voice.",
-      "Restrained product UI with dark blue foundations and rare gold emphasis.",
+      "Arabic-first RTL structure with Cairo as the single defining voice across display and body.",
+      "Warm product UI: coral for action and guidance, navy for structure, cream for the page.",
+      "A real light (cream) and dark (navy) surface, following the system preference by default.",
       "Course content and study assistance are the visual center, not decoration.",
       "Familiar shadcn/ui interaction vocabulary with careful RTL behavior.",
-      "Student comfort wins over information density unless the surface is explicitly administrative."
+      "Expressive but purposeful — coral means something is happening, not that something is pretty."
     ],
     "rules": [
-      { "name": "The Gold Means Guidance Rule", "body": "Chapter Gold is not decoration. If a gold element does not signal action, progress, focus, or instructional guidance, remove it.", "section": "colors" },
-      { "name": "The No Decorative Display Rule", "body": "Product UI labels, buttons, tabs, and study controls always use the normal Cairo product scale. Display sizing belongs to the landing page and a few brand moments, not daily workflow.", "section": "typography" },
-      { "name": "The Dense Only When Needed Rule", "body": "Compact spacing and heavier data density are permitted for admin or operational tasks. Student-facing study and library screens stay comfortable first.", "section": "elevation" }
+      { "name": "The Coral Means Action Rule", "body": "Coral signals that something is happening or can happen: a primary action, active state, progress, focus, or guidance. If a coral element does none of those, remove it. Coral may be confident and frequent on action surfaces, but flat coral as ambient background decoration is forbidden.", "section": "colors" },
+      { "name": "The Arabic Letter-Joining Rule", "body": "Never apply letter-spacing (positive or negative) to Arabic text. Arabic is cursive; spacing disconnects letters and breaks legibility. All product type uses letter-spacing: normal.", "section": "typography" },
+      { "name": "The One Voice Rule", "body": "Cairo is the only typeface in product UI. Do not introduce a second sans, a display face, or Latin-only fonts (Inter, Geist, Bricolage) — they do not carry Arabic and fracture the single-voice identity.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. A shadow is a response to state (hover, elevation, focus) — never resting decoration. Never pair a decorative 1px border with a soft shadow blur of 16px or more.", "section": "elevation" },
+      { "name": "The Dense Only When Needed Rule", "body": "Compact spacing and heavier density are permitted for admin or operational tasks. Student-facing study and library screens stay comfortable first.", "section": "elevation" }
     ],
     "dos": [
       "Do keep Arabic RTL behavior correct across layout, overlays, form controls, and navigation.",
-      "Do use Sanad Blue for product structure and Chapter Gold only for guidance, action, progress, or focus.",
-      "Do favor comfortable student reading space over dense dashboards on student-facing surfaces.",
+      "Do use Coral confidently for primary actions, active states, progress, focus, and guidance — it is the tutor's voice.",
+      "Do use Navy for structure, dark surfaces, and primary ink, and warm Cream/Sand for light surfaces and reading space.",
+      "Do keep Cairo as the single typeface and letter-spacing: normal everywhere Arabic appears.",
+      "Do favor comfortable, warm reading space over dense dashboards on student-facing surfaces.",
       "Do use familiar shadcn/ui affordances for buttons, dialogs, sidebars, tabs, and menus.",
       "Do make the next action obvious in library, enrollment, and study flows."
     ],
     "donts": [
       "Don't make Sanad look like a childish tutor app. Avoid cartoonish cues, toy-like controls, excessive gamification, and mascot-led UI.",
       "Don't make student screens feel like dense admin dashboards. Avoid cramped tables, heavy metadata blocks, and cold operational layouts.",
+      "Don't make Sanad feel clinical or sterile. Warmth (coral, cream) is the point — avoid cold grays and flat blue-only palettes.",
+      "Don't apply letter-spacing to Arabic text, or introduce Latin-only fonts (Inter, Geist, Bricolage) that drop Arabic glyphs.",
       "Don't use decorative gradients as the default button or heading treatment in product UI.",
-      "Don't use Chapter Gold as ambient decoration. Its rarity is the point.",
+      "Don't pair a decorative 1px border with a wide soft shadow (ghost-card pattern).",
       "Don't hide standard affordances behind custom controls, clipped dropdowns, or non-obvious gestures."
     ]
   }
