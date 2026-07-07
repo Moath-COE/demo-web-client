@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, memo } from "react";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ContentToolbar } from "@/components/study/contentToolBar";
 import {
   Carousel,
@@ -95,31 +94,26 @@ export const PdfCanvas = memo(function PdfCanvas({
 }) {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
+  const [containerSize, setContainerSize] = useState<{
+    width: number;
+    height: number;
+  }>({ width: 0, height: 0 });
+  const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setNumPages(SLIDES.length);
   }, [setNumPages]);
 
   useEffect(() => {
-    if (!api) return;
-    const measure = () => {
-      const slides = api.slideNodes();
-      if (slides.length > 0) {
-        const style = getComputedStyle(slides[0]);
-        const paddingH =
-          parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
-        setContainerWidth(slides[0].clientWidth - paddingH);
-      }
-    };
+    const el = stageRef.current;
+    if (!el) return;
+    const measure = () =>
+      setContainerSize({ width: el.clientWidth, height: el.clientHeight });
     measure();
-    const container = api.containerNode();
-    if (container) {
-      const observer = new ResizeObserver(measure);
-      observer.observe(container);
-      return () => observer.disconnect();
-    }
-  }, [api]);
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!api) {
@@ -157,35 +151,56 @@ export const PdfCanvas = memo(function PdfCanvas({
         prev[key] = payload;
       }
     }
-  }, [activeMarker, api, containerWidth]);
+  }, [activeMarker, api, containerSize]);
+
+  const fitScale =
+    containerSize.width > 0 && containerSize.height > 0
+      ? Math.min(
+          containerSize.width / DESIGN_WIDTH,
+          containerSize.height / DESIGN_HEIGHT,
+        )
+      : 0;
+  const renderScale = fitScale * scale;
 
   return (
     <Carousel
-      className="mx-auto flex h-full w-full max-w-240 flex-col overflow-hidden justify-center"
+      className="mx-auto flex h-full w-full max-w-240 flex-col overflow-hidden"
       setApi={setApi}
       dir="ltr"
     >
-      <CarouselContent className="h-full">
-        {SLIDES.map((html, index) => (
-          <CarouselItem key={index}>
-            <AspectRatio ratio={16 / 9} className="overflow-hidden bg-card">
-              <div className="h-full w-full overflow-auto">
-                {containerWidth > 0 && (
+      <div
+        ref={stageRef}
+        className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden [&>[data-slot=carousel-content]]:absolute [&>[data-slot=carousel-content]]:inset-0"
+      >
+        <CarouselContent className="h-full">
+          {SLIDES.map((html, index) => (
+            <CarouselItem key={index} className="h-full">
+              <div className="flex h-full w-full items-center justify-center overflow-auto">
+                {renderScale > 0 && (
                   <div
                     style={{
-                      width: DESIGN_WIDTH,
-                      height: DESIGN_HEIGHT,
-                      zoom: (containerWidth / DESIGN_WIDTH) * scale,
+                      width: DESIGN_WIDTH * renderScale,
+                      height: DESIGN_HEIGHT * renderScale,
+                      flexShrink: 0,
                     }}
-                    dangerouslySetInnerHTML={{ __html: html }}
-                  />
+                  >
+                    <div
+                      style={{
+                        width: DESIGN_WIDTH,
+                        height: DESIGN_HEIGHT,
+                        transform: `scale(${renderScale})`,
+                        transformOrigin: "top left",
+                      }}
+                      dangerouslySetInnerHTML={{ __html: html }}
+                    />
+                  </div>
                 )}
               </div>
-            </AspectRatio>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <div className="relative z-20 mx-auto mt-2 flex items-center justify-center pb-2">
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </div>
+      <div className="relative z-20 flex shrink-0 items-center justify-center py-2">
         <ContentToolbar
           pageNumber={pageNumber}
           numPages={numPages}
