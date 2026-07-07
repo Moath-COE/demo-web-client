@@ -275,6 +275,100 @@
     animation: agent-point 1s ease-in-out infinite;
   }
 
+  [data-screen-label] mark.agent-highlight {
+    @apply rounded relative;
+    color: inherit;
+    background: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--coral) 45%, transparent),
+      color-mix(in srgb, var(--coral) 45%, transparent)
+    );
+    background-size: 0% 100%;
+    background-repeat: no-repeat;
+    animation: agent-highlight-draw 2s ease-out forwards;
+  }
+
+  [data-screen-label] mark.agent-highlight::after {
+    content: "🤖";
+    display: block;
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+    color: initial;
+    font-size: 14px;
+    line-height: 1;
+    top: -18px;
+    left: 0%;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--coral) 80%, transparent));
+    animation: agent-cursor-move 2s ease-out forwards;
+  }
+
+  [data-screen-label] mark.agent-circle {
+    @apply relative rounded-sm p-1 z-10;
+    color: inherit;
+    background: transparent;
+    outline: 2px solid color-mix(in srgb, var(--coral) 0%);
+    outline-offset: 1px;
+    animation: agent-circle-draw 2s ease-out forwards;
+  }
+
+  [data-screen-label] mark.agent-circle::after {
+    content: "🤖";
+    display: block;
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+    color: initial;
+    font-size: 14px;
+    line-height: 1;
+    top: -18px;
+    left: 0%;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--coral) 60%, transparent));
+    animation: agent-indicator-pulse 2s ease-out forwards;
+  }
+
+  [data-screen-label] mark.agent-underline {
+    @apply relative;
+    color: inherit;
+    background: transparent;
+    background-image: linear-gradient(to right, var(--coral), var(--coral));
+    background-size: 0% 2px;
+    background-position: bottom left;
+    background-repeat: no-repeat;
+    animation: agent-underline-draw 2s ease-out forwards;
+  }
+
+  [data-screen-label] mark.agent-underline::after {
+    content: "🤖";
+    display: block;
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+    color: initial;
+    font-size: 14px;
+    line-height: 1;
+    top: -18px;
+    left: 0%;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--coral) 60%, transparent));
+    animation: agent-cursor-move 2s ease-out forwards;
+  }
+
+  [data-screen-label] mark.agent-point {
+    @apply relative;
+    color: inherit;
+    background: transparent;
+  }
+
+  [data-screen-label] mark.agent-point::after {
+    content: "⬅";
+    @apply absolute -right-8 top-1/2 text-xl drop-shadow-md;
+    color: var(--coral);
+    animation: agent-point 1s ease-in-out infinite;
+  }
+
   .brief-panel {
     border: 1px solid color-mix(in oklch, var(--sidebar-foreground), transparent 72%);
     background: color-mix(in oklch, var(--sidebar), var(--sidebar-primary) 50%);

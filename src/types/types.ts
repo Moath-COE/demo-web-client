@@ -16,7 +16,7 @@ export type CourseContent = CoursePage[];
 export type markerPayload = {
   type: "highlight" | "circle" | "underline" | "point";
   page: number;
-  span_id: number;
+  text: string;
   delay: number;
 };
 
